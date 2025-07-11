@@ -11,6 +11,7 @@ build/
 
 # Environment variables
 .env
+.cursorrules
 .env.local
 .env.development.local
 .env.test.local
@@ -107,3 +108,6 @@ Thumbs.db
 # MCP specific
 */.vscode/mcp.json
 .vscode/mcp.json
+
+# Ignore Cursor IDE rules file
+.cursorrules

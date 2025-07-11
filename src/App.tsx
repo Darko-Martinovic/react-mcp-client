@@ -1,12 +1,8 @@
 import React from 'react';
+import Chat from './Chat';
 
 const App: React.FC = () => {
-  return (
-    <div>
-      <h1>Welcome to the MCP BI Chat App (TypeScript)</h1>
-      <p>Start building your business analyst chat experience here.</p>
-    </div>
-  );
+  return <Chat />;
 };
 
 export default App; 
