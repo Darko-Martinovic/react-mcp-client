@@ -1503,13 +1503,13 @@ Available sample tools: ${articles
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Trace Call checkbox - only show for system messages with trace data */}
                     {msg.sender === "system" && msg.traceData && (
-                      <label 
-                        style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
+                      <label
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
                           cursor: "pointer",
                           color: "#666",
                           fontFamily: "Inter, system-ui, sans-serif",
