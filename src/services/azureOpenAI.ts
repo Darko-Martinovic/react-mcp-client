@@ -1,4 +1,7 @@
-// Azure OpenAI service layer (stub)
+// Azure OpenAI service layer (real integration)
+// Requires .env variables:
+// VITE_AOAI_ENDPOINT
+// VITE_AOAI_APIKEY
 
 export interface FunctionCall {
   tool: string;
@@ -10,15 +13,58 @@ export interface AzureOpenAIResponse {
   aiMessage: string;
 }
 
-export async function askAzureOpenAI(userMessage: string): Promise<AzureOpenAIResponse> {
-  // Mocked response simulating Azure OpenAI function call output
-  return {
-    functionCalls: [
+export async function askAzureOpenAI(
+  userMessage: string
+): Promise<AzureOpenAIResponse> {
+  const endpoint = import.meta.env.VITE_AOAI_ENDPOINT;
+  const apiKey = import.meta.env.VITE_AOAI_APIKEY;
+  if (!endpoint || !apiKey) {
+    throw new Error(
+      "Azure OpenAI endpoint or API key not set in environment variables."
+    );
+  }
+
+  const body = {
+    messages: [
       {
-        tool: 'getBusinessData',
-        arguments: { query: userMessage },
+        role: "system",
+        content: "You are a helpful assistant for business analysts.",
       },
+      { role: "user", content: userMessage },
     ],
-    aiMessage: `I will use the 'getBusinessData' tool to answer your question: "${userMessage}"`,
+    // Add model, max_tokens, temperature, etc. as needed
   };
-} 
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": apiKey,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Azure OpenAI API error: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data = await response.json();
+
+  const aiMessage =
+    data.choices?.[0]?.message?.content || "No response from AI.";
+  let functionCalls: FunctionCall[] = [];
+  try {
+    if (data.choices?.[0]?.message?.function_call_plan) {
+      functionCalls = JSON.parse(data.choices[0].message.function_call_plan);
+    }
+  } catch {
+    // fallback: no function calls
+  }
+
+  return {
+    functionCalls,
+    aiMessage,
+  };
+}
