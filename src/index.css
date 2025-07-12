@@ -1,16 +1,24 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  /* Modern font stack with Inter as primary choice */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", system-ui, sans-serif;
+  line-height: 1.6; /* Better readability for chat content */
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Chat-optimized typography settings */
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11"; /* Inter font features for better readability */
+  font-variant-numeric: tabular-nums; /* Better number alignment */
+
+  color-scheme: light;
+  color: #1a1a1a; /* Better contrast for light theme */
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%; /* Prevent font scaling on mobile - Safari */
+  text-size-adjust: 100%; /* Prevent font scaling on mobile - Standard */
 }
 
 a {
@@ -24,10 +32,71 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  /* Optimized for full-screen chat app */
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Chat-specific typography styles */
+.chat-message {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: -0.01em; /* Slightly tighter for better readability */
+}
+
+.chat-message.user {
+  font-weight: 500; /* Slightly bolder for user messages */
+}
+
+.chat-message.system {
+  font-weight: 400;
+  color: #374151; /* Slightly muted for AI responses */
+}
+
+.chat-input {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.chat-title {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em; /* Tighter spacing for titles */
+}
+
+.sidebar-text {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Code blocks in chat messages */
+.chat-code {
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono",
+    "Source Code Pro", monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid #e1e4e8;
+}
+
+/* Inline code in chat messages */
+.chat-inline-code {
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  font-size: 14px;
+  background: #f6f8fa;
+  padding: 2px 4px;
+  border-radius: 3px;
+  border: 1px solid #e1e4e8;
 }
 
 h1 {

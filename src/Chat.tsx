@@ -276,14 +276,25 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
               ) : (
                 <>
                   <span
+                    className={`chat-message ${msg.sender}`}
                     style={{
                       background: msg.sender === "user" ? "#e0f7fa" : "#f1f8e9",
-                      padding: "10px 18px",
-                      borderRadius: 18,
+                      padding: "12px 20px",
+                      borderRadius: 20,
                       display: "inline-block",
                       whiteSpace: "pre-wrap",
-                      fontSize: 16,
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                      fontSize: 15,
+                      lineHeight: "1.5",
+                      fontWeight: msg.sender === "user" ? 500 : 400,
+                      letterSpacing: "-0.01em",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                      border:
+                        msg.sender === "user"
+                          ? "1px solid #b3e5fc"
+                          : "1px solid #e8f5e8",
+                      color: msg.sender === "user" ? "#006064" : "#2e7d32",
+                      maxWidth: "85%",
+                      wordBreak: "break-word",
                     }}
                   >
                     {msg.text}
@@ -336,30 +347,59 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
           value={input}
           onChange={handleInputChange}
           placeholder="Type your message..."
+          className="chat-input"
           style={{
             flex: 1,
-            padding: 12,
-            borderRadius: 10,
-            border: "1px solid #ccc",
-            fontSize: 16,
-            background: "#f9f9f9",
+            padding: "14px 16px",
+            borderRadius: 12,
+            border: "1px solid #e1e4e8",
+            fontSize: 15,
+            background: "#ffffff",
+            fontFamily: "Inter, system-ui, sans-serif",
+            fontWeight: 400,
+            letterSpacing: "-0.01em",
+            lineHeight: "1.4",
+            transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
           }}
           disabled={loading}
+          onFocus={(e) => {
+            e.target.style.borderColor = "#1976d2";
+            e.target.style.boxShadow = "0 0 0 3px rgba(25, 118, 210, 0.1)";
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = "#e1e4e8";
+            e.target.style.boxShadow = "0 1px 3px rgba(0,0,0,0.1)";
+          }}
         />
         <button
           type="submit"
           style={{
-            padding: "12px 28px",
-            borderRadius: 10,
+            padding: "14px 32px",
+            borderRadius: 12,
             border: "none",
             background: "#1976d2",
             color: "#fff",
-            fontWeight: "bold",
-            fontSize: 16,
+            fontFamily: "Inter, system-ui, sans-serif",
+            fontWeight: 600,
+            fontSize: 15,
+            letterSpacing: "-0.01em",
+            cursor: "pointer",
+            transition: "background-color 0.2s ease, transform 0.1s ease",
+            boxShadow: "0 2px 8px rgba(25, 118, 210, 0.3)",
           }}
           disabled={loading}
+          onMouseDown={(e) => {
+            e.currentTarget.style.transform = "scale(0.98)";
+          }}
+          onMouseUp={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+          }}
         >
-          Send
+          {loading ? "Processing..." : "Send"}
         </button>
       </form>
     </div>

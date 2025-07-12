@@ -27,6 +27,7 @@ const App: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const didLoadChats = useRef(false);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load chats from localStorage on mount
   useEffect(() => {
@@ -71,6 +72,15 @@ const App: React.FC = () => {
       setActiveChatId(newChat.id);
     }
     // eslint-disable-next-line
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Persist chats to localStorage on change
@@ -119,18 +129,40 @@ const App: React.FC = () => {
     setEditTitle(currentTitle);
   };
 
+  // Handle single click with delay to avoid conflict with double-click
+  const handleChatClick = (id: string) => {
+    // Clear any existing timeout
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+
+    // Set a timeout to handle the single click after a short delay
+    clickTimeoutRef.current = setTimeout(() => {
+      handleSelectChat(id);
+    }, 200); // 200ms delay
+  };
+
+  const handleChatDoubleClick = (id: string, title: string) => {
+    // Clear the single click timeout since we're doing a double click
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+    }
+    handleEditTitle(id, title);
+  };
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditTitle(e.target.value);
   };
 
   const handleTitleBlur = (id: string) => {
-    setChats((prev) =>
-      prev.map((chat) =>
-        chat.id === id
-          ? { ...chat, title: editTitle.trim() || "Untitled Chat" }
-          : chat
-      )
-    );
+    if (editTitle.trim()) {
+      setChats(
+        chats.map((chat) =>
+          chat.id === id ? { ...chat, title: editTitle.trim() } : chat
+        )
+      );
+    }
     setEditingId(null);
     setEditTitle("");
   };
@@ -141,6 +173,9 @@ const App: React.FC = () => {
   ) => {
     if (e.key === "Enter") {
       handleTitleBlur(id);
+    } else if (e.key === "Escape") {
+      setEditingId(null);
+      setEditTitle("");
     }
   };
 
@@ -192,7 +227,17 @@ const App: React.FC = () => {
           </span>{" "}
           New Chat
         </button>
-        <div style={{ fontWeight: "bold", marginBottom: 8, fontSize: 18 }}>
+        <div
+          className="chat-title"
+          style={{
+            fontWeight: 600,
+            marginBottom: 12,
+            fontSize: 18,
+            fontFamily: "Inter, system-ui, sans-serif",
+            letterSpacing: "-0.02em",
+            color: "#1a1a1a",
+          }}
+        >
           Chats
         </div>
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
@@ -207,7 +252,8 @@ const App: React.FC = () => {
               }}
             >
               <div
-                onClick={() => handleSelectChat(chat.id)}
+                onClick={() => handleChatClick(chat.id)}
+                onDoubleClick={() => handleChatDoubleClick(chat.id, chat.title)}
                 style={{
                   flex: 1,
                   minWidth: 0, // Allow flex item to shrink below content size
@@ -226,8 +272,17 @@ const App: React.FC = () => {
                   flexDirection: "column",
                   alignItems: "flex-start",
                   gap: 4,
+                  transition:
+                    "background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease",
+                  userSelect: "none", // Prevent text selection on double-click
                 }}
-                title={chat.title}
+                title={`${chat.title} (Double-click to edit)`}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.02)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
               >
                 <div
                   style={{
