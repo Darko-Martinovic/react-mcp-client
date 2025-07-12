@@ -12,6 +12,9 @@
   "dependencies": {
     "@modelcontextprotocol/server-github": "^2025.4.8",
     "axios": "^1.10.0",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3"

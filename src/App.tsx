@@ -202,13 +202,15 @@ const App: React.FC = () => {
               style={{
                 marginBottom: 10,
                 display: "flex",
-                alignItems: "center",
+                alignItems: "stretch",
+                gap: 4,
               }}
             >
-              <button
+              <div
                 onClick={() => handleSelectChat(chat.id)}
                 style={{
                   flex: 1,
+                  minWidth: 0, // Allow flex item to shrink below content size
                   padding: 8,
                   borderRadius: 8,
                   border:
@@ -217,82 +219,122 @@ const App: React.FC = () => {
                       : "1px solid #ccc",
                   background: chat.id === activeChatId ? "#e3f2fd" : "#fff",
                   color: "#333",
-                  textAlign: "left",
                   cursor: "pointer",
                   fontWeight: chat.id === activeChatId ? "bold" : "normal",
                   fontSize: 15,
                   display: "flex",
-                  alignItems: "center",
-                  gap: 6,
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: 4,
                 }}
                 title={chat.title}
               >
-                <span role="img" aria-label="chat">
-                  💬
-                </span>
-                {editingId === chat.id ? (
-                  <input
-                    value={editTitle}
-                    onChange={handleTitleChange}
-                    onBlur={() => handleTitleBlur(chat.id)}
-                    onKeyDown={(e) => handleTitleKeyDown(e, chat.id)}
-                    autoFocus
-                    style={{
-                      fontSize: 15,
-                      flex: 1,
-                      marginLeft: 4,
-                      border: "1px solid #1976d2",
-                      borderRadius: 4,
-                      padding: "2px 4px",
-                    }}
-                  />
-                ) : (
-                  <span
-                    style={{
-                      flex: 1,
-                      marginLeft: 4,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {chat.title}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    width: "100%",
+                    minWidth: 0,
+                  }}
+                >
+                  <span role="img" aria-label="chat">
+                    💬
                   </span>
-                )}
-                <span style={{ fontSize: 12, color: "#888", marginLeft: 6 }}>
+                  {editingId === chat.id ? (
+                    <input
+                      value={editTitle}
+                      onChange={handleTitleChange}
+                      onBlur={() => handleTitleBlur(chat.id)}
+                      onKeyDown={(e) => handleTitleKeyDown(e, chat.id)}
+                      autoFocus
+                      placeholder="Enter chat title"
+                      style={{
+                        fontSize: 14,
+                        flex: 1,
+                        minWidth: 0,
+                        border: "1px solid #1976d2",
+                        borderRadius: 4,
+                        padding: "2px 4px",
+                      }}
+                    />
+                  ) : (
+                    <span
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        fontSize: 14,
+                        lineHeight: "1.2",
+                      }}
+                    >
+                      {chat.title}
+                    </span>
+                  )}
+                </div>
+                <span
+                  style={{
+                    fontSize: 11,
+                    color: "#888",
+                    alignSelf: "flex-end",
+                  }}
+                >
                   {new Date(chat.createdAt).toLocaleDateString()}
                 </span>
-              </button>
-              <button
-                onClick={() => handleEditTitle(chat.id, chat.title)}
+              </div>
+              <div
                 style={{
-                  marginLeft: 4,
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: 18,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  minWidth: "auto",
                 }}
-                title="Rename Chat"
               >
-                <span role="img" aria-label="edit">
-                  ✏️
-                </span>
-              </button>
-              <button
-                onClick={() => handleDeleteChat(chat.id)}
-                style={{
-                  marginLeft: 4,
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: 18,
-                }}
-                title="Delete Chat"
-              >
-                <span role="img" aria-label="delete">
-                  🗑️
-                </span>
-              </button>
+                <button
+                  onClick={() => handleEditTitle(chat.id, chat.title)}
+                  style={{
+                    background: "#f5f5f5",
+                    border: "1px solid #ddd",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                    fontSize: 14,
+                    padding: "4px 6px",
+                    height: "auto",
+                    minHeight: "28px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  title="Rename Chat"
+                >
+                  <span role="img" aria-label="edit">
+                    ✏️
+                  </span>
+                </button>
+                <button
+                  onClick={() => handleDeleteChat(chat.id)}
+                  style={{
+                    background: "#ffe6e6",
+                    border: "1px solid #ffcccc",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                    fontSize: 14,
+                    padding: "4px 6px",
+                    height: "auto",
+                    minHeight: "28px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  title="Delete Chat"
+                >
+                  <span role="img" aria-label="delete">
+                    🗑️
+                  </span>
+                </button>
+              </div>
             </li>
           ))}
         </ul>
@@ -303,6 +345,7 @@ const App: React.FC = () => {
           <Chat
             messages={activeChat.messages}
             setMessages={handleUpdateMessages}
+            title={activeChat.title}
           />
         )}
       </div>

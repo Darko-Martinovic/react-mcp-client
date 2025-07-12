@@ -14,7 +14,8 @@ export interface AzureOpenAIResponse {
 }
 
 export async function askAzureOpenAI(
-  userMessage: string
+  userMessage: string,
+  systemPrompt: string
 ): Promise<AzureOpenAIResponse> {
   const endpoint = import.meta.env.VITE_AOAI_ENDPOINT;
   const apiKey = import.meta.env.VITE_AOAI_APIKEY;
@@ -26,10 +27,7 @@ export async function askAzureOpenAI(
 
   const body = {
     messages: [
-      {
-        role: "system",
-        content: "You are a helpful assistant for business analysts.",
-      },
+      { role: "system", content: systemPrompt },
       { role: "user", content: userMessage },
     ],
     // Add model, max_tokens, temperature, etc. as needed
