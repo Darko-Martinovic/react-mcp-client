@@ -652,6 +652,9 @@ Query Intent Guidelines:
 - For sales data: use "sales" or "sales data"
 - For low stock alerts: use "low stock" or "stock" (only when user specifically asks about LOW stock)
 - For general inventory/stock levels: use "detailed inventory" or "products inventory"
+- For TOTAL/SUMMARY queries (total revenue, total sales, how much): use "sales data" - the system will automatically provide summary format
+- For DETAILED/BREAKDOWN queries (show all sales, list transactions, breakdown): use "detailed sales" or "sales breakdown"
+- For CATEGORY PERFORMANCE queries (how categories are performing, category sales): use "sales data product categories" - system will auto-apply date range
 
 Examples:
 User: "What kind of tools do we have?"
@@ -688,6 +691,21 @@ User: "Which products have stock levels under 30 units?"
 Function: search
 Parameters: {"query": "low stock levels under 30 units"}
 Reasoning: User wants products with stock below specific threshold
+
+User: "What was our total revenue for the last month?"
+Function: search
+Parameters: {"query": "sales data total revenue last month"}
+Reasoning: User wants total revenue summary for last month
+
+User: "Show me all sales transactions from last week"
+Function: search
+Parameters: {"query": "detailed sales breakdown last week"}
+Reasoning: User wants detailed transaction list for last week
+
+User: "How are our different product categories performing in sales?"
+Function: search
+Parameters: {"query": "sales data product categories"}
+Reasoning: User wants category performance analysis
 
 REMEMBER: Always respond with the structured format. Never format or display the actual results - that will be handled separately.
 
@@ -1043,7 +1061,8 @@ Available sample tools: ${articles
         (!enhancedParameters.startDate &&
           !enhancedParameters.endDate &&
           !enhancedParameters.supplier &&
-          !enhancedParameters.category)
+          !enhancedParameters.category &&
+          !enhancedParameters.threshold)
       ) {
         const directParams = extractParametersDirectly(originalQuery);
         if (Object.keys(directParams).length > 0) {
@@ -1053,6 +1072,33 @@ Available sample tools: ${articles
             directParams
           );
         }
+      }
+
+      // For sales-related tools, ensure we have date parameters if none specified
+      if (
+        selectedTool.functionName &&
+        (selectedTool.functionName.toLowerCase().includes("sales") ||
+          selectedTool.functionName.toLowerCase().includes("revenue")) &&
+        !enhancedParameters.startDate &&
+        !enhancedParameters.endDate
+      ) {
+        // Default to last 30 days for sales queries without explicit date range
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0];
+        const currentDate = new Date().toISOString().split("T")[0];
+
+        enhancedParameters.startDate = thirtyDaysAgo;
+        enhancedParameters.endDate = currentDate;
+
+        console.log("=== AUTO-APPLIED DATE RANGE ===");
+        console.log("Tool requires date range for sales analysis");
+        console.log("Applied default range:", {
+          startDate: enhancedParameters.startDate,
+          endDate: enhancedParameters.endDate,
+          reason: "Default 30-day range for sales analysis",
+        });
+        console.log("===============================");
       }
 
       // Merge AI-extracted parameters with original query parameters
@@ -1117,6 +1163,30 @@ Available sample tools: ${articles
         console.log("- category type:", typeof enrichedParameters.category);
       }
 
+      // Validate threshold parameters if present
+      if (enrichedParameters.threshold) {
+        console.log("Threshold validation:");
+        console.log("- threshold:", enrichedParameters.threshold);
+        console.log("- threshold type:", typeof enrichedParameters.threshold);
+        console.log("- threshold value:", enrichedParameters.threshold);
+      }
+
+      // Special debugging for category performance tools
+      if (
+        selectedTool.functionName &&
+        selectedTool.functionName.toLowerCase().includes("category")
+      ) {
+        console.log("=== CATEGORY TOOL DEBUGGING ===");
+        console.log("Tool function name:", selectedTool.functionName);
+        console.log("Tool parameters spec:", selectedTool.parameters);
+        console.log(
+          "Expected parameters based on description:",
+          selectedTool.description
+        );
+        console.log("Current parameters being sent:", enrichedParameters);
+        console.log("==============================");
+      }
+
       console.log("===============================");
 
       // Add query parameters for GET requests or body for POST requests
@@ -1178,7 +1248,8 @@ Available sample tools: ${articles
         return formatStructuredMCPResponse(
           mcpData,
           selectedTool.functionName || "Unknown Tool",
-          enrichedParameters
+          enrichedParameters,
+          originalQuery
         );
       } else {
         // For GET requests, add query parameters to URL
@@ -1246,7 +1317,8 @@ Available sample tools: ${articles
         return formatStructuredMCPResponse(
           mcpData,
           selectedTool.functionName || "Unknown Tool",
-          enrichedParameters
+          enrichedParameters,
+          originalQuery
         );
       }
     } catch (mcpError) {
@@ -1262,11 +1334,113 @@ Available sample tools: ${articles
     }
   };
 
+  // Function to detect if user wants summary vs detailed data
+  const isSummaryRequest = (originalQuery: string): boolean => {
+    const summaryKeywords = [
+      "total",
+      "overall",
+      "sum",
+      "revenue",
+      "amount",
+      "what was",
+      "how much",
+      "what is",
+      "total sales",
+      "total revenue",
+      "overall sales",
+      "sum of",
+      "aggregate",
+    ];
+
+    const detailedKeywords = [
+      "show me all",
+      "list all",
+      "breakdown",
+      "details",
+      "detailed",
+      "analytics",
+      "analysis",
+      "each",
+      "individual",
+      "transaction",
+      "item by item",
+    ];
+
+    const lowerQuery = originalQuery.toLowerCase();
+
+    // Check for detailed keywords first (more specific)
+    const hasDetailedKeywords = detailedKeywords.some((keyword) =>
+      lowerQuery.includes(keyword)
+    );
+
+    if (hasDetailedKeywords) {
+      return false; // User wants detailed data
+    }
+
+    // Check for summary keywords
+    const hasSummaryKeywords = summaryKeywords.some((keyword) =>
+      lowerQuery.includes(keyword)
+    );
+
+    return hasSummaryKeywords;
+  };
+
+  // Function to calculate summary from sales data
+  const calculateSalesSummary = (
+    tableData: any[],
+    parameters?: Record<string, any>
+  ): string => {
+    if (!tableData || tableData.length === 0) {
+      return "No sales data found for the specified period.";
+    }
+
+    // Calculate total revenue
+    const totalRevenue = tableData.reduce((sum, sale) => {
+      return sum + (sale.totalAmount || 0);
+    }, 0);
+
+    // Get date range from the data
+    const salesDates = tableData
+      .map((sale) => new Date(sale.saleDate))
+      .filter((date) => !isNaN(date.getTime()))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    const fromDate =
+      salesDates.length > 0 ? salesDates[0].toLocaleDateString() : "N/A";
+    const toDate =
+      salesDates.length > 0
+        ? salesDates[salesDates.length - 1].toLocaleDateString()
+        : "N/A";
+
+    // Build filter info
+    let filterInfo = "";
+    if (parameters?.startDate && parameters?.endDate) {
+      const startDate = new Date(parameters.startDate);
+      const endDate = new Date(parameters.endDate);
+      filterInfo = `\n📅 **Period:** ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()} (${
+        parameters.startDate
+      } to ${parameters.endDate})`;
+    }
+
+    if (parameters?.category) {
+      filterInfo += `\n🏷️ **Category:** ${parameters.category}`;
+    }
+
+    if (parameters?.supplier) {
+      filterInfo += `\n🏢 **Supplier:** ${parameters.supplier}`;
+    }
+
+    return `💰 **Total Revenue:** $${totalRevenue.toFixed(2)}${filterInfo}
+📊 **Transaction Count:** ${tableData.length}
+📅 **Date Range:** ${fromDate} - ${toDate}`;
+  };
+
   // Function to return structured data for better table rendering
   const formatStructuredMCPResponse = (
     data: any,
     toolName: string,
-    parameters?: Record<string, any>
+    parameters?: Record<string, any>,
+    originalQuery?: string
   ): MCPResponse => {
     console.log("Formatting structured MCP response:", data);
 
@@ -1279,11 +1453,18 @@ Available sample tools: ${articles
     if (parameters) {
       const relevantParams = Object.entries(parameters)
         .filter(([key, value]) => key !== "query" && value)
-        .map(([key, value]) => `${key}: ${value}`)
+        .map(([key, value]) => {
+          // Format dates more clearly
+          if (key === "startDate" || key === "endDate") {
+            const date = new Date(value as string);
+            return `${key}: ${date.toLocaleDateString()} (${value})`;
+          }
+          return `${key}: ${value}`;
+        })
         .join(", ");
 
       if (relevantParams) {
-        paramInfo = `\n🔍 **Filters:** ${relevantParams}`;
+        paramInfo = `\n🔍 **Applied Filters:** ${relevantParams}`;
       }
     }
 
@@ -1308,9 +1489,59 @@ Available sample tools: ${articles
           };
         }
 
+        // Check if this is a sales data request and user wants summary
+        const isSalesData =
+          toolName.toLowerCase().includes("sales") ||
+          tableData.some((item: any) => item.totalAmount !== undefined);
+        const isCategoryData =
+          toolName.toLowerCase().includes("category") ||
+          tableData.some((item: any) => item.category !== undefined);
+        const wantsSummary = originalQuery
+          ? isSummaryRequest(originalQuery)
+          : false;
+
+        console.log("=== SUMMARY DETECTION ===");
+        console.log("Original query:", originalQuery);
+        console.log("Is sales data:", isSalesData);
+        console.log("Is category data:", isCategoryData);
+        console.log("Wants summary:", wantsSummary);
+        console.log("Tool name:", toolName);
+        console.log("=========================");
+
+        if (isSalesData && wantsSummary && !isCategoryData) {
+          // Return summary format for total/revenue queries (but not category breakdowns)
+          const summaryText = calculateSalesSummary(tableData, parameters);
+
+          return {
+            text: `✅ **${toolName}** executed successfully\n\n${summaryText}\n⏰ **Timestamp:** ${
+              data.timestamp || new Date().toLocaleString()
+            }`,
+          };
+        }
+
+        // Return detailed format for other queries
         let summary = `✅ **${toolName}** executed successfully${paramInfo}\n\n📊 **Results (${
           data.count || tableData.length
         }):**`;
+
+        // Add note if default date range was auto-applied
+        if (parameters?.startDate && parameters?.endDate && originalQuery) {
+          const hasExplicitDateInQuery =
+            originalQuery.toLowerCase().includes("last month") ||
+            originalQuery.toLowerCase().includes("last week") ||
+            originalQuery.toLowerCase().includes("yesterday") ||
+            originalQuery.toLowerCase().includes("today") ||
+            originalQuery.toLowerCase().includes("days") ||
+            /\d{4}-\d{2}-\d{2}/.test(originalQuery); // Check for date format
+
+          if (
+            !hasExplicitDateInQuery &&
+            (toolName.toLowerCase().includes("sales") ||
+              toolName.toLowerCase().includes("category"))
+          ) {
+            summary += `\n\n📅 **Note:** Default 30-day date range applied automatically for analysis.`;
+          }
+        }
 
         // Check for potential filtering issues and add warning to summary
         if (parameters?.supplier && tableData.length > 0) {
@@ -1577,6 +1808,28 @@ Available sample tools: ${articles
       params.endDate = currentDate;
     }
 
+    // Check for category performance queries without explicit date range
+    if (
+      (lowerQuery.includes("categories performing") ||
+        lowerQuery.includes("category performance") ||
+        lowerQuery.includes("sales by category") ||
+        lowerQuery.includes("category sales") ||
+        lowerQuery.includes("different categories")) &&
+      !params.startDate &&
+      !params.endDate
+    ) {
+      // Default to last 30 days for category performance analysis
+      const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      console.log(
+        "Detected category performance query - applying default 30-day range"
+      );
+      console.log(`Date range: ${startDate} to ${currentDate}`);
+      params.startDate = startDate;
+      params.endDate = currentDate;
+    }
+
     console.log("Extracted parameters:", params);
     console.log("===============================");
     return params;
@@ -1663,6 +1916,15 @@ Output: {"maxStockLevel": 50}
 
 Input: "Low stock dairy products under 25 units"
 Output: {"category": "Dairy", "threshold": 25}
+
+Input: "How are our different product categories performing in sales?"
+Output: {"startDate": "${thirtyDaysAgo}", "endDate": "${currentDate}"}
+
+Input: "Category sales performance this month"
+Output: {"startDate": "${thirtyDaysAgo}", "endDate": "${currentDate}"}
+
+Input: "Sales breakdown by category"
+Output: {"startDate": "${thirtyDaysAgo}", "endDate": "${currentDate}"}
 
 Return {} if no parameters needed.`;
 
