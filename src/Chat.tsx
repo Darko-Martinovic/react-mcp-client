@@ -2089,6 +2089,19 @@ Return {} if no parameters needed.`;
 
               {msg.tableData ? (
                 <>
+                  {/* Show summary text above the table if it exists */}
+                  {msg.text && (
+                    <span
+                      className={`message-bubble ${
+                        msg.sender === "user"
+                          ? "message-bubble--user"
+                          : "message-bubble--system"
+                      }`}
+                      style={{ marginBottom: "10px", display: "block" }}
+                    >
+                      {msg.text}
+                    </span>
+                  )}
                   {renderTable(msg.tableData, msg.toolName)}
                   {/* Copy button for table data */}
                   <div
