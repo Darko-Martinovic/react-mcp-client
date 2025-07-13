@@ -1,8 +1,34 @@
 {
   "name": "react-mcp-client",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A modern React-based client for interacting with Model Context Protocol (MCP) servers, featuring AI-powered chat interface with Azure OpenAI integration and advanced trace debugging capabilities.",
   "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "Darko Martinovic",
+    "email": "darko.martinovic@outlook.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Darko-Martinovic/react-mcp-client.git"
+  },
+  "homepage": "https://github.com/Darko-Martinovic/react-mcp-client#readme",
+  "bugs": {
+    "url": "https://github.com/Darko-Martinovic/react-mcp-client/issues"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "mcp",
+    "model-context-protocol",
+    "azure-openai",
+    "ai",
+    "chat",
+    "debugging",
+    "trace",
+    "azure-search",
+    "rag"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
