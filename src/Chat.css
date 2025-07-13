@@ -216,6 +216,7 @@
   max-height: 300px;
   overflow-y: auto;
   line-height: 1.4;
+  position: relative; /* Ensure proper positioning context */
 }
 
 .trace-title {
@@ -241,6 +242,22 @@
   background-color: #ffffff;
   border: 1px solid #dee2e6;
   border-radius: 3px;
+}
+
+/* Special positioning for tooltips inside trace panel */
+.trace-panel .copy-tooltip {
+  position: absolute;
+  top: 30px; /* Position below the button instead of above */
+  right: 0;
+  background: #4caf50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Table Styles */
