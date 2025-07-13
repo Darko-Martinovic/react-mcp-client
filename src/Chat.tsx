@@ -479,7 +479,8 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
           }
         } catch (mcpError) {
           console.error("MCP Server Error:", mcpError);
-          traceData.error = mcpError.toString();
+          traceData.error =
+            mcpError instanceof Error ? mcpError.message : String(mcpError);
           setMessages([
             ...baseMessages,
             userMsg,
@@ -692,7 +693,7 @@ Available sample tools: ${articles
 
     // Get MCP server URL from environment
     const mcpServerUrl =
-      import.meta.env.VITE_MCP_SERVER_URL || "http://localhost:5000";
+      (import.meta as any).env.VITE_MCP_SERVER_URL || "http://localhost:5000";
     const fullEndpoint = `${mcpServerUrl}${selectedTool.endpoint}`;
 
     console.log(
