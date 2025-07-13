@@ -7,7 +7,12 @@ import React, {
 } from "react";
 import { askAzureOpenAI } from "./services/azureOpenAI";
 import { callMcpTool } from "./services/mcpServer";
-import { fetchArticlesFromAzureSearch } from "./services/azureSearch";
+import {
+  fetchArticlesFromAzureSearch,
+  fetchAzureSearchSchema,
+  getSearchableFields,
+  getFilterableFields,
+} from "./services/azureSearch";
 import "./Chat.css";
 
 interface Message {
@@ -407,7 +412,72 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
         mcpResponse: null,
         selectedTool: null,
         parameters: {},
+        schema: null, // Add schema info to trace
       };
+
+      // Check if user is asking about schema or capabilities
+      const isSchemaQuery =
+        input.toLowerCase().includes("schema") ||
+        input.toLowerCase().includes("index") ||
+        input.toLowerCase().includes("what tools") ||
+        input.toLowerCase().includes("available tools") ||
+        input.toLowerCase().includes("capabilities");
+
+      if (isSchemaQuery) {
+        // Fetch and display schema information
+        const schema = await fetchAzureSearchSchema();
+        traceData.schema = schema;
+
+        if (schema) {
+          const searchableFields = getSearchableFields(schema);
+          const filterableFields = getFilterableFields(schema);
+
+          const schemaInfo = `🔧 **Azure Search Index Schema**
+
+**Index Name:** ${schema.indexName}
+
+**Available Fields:**
+${schema.fields
+  .map(
+    (field) =>
+      `• **${field.name}** (${field.type})${field.key ? " 🔑" : ""}${
+        field.searchable ? " 🔍" : ""
+      }${field.filterable ? " 🏷️" : ""}${field.sortable ? " ↕️" : ""}`
+  )
+  .join("\n")}
+
+**Field Legend:**
+🔑 Key field | 🔍 Searchable | 🏷️ Filterable | ↕️ Sortable
+
+**Searchable Fields:** ${searchableFields.join(", ")}
+**Filterable Fields:** ${filterableFields.join(", ")}
+
+**Total Fields:** ${schema.fields.length}
+**Last Updated:** ${new Date().toLocaleString()}`;
+
+          setMessages([
+            ...baseMessages,
+            userMsg,
+            {
+              sender: "system",
+              text: schemaInfo,
+              traceData: traceData,
+            },
+          ]);
+          return;
+        } else {
+          setMessages([
+            ...baseMessages,
+            userMsg,
+            {
+              sender: "system",
+              text: "❌ Could not retrieve Azure Search index schema. The schema endpoint may not be available.",
+              traceData: traceData,
+            },
+          ]);
+          return;
+        }
+      }
 
       // Step 1: Get AI intent (but don't display AI response)
       const aiResponse = await getAIIntent(input, baseMessages);
@@ -520,8 +590,35 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
     userMessage: string,
     previousMessages: Message[]
   ): Promise<AIResponse> => {
+    // Fetch schema first to understand the index structure
+    const schema = await fetchAzureSearchSchema();
+    console.log("=== AZURE SEARCH SCHEMA ===");
+    console.log("Schema loaded:", schema);
+
+    if (schema) {
+      const searchableFields = getSearchableFields(schema);
+      const filterableFields = getFilterableFields(schema);
+      console.log("Searchable fields:", searchableFields);
+      console.log("Filterable fields:", filterableFields);
+    }
+    console.log("===========================");
+
     // Fetch articles from Azure Search for RAG context
     const articles = await fetchArticlesFromAzureSearch("*");
+
+    // Build enhanced system prompt with schema information
+    let schemaInfo = "";
+    if (schema) {
+      schemaInfo = `
+
+Index Schema Information:
+- Index Name: ${schema.indexName}
+- Available Fields: ${schema.fields
+        .map((f) => `${f.name} (${f.type})`)
+        .join(", ")}
+- Searchable Fields: ${getSearchableFields(schema).join(", ")}
+- Filterable Fields: ${getFilterableFields(schema).join(", ")}`;
+    }
 
     // Build system prompt with MCP function instruction
     const systemPrompt = `You are an intelligent assistant that helps users interact with MCP (Model Context Protocol) tools.
@@ -536,7 +633,7 @@ DO NOT provide any other response format. DO NOT format results or explain tools
 
 Available MCP tools in the search index: ${articles
       .map((a: any) => a.functionName || a.name)
-      .join(", ")}
+      .join(", ")}${schemaInfo}
 
 Your ONLY job is to:
 1. Understand the user's intent
@@ -544,12 +641,12 @@ Your ONLY job is to:
 3. Extract appropriate search terms for the Parameters based on intent
 
 Query Intent Guidelines:
-- For product listings/inventory: use "products" or "inventory"
+- For product listings/inventory: use "products" or "inventory" or "detailed inventory"
 - For specific suppliers: include supplier name in search
 - For specific categories: include category name in search  
 - For sales data: use "sales" or "sales data"
-- For low stock alerts: use "low stock" or "stock"
-- For detailed inventory: use "detailed inventory"
+- For low stock alerts: use "low stock" or "stock" (only when user specifically asks about LOW stock)
+- For general inventory/stock levels: use "detailed inventory" or "products inventory"
 
 Examples:
 User: "What kind of tools do we have?"
@@ -559,12 +656,17 @@ Reasoning: User wants to search for available tools
 
 User: "Show me all dairy products"
 Function: search  
-Parameters: {"query": "products dairy"}
+Parameters: {"query": "products dairy inventory"}
 Reasoning: User wants to search for dairy products in inventory
+
+User: "Show me all dairy products and their current stock levels"
+Function: search  
+Parameters: {"query": "detailed inventory dairy"}
+Reasoning: User wants detailed inventory information for dairy products
 
 User: "What products do we get from Fresh Dairy Co.?"
 Function: search
-Parameters: {"query": "products Fresh Dairy Co."}
+Parameters: {"query": "products Fresh Dairy Co. inventory"}
 Reasoning: User wants products from specific supplier
 
 User: "Show me sales from last week"
@@ -576,6 +678,11 @@ User: "What products are low in stock?"
 Function: search
 Parameters: {"query": "low stock products"}
 Reasoning: User wants low stock information
+
+User: "Which products have stock levels under 30 units?"
+Function: search
+Parameters: {"query": "low stock levels under 30 units"}
+Reasoning: User wants products with stock below specific threshold
 
 REMEMBER: Always respond with the structured format. Never format or display the actual results - that will be handled separately.
 
@@ -665,6 +772,18 @@ Available sample tools: ${articles
   const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
     console.log("Calling actual MCP Server on port 5000:", mcpCall);
 
+    // Get schema information for enhanced debugging
+    const schema = await fetchAzureSearchSchema();
+    if (schema) {
+      console.log("=== SCHEMA VALIDATION ===");
+      console.log("Index Name:", schema.indexName);
+      console.log(
+        "Available Fields:",
+        schema.fields.map((f) => f.name)
+      );
+      console.log("========================");
+    }
+
     // First, get the available tools from Azure Search to find the right tool name and endpoint
     const searchResponse = await fetch("/api/search", {
       method: "POST",
@@ -678,17 +797,105 @@ Available sample tools: ${articles
 
     const searchData: SearchResult = await searchResponse.json();
     console.log("Search results for tool lookup:", searchData);
+    console.log("=== ENHANCED TOOL SELECTION DEBUG ===");
+    console.log("Query used for tool search:", mcpCall.parameters.query || "*");
+    console.log("Available tools found:", searchData.value?.length || 0);
+
+    // Enhanced tool logging with schema-aware field checking
+    searchData.value?.forEach((tool, index) => {
+      console.log(`Tool ${index}:`, {
+        functionName: tool.functionName,
+        name: tool.name,
+        description: tool.description,
+        endpoint: tool.endpoint,
+        httpMethod: tool.httpMethod,
+        // Check if all expected schema fields are present
+        hasRequiredFields: {
+          functionName: !!tool.functionName,
+          description: !!tool.description,
+          endpoint: !!tool.endpoint,
+          httpMethod: !!tool.httpMethod,
+        },
+      });
+    });
+    console.log("=====================================");
 
     // Extract the best matching tool and its endpoint
     let selectedTool = null;
     if (searchData.value && searchData.value.length > 0) {
-      // Use the highest scoring result
-      selectedTool = searchData.value[0];
-      console.log("Selected tool to call:", selectedTool);
+      // Check if we need to override tool selection based on query intent
+      const originalQuery = mcpCall.parameters.query || "";
+      const isLowStockQuery =
+        originalQuery.toLowerCase().includes("low stock") ||
+        originalQuery.toLowerCase().includes("under") ||
+        originalQuery.toLowerCase().includes("below");
+
+      const isGeneralInventoryQuery =
+        !isLowStockQuery &&
+        (originalQuery.toLowerCase().includes("all") ||
+          originalQuery.toLowerCase().includes("current stock") ||
+          originalQuery.toLowerCase().includes("inventory") ||
+          originalQuery.toLowerCase().includes("detailed"));
+
+      console.log("Enhanced query analysis:", {
+        isLowStockQuery,
+        isGeneralInventoryQuery,
+        originalQuery,
+        queryLength: originalQuery.length,
+        queryWords: originalQuery.split(" ").length,
+      });
+
+      // Try to find the most appropriate tool with schema validation
+      if (isGeneralInventoryQuery) {
+        // Look for general inventory/products tools first
+        const inventoryTool = searchData.value.find(
+          (tool) =>
+            tool.functionName &&
+            tool.endpoint && // Ensure we have required fields
+            (tool.functionName.toLowerCase().includes("inventory") ||
+              tool.functionName.toLowerCase().includes("products") ||
+              tool.functionName.toLowerCase().includes("getproduct")) &&
+            !tool.functionName.toLowerCase().includes("low") &&
+            !tool.functionName.toLowerCase().includes("stock")
+        );
+
+        if (inventoryTool) {
+          selectedTool = inventoryTool;
+          console.log(
+            "Override: Selected general inventory tool with validation:",
+            {
+              functionName: selectedTool.functionName,
+              endpoint: selectedTool.endpoint,
+              hasEndpoint: !!selectedTool.endpoint,
+              isValid: !!(selectedTool.functionName && selectedTool.endpoint),
+            }
+          );
+        } else {
+          // Fallback to first tool with required fields
+          selectedTool =
+            searchData.value.find(
+              (tool) => tool.functionName && tool.endpoint
+            ) || searchData.value[0];
+          console.log(
+            "Fallback: Using highest scoring tool with validation:",
+            selectedTool
+          );
+        }
+      } else {
+        // Use the highest scoring result with required fields for other queries
+        selectedTool =
+          searchData.value.find((tool) => tool.functionName && tool.endpoint) ||
+          searchData.value[0];
+        console.log("Selected tool to call with validation:", selectedTool);
+      }
     }
 
     if (!selectedTool || !selectedTool.endpoint) {
-      return { text: "No matching MCP tool found for your request." };
+      const errorMsg = !selectedTool
+        ? "No matching MCP tool found for your request."
+        : `Selected tool "${selectedTool.functionName}" is missing endpoint information.`;
+      console.error("Tool selection failed:", errorMsg);
+      return { text: errorMsg };
     }
 
     // Get MCP server URL from environment
@@ -699,6 +906,12 @@ Available sample tools: ${articles
     console.log(
       `Calling MCP server endpoint: ${selectedTool.httpMethod} ${fullEndpoint}`
     );
+    console.log("Selected tool validation:", {
+      functionName: selectedTool.functionName,
+      endpoint: selectedTool.endpoint,
+      httpMethod: selectedTool.httpMethod,
+      description: selectedTool.description?.substring(0, 100) + "...",
+    });
 
     // Now call the actual MCP server endpoint
     try {
@@ -733,14 +946,25 @@ Available sample tools: ${articles
 
       // Extract product categories
       const categoryMatch = originalQuery.match(
-        /\b(dairy|meat|vegetables|fruits|beverages|bread|snacks|frozen|organic|bakery|grains)\b/i
+        /\b(dairy|meat|vegetables|fruits|beverages|bread|snacks|frozen|organic|bakery|grains|seafood)\b/i
       );
       if (categoryMatch) {
         // Capitalize first letter to match the server's expected format
-        enrichedParameters.category =
+        const category =
           categoryMatch[1].charAt(0).toUpperCase() +
           categoryMatch[1].slice(1).toLowerCase();
-        console.log("Extracted category:", enrichedParameters.category);
+        enrichedParameters.category = category;
+        // Also try alternative parameter names that the server might expect
+        enrichedParameters.Category = category;
+        enrichedParameters.categoryFilter = category;
+        enrichedParameters.productCategory = category;
+        console.log("Extracted category:", category);
+        console.log("Added category parameters:", {
+          category: enrichedParameters.category,
+          Category: enrichedParameters.Category,
+          categoryFilter: enrichedParameters.categoryFilter,
+          productCategory: enrichedParameters.productCategory,
+        });
       }
 
       // Extract date ranges for sales and time-based queries
@@ -831,8 +1055,41 @@ Available sample tools: ${articles
         );
       }
 
+      // Extract stock level thresholds for low stock queries
+      const stockThresholdPatterns = [
+        /(?:under|below|less\s+than|lower\s+than)\s+(\d+)\s*(?:units?)?/i,
+        /(?:stock|inventory).*?(?:under|below|less\s+than|lower\s+than)\s+(\d+)/i,
+        /(\d+)\s*(?:units?)?\s+or\s+(?:under|below|less)/i,
+        /threshold.*?(\d+)/i,
+        /limit.*?(\d+)/i,
+      ];
+
+      // Check if this is a stock-related query
+      if (
+        originalQuery.toLowerCase().includes("stock") ||
+        originalQuery.toLowerCase().includes("inventory") ||
+        originalQuery.toLowerCase().includes("low")
+      ) {
+        for (const pattern of stockThresholdPatterns) {
+          const thresholdMatch = originalQuery.match(pattern);
+          if (thresholdMatch && thresholdMatch[1]) {
+            const threshold = parseInt(thresholdMatch[1]);
+            if (!isNaN(threshold) && threshold > 0) {
+              enrichedParameters.threshold = threshold;
+              console.log("Extracted stock threshold:", threshold);
+              break;
+            }
+          }
+        }
+      }
+
       // Add query parameters for GET requests or body for POST requests
       if (selectedTool.httpMethod === "POST") {
+        console.log("=== SENDING POST REQUEST ===");
+        console.log("Final enriched parameters:", enrichedParameters);
+        console.log("POST body:", JSON.stringify(enrichedParameters, null, 2));
+        console.log("=============================");
+
         requestOptions.body = JSON.stringify(enrichedParameters);
 
         const mcpResponse = await fetch(fullEndpoint, requestOptions);
@@ -854,9 +1111,14 @@ Available sample tools: ${articles
         );
       } else {
         // For GET requests, add query parameters to URL
+        console.log("=== SENDING GET REQUEST ===");
+        console.log("Final enriched parameters:", enrichedParameters);
+        console.log("=============================");
+
         const url = new URL(fullEndpoint);
         Object.entries(enrichedParameters).forEach(([key, value]) => {
           if (value && key !== "query") {
+            console.log(`Adding URL parameter: ${key} = ${value}`);
             url.searchParams.append(key, String(value));
           }
         });

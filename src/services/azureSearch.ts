@@ -39,3 +39,74 @@ export async function fetchArticlesFromAzureSearch(
     }
   });
 }
+
+// Azure Search schema interface
+interface FieldSchema {
+  name: string;
+  type: string;
+  key?: boolean;
+  searchable?: boolean;
+  filterable?: boolean;
+  sortable?: boolean;
+}
+
+interface IndexSchema {
+  indexName: string;
+  fields: FieldSchema[];
+}
+
+interface SchemaResponse {
+  success: boolean;
+  data: IndexSchema;
+  message: string;
+  timestamp: string;
+}
+
+// Cache for schema to avoid repeated fetches
+let cachedSchema: IndexSchema | null = null;
+
+// Function to fetch Azure Search index schema
+export async function fetchAzureSearchSchema(): Promise<IndexSchema | null> {
+  if (cachedSchema) {
+    return cachedSchema;
+  }
+
+  try {
+    const response = await fetch("/api/tools/schema", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      console.error(`Schema fetch failed with ${response.status}`);
+      return null;
+    }
+
+    const schemaResponse: SchemaResponse = await response.json();
+    console.log("Fetched Azure Search schema:", schemaResponse);
+
+    if (schemaResponse.success && schemaResponse.data) {
+      cachedSchema = schemaResponse.data;
+      return cachedSchema;
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error fetching Azure Search schema:", error);
+    return null;
+  }
+}
+
+// Function to get searchable fields from schema
+export function getSearchableFields(schema: IndexSchema): string[] {
+  return schema.fields
+    .filter((field) => field.searchable === true)
+    .map((field) => field.name);
+}
+
+// Function to get filterable fields from schema
+export function getFilterableFields(schema: IndexSchema): string[] {
+  return schema.fields
+    .filter((field) => field.filterable === true)
+    .map((field) => field.name);
+}

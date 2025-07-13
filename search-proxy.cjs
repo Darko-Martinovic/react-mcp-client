@@ -22,6 +22,29 @@ app.use((req, res, next) => {
   }
 });
 
+// Schema endpoint - proxy to backend MCP server
+app.get("/api/tools/schema", async (req, res) => {
+  console.log("Received request to /api/tools/schema");
+
+  const mcpServerUrl =
+    process.env.VITE_MCP_SERVER_URL || "http://localhost:5000";
+
+  try {
+    console.log("Making request to MCP server for schema...");
+    const mcpRes = await axios.get(`${mcpServerUrl}/api/tools/schema`);
+    console.log("MCP server schema response status:", mcpRes.status);
+    const data = mcpRes.data;
+    console.log("Schema response received, sending back to client");
+    res.json(data);
+  } catch (err) {
+    console.error("Error in schema proxy:", err.message);
+    if (err.response) {
+      console.error("MCP server error response:", err.response.data);
+    }
+    res.status(500).json({ error: "Schema proxy error", details: err.message });
+  }
+});
+
 app.post("/api/search", async (req, res) => {
   console.log("Received request to /api/search");
   console.log("Request body:", req.body);
