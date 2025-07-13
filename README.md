@@ -14,6 +14,24 @@ A modern React-based client application for interacting with Model Context Proto
 - **Real-time Visual Feedback**: Copy-to-clipboard functionality with visual confirmation
 - **Responsive Design**: Modern, mobile-friendly interface with smooth animations
 
+### 🧠 Enhanced AI Capabilities
+
+- **Intelligent Parameter Extraction**: AI-powered extraction of thresholds, date ranges, suppliers, and categories
+- **Smart Query Classification**: Automatic detection of summary vs detailed data requests
+- **Auto-Applied Date Ranges**: Intelligent default date range application for sales and analytics queries
+- **Threshold Detection**: Automatic extraction of numeric thresholds from natural language (e.g., "under 30 units")
+- **Category Performance Analysis**: Specialized handling for product category performance queries
+- **Applied Filter Transparency**: Clear display of all automatically applied filters and parameters
+
+### 📊 Advanced Data Processing
+
+- **Summary vs Detailed Logic**: Intelligent switching between summary totals and detailed breakdowns
+- **Revenue Calculation**: Automatic calculation of total revenue with period information
+- **Category Analytics**: Enhanced category performance analysis with auto-applied date ranges
+- **Low Stock Detection**: Smart detection and filtering of low stock inventory items
+- **Supplier Filtering**: Intelligent supplier name extraction and filtering capabilities
+- **Real-time Parameter Display**: Live display of applied filters with human-readable date formats
+
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 19.1.0 with TypeScript
@@ -80,7 +98,44 @@ A modern React-based client application for interacting with Model Context Proto
 
    Navigate to `http://localhost:5174` (or the port shown in terminal)
 
-## 🏗️ Project Structure
+## 📱 Application Screenshot
+
+![React MCP Client Interface](src/assets/Screen.jpg)
+
+_Modern chat interface with AI-powered MCP server integration and comprehensive trace debugging_
+
+## 🏗️ Project Architecture
+
+### System Architecture Flow
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│             │    │             │    │             │    │             │
+│  Frontend   │───▶│ Azure OpenAI│───▶│  Frontend   │───▶│ MCP Server  │
+│  (React)    │    │     API     │    │ Processing  │    │   (Port     │
+│             │    │             │    │             │    │   5000)     │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+       ▲                                       │                  │
+       │                                       ▼                  ▼
+       │           ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+       │           │             │    │             │    │             │
+       └───────────│  Frontend   │◀───│  Frontend   │◀───│   Response  │
+                   │  Rendering  │    │ Formatting  │    │  Processing │
+                   │             │    │             │    │             │
+                   └─────────────┘    └─────────────┘    └─────────────┘
+```
+
+**Flow Description:**
+
+1. **User Input** → Frontend captures user query
+2. **AI Processing** → Azure OpenAI analyzes intent and generates structured function calls
+3. **Parameter Extraction** → Frontend extracts and enriches MCP parameters with AI assistance
+4. **MCP Server Call** → Direct HTTP communication with MCP server on port 5000
+5. **Response Processing** → MCP server processes request and returns structured data
+6. **Smart Formatting** → Frontend applies intelligent formatting (summary vs detailed)
+7. **UI Rendering** → Results displayed with tables, summaries, and applied filters
+
+### Project Structure
 
 ```
 react-mcp-client/
@@ -88,53 +143,109 @@ react-mcp-client/
 │   └── vite.svg                 # Vite logo
 ├── src/
 │   ├── assets/
-│   │   └── react.svg           # React logo
+│   │   ├── react.svg           # React logo
+│   │   └── Screen.jpg          # Application screenshot
 │   ├── services/
-│   │   ├── azureOpenAI.ts      # Azure OpenAI integration
-│   │   ├── azureSearch.ts      # Azure Search integration
-│   │   └── mcpServer.ts        # MCP server communication
-│   ├── App.tsx                 # Main application component
-│   ├── Chat.tsx                # Chat interface component
-│   ├── index.css               # Global styles
-│   └── main.tsx                # Application entry point
-├── search-proxy.cjs            # Express proxy for Azure Search
-├── vite.config.js              # Vite configuration
-├── package.json                # Dependencies and scripts
-└── tsconfig.json              # TypeScript configuration
+│   │   ├── azureOpenAI.ts      # Azure OpenAI integration & AI parameter extraction
+│   │   ├── azureSearch.ts      # Azure Search integration (RAG capabilities)
+│   │   └── mcpServer.ts        # MCP server communication & response formatting
+│   ├── App.tsx                 # Main application component & session management
+│   ├── Chat.tsx                # Chat interface, trace debugging & table rendering
+│   ├── Chat.css                # Chat-specific styling & responsive design
+│   ├── App.css                 # Global application styling
+│   ├── index.css               # Base styles & CSS variables
+│   └── main.tsx                # Application entry point & React setup
+├── search-proxy.cjs            # Express proxy for Azure Search (CORS handling)
+├── vite.config.js              # Vite configuration & development settings
+├── eslint.config.js            # ESLint configuration for code quality
+├── tsconfig.json               # TypeScript configuration
+├── tsconfig.node.json          # Node.js TypeScript configuration
+├── package.json                # Dependencies, scripts & project metadata
+└── README.md                   # Project documentation
 ```
+
+### Key Components
+
+- **`Chat.tsx`** - Core chat interface with AI-powered parameter extraction, trace debugging, and smart response formatting
+- **`App.tsx`** - Session management, chat persistence, and export functionality
+- **`services/`** - Modular service layer for external integrations (Azure OpenAI, Azure Search, MCP servers)
+- **`search-proxy.cjs`** - Backend proxy to handle CORS and Azure Search requests
 
 ## 🔄 How It Works
 
-### 1. **Chat Flow**
+### 1. **Enhanced Chat Flow**
 
 ```
-User Input → Azure OpenAI → MCP Call Extraction → MCP Server → Response Rendering
+User Query → AI Intent Analysis → Parameter Extraction → MCP Server Call → Smart Formatting → UI Rendering
 ```
 
-1. User submits a query through the chat interface
-2. Azure OpenAI processes the intent and generates structured function calls
-3. The system extracts MCP server calls from the AI response
-4. Direct communication with the MCP server on port 5000
-5. Results are formatted and displayed with optional table rendering
+**Detailed Process:**
 
-### 2. **Trace Debugging**
+1. **User Input Processing**
+
+   - User submits query through the React chat interface
+   - Input validation and sanitization
+   - Query context building with conversation history
+
+2. **AI-Powered Intent Analysis**
+
+   - Azure OpenAI processes user intent using advanced prompting
+   - Generates structured function calls with parameters
+   - Extracts tool selection and parameter requirements
+
+3. **Intelligent Parameter Extraction**
+
+   - AI-assisted parameter extraction with threshold detection
+   - Auto-applied date ranges for sales/analytics queries
+   - Smart supplier and category detection
+   - Fallback to direct regex extraction
+
+4. **MCP Server Communication**
+
+   - Direct HTTP communication with MCP server on port 5000
+   - Dynamic endpoint selection based on query intent
+   - Parameter enrichment and validation
+   - Comprehensive error handling and retry logic
+
+5. **Smart Response Formatting**
+
+   - Summary vs detailed response detection
+   - Category-aware data processing
+   - Automatic table rendering for structured data
+   - Applied filter transparency and user feedback
+
+6. **Advanced UI Rendering**
+   - Real-time display of applied filters and parameters
+   - Interactive table rendering with smart formatting
+   - Trace debugging with expandable panels
+   - Copy-to-clipboard with visual feedback
+
+### 2. **Advanced Trace Debugging**
 
 The application includes comprehensive trace functionality that captures:
 
-- **User Input**: Original query from the user
-- **AI Response**: Full Azure OpenAI response with function calls
-- **MCP Call**: Extracted function name and parameters
-- **MCP Response**: Raw response from the MCP server
-- **Selected Tool**: The specific tool/function called
-- **Parameters**: Processed parameters sent to the MCP server
-- **Timestamp**: Exact time of the request
-- **Error Handling**: Any errors encountered during the process
+- **User Input**: Original query from the user with intent analysis
+- **AI Response**: Full Azure OpenAI response with function calls and reasoning
+- **Parameter Extraction**: AI-powered parameter detection with fallback mechanisms
+- **MCP Call**: Extracted function name and enriched parameters
+- **MCP Response**: Raw response from the MCP server with validation
+- **Selected Tool**: The specific tool/function called with endpoint information
+- **Applied Parameters**: All processed parameters including auto-applied defaults
+- **Response Formatting**: Summary vs detailed logic decisions
+- **Filter Transparency**: Display of all applied filters with human-readable formats
+- **Timestamp**: Exact time of each request phase
+- **Error Handling**: Comprehensive error tracking with debugging context
 
-### 3. **Data Rendering**
+### 3. **Intelligent Data Rendering**
 
-- **Text Responses**: Rendered as formatted markdown-style text
-- **Table Data**: Automatically detected and rendered in beautiful, interactive tables
-- **Mixed Content**: Support for responses containing both text summaries and structured data
+- **Smart Summary Detection**: Automatic detection of requests for totals vs detailed data
+- **Applied Filter Display**: Real-time display of all applied parameters and date ranges
+- **Auto-Applied Defaults**: Transparent communication of automatically applied date ranges
+- **Category Performance**: Specialized rendering for category-based analytics
+- **Revenue Calculations**: Automatic total revenue calculation with period information
+- **Mixed Content Support**: Seamless handling of responses with both summaries and detailed tables
+- **Interactive Tables**: Beautiful, responsive tables with smart column formatting
+- **Low Stock Alerts**: Visual highlighting of inventory items below specified thresholds
 
 ## 🎨 UI Features
 
@@ -246,9 +357,36 @@ Located in `src/services/mcpServer.ts`
    - Check browser console for JavaScript errors
    - Verify the response structure matches the expected format
 
-4. **Trace panel not showing**
+4. **Applied filters not visible**
+
+   - ✅ **FIXED**: Applied filters are now displayed above table data
+   - Date ranges are shown in both human-readable (6/13/2025) and ISO formats (2025-06-13)
+   - Auto-applied defaults are clearly marked with explanatory notes
+
+5. **Parameter extraction issues**
+
+   - ✅ **ENHANCED**: AI-powered parameter extraction with comprehensive examples
+   - Threshold detection for queries like "under 30 units"
+   - Smart supplier and category name extraction
+   - Fallback to regex-based extraction when AI extraction fails
+
+6. **Category performance HTTP 400 errors**
+
+   - ✅ **RESOLVED**: Auto-applied 30-day date ranges for category queries
+   - Enhanced parameter validation and debugging
+   - Clear error messages with parameter validation details
+
+7. **Summary vs detailed data confusion**
+
+   - ✅ **IMPLEMENTED**: Smart detection of summary vs detailed requests
+   - Revenue queries automatically show totals and summaries
+   - Category breakdowns show detailed data with applied filters
+   - Clear indicators of which format is being used
+
+8. **Trace panel not showing**
    - Click the checkbox next to the copy button to toggle trace visibility
    - Check that the message contains `traceData` in the response
+   - Enhanced trace data now includes parameter extraction debugging
 
 ### Debug Mode
 
