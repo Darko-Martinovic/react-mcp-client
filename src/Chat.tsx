@@ -1029,210 +1029,70 @@ Available sample tools: ${articles
 
       // Prepare the parameters by extracting meaningful search terms from the original query
       const enrichedParameters = { ...mcpCall.parameters };
-
-      // Extract specific entities like supplier names, categories, etc. from the query
       const originalQuery = mcpCall.parameters.query || "";
-      console.log("Analyzing query for entities:", originalQuery);
 
-      // Extract supplier names (improved pattern to capture company names more accurately)
-      const supplierPatterns = [
-        /(?:from|by)\s+([A-Z][a-zA-Z\s]*(?:Co\.|Corp\.|Inc\.|LLC|Company|Dairy|Farm|Foods))/,
-        /([A-Z][a-zA-Z\s]*(?:Co\.|Corp\.|Inc\.|LLC|Company|Dairy|Farm|Foods))/,
-      ];
-
-      let supplierMatch: RegExpMatchArray | null = null;
-      for (const pattern of supplierPatterns) {
-        supplierMatch = originalQuery.match(pattern);
-        if (supplierMatch) break;
-      }
-
-      if (supplierMatch) {
-        enrichedParameters.supplier = supplierMatch[1].trim();
-        console.log("Extracted supplier:", enrichedParameters.supplier);
-      }
-
-      // Extract product categories
-      const categoryMatch = originalQuery.match(
-        /\b(dairy|meat|vegetables|fruits|beverages|bread|snacks|frozen|organic|bakery|grains|seafood)\b/i
+      // Use AI to intelligently extract parameters instead of regex patterns
+      let enhancedParameters = await extractParametersWithAI(
+        originalQuery,
+        selectedTool
       );
-      if (categoryMatch) {
-        // Capitalize first letter to match the server's expected format
-        const category =
-          categoryMatch[1].charAt(0).toUpperCase() +
-          categoryMatch[1].slice(1).toLowerCase();
-        enrichedParameters.category = category;
-        // Also try alternative parameter names that the server might expect
-        enrichedParameters.Category = category;
-        enrichedParameters.categoryFilter = category;
-        enrichedParameters.productCategory = category;
-        console.log("Extracted category:", category);
-        console.log("Added category parameters:", {
-          category: enrichedParameters.category,
-          Category: enrichedParameters.Category,
-          categoryFilter: enrichedParameters.categoryFilter,
-          productCategory: enrichedParameters.productCategory,
-        });
-      }
 
-      // Extract date ranges for sales and time-based queries
-      const datePatterns = [
-        /last\s+(\d+)\s+(days?|weeks?|months?)/i,
-        /past\s+(\d+)\s+(days?|weeks?|months?)/i,
-        /(\d+)\s+(days?|weeks?|months?)\s+ago/i,
-        // Add patterns for written numbers
-        /last\s+(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(days?|weeks?|months?)/i,
-        /past\s+(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(days?|weeks?|months?)/i,
-        /last\s+(week|month|year)/i,
-        /past\s+(week|month|year)/i,
-        /today/i,
-        /yesterday/i,
-        /this\s+(week|month|year)/i,
-      ];
-
-      // Map written numbers to digits
-      const numberMap: Record<string, number> = {
-        one: 1,
-        two: 2,
-        three: 3,
-        four: 4,
-        five: 5,
-        six: 6,
-        seven: 7,
-        eight: 8,
-        nine: 9,
-        ten: 10,
-        eleven: 11,
-        twelve: 12,
-        week: 1,
-        month: 1,
-        year: 1,
-      };
-
-      let dateFound = false;
-      for (const pattern of datePatterns) {
-        const dateMatch = originalQuery.match(pattern);
-        if (dateMatch) {
-          dateFound = true;
-          const now = new Date();
-          let startDate = new Date();
-
-          if (pattern.source.includes("today")) {
-            startDate = new Date(
-              now.getFullYear(),
-              now.getMonth(),
-              now.getDate()
-            );
-            enrichedParameters.startDate = startDate
-              .toISOString()
-              .split("T")[0];
-            enrichedParameters.endDate = now.toISOString().split("T")[0];
-          } else if (pattern.source.includes("yesterday")) {
-            startDate = new Date(
-              now.getFullYear(),
-              now.getMonth(),
-              now.getDate() - 1
-            );
-            enrichedParameters.startDate = startDate
-              .toISOString()
-              .split("T")[0];
-            enrichedParameters.endDate = startDate.toISOString().split("T")[0];
-          } else if (dateMatch[1]) {
-            // Handle both numeric and written numbers
-            let number: number;
-            let unit: string;
-
-            if (isNaN(parseInt(dateMatch[1]))) {
-              // It's a written number or unit
-              const writtenNumber = dateMatch[1].toLowerCase();
-              number = numberMap[writtenNumber] || 1;
-              unit = dateMatch[2] ? dateMatch[2].toLowerCase() : writtenNumber;
-            } else {
-              // It's a numeric value
-              number = parseInt(dateMatch[1]);
-              unit = dateMatch[2].toLowerCase();
-            }
-
-            console.log(`Parsing date: number=${number}, unit=${unit}`);
-
-            if (unit.startsWith("day")) {
-              startDate = new Date(
-                now.getTime() - number * 24 * 60 * 60 * 1000
-              );
-            } else if (unit.startsWith("week")) {
-              startDate = new Date(
-                now.getTime() - number * 7 * 24 * 60 * 60 * 1000
-              );
-            } else if (unit.startsWith("month")) {
-              startDate = new Date(
-                now.getFullYear(),
-                now.getMonth() - number,
-                now.getDate()
-              );
-            } else if (unit.startsWith("year")) {
-              startDate = new Date(
-                now.getFullYear() - number,
-                now.getMonth(),
-                now.getDate()
-              );
-            }
-
-            enrichedParameters.startDate = startDate
-              .toISOString()
-              .split("T")[0];
-            enrichedParameters.endDate = now.toISOString().split("T")[0];
-          }
-
-          console.log(
-            "Extracted date range:",
-            enrichedParameters.startDate,
-            "to",
-            enrichedParameters.endDate
-          );
-          break;
+      // If AI extraction didn't produce date parameters but query mentions time periods,
+      // use direct date calculation as fallback
+      if (!enhancedParameters.startDate && !enhancedParameters.endDate) {
+        const dateParams = extractDateParametersDirectly(originalQuery);
+        if (dateParams.startDate || dateParams.endDate) {
+          enhancedParameters = { ...enhancedParameters, ...dateParams };
+          console.log("Applied direct date calculation fallback:", dateParams);
         }
       }
 
-      // For sales queries without explicit dates, default to last 30 days (more reasonable than 7 days)
-      if (originalQuery.toLowerCase().includes("sales") && !dateFound) {
-        const now = new Date();
-        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        enrichedParameters.startDate = monthAgo.toISOString().split("T")[0];
-        enrichedParameters.endDate = now.toISOString().split("T")[0];
+      // Merge AI-extracted parameters with original query parameters
+      Object.assign(enrichedParameters, enhancedParameters);
+
+      // Clean up parameters - remove any undefined/null values that might cause 400 errors
+      Object.keys(enrichedParameters).forEach((key) => {
+        if (
+          enrichedParameters[key] === undefined ||
+          enrichedParameters[key] === null ||
+          enrichedParameters[key] === ""
+        ) {
+          delete enrichedParameters[key];
+        }
+      });
+
+      console.log("=== AI PARAMETER EXTRACTION ===");
+      console.log("Original query:", originalQuery);
+      console.log("Selected tool:", selectedTool.functionName);
+      console.log("AI-extracted parameters:", enhancedParameters);
+      console.log("Final enriched parameters:", enrichedParameters);
+      console.log("================================");
+
+      // Enhanced debugging for HTTP 400 errors
+      console.log("=== PARAMETER VALIDATION ===");
+      console.log("Tool parameters spec:", selectedTool.parameters);
+      console.log("Tool description:", selectedTool.description);
+      console.log("HTTP Method:", selectedTool.httpMethod);
+      console.log("Endpoint:", selectedTool.endpoint);
+      console.log("Parameters being sent:", enrichedParameters);
+
+      // Validate date parameters if present
+      if (enrichedParameters.startDate || enrichedParameters.endDate) {
+        console.log("Date validation:");
         console.log(
-          "Default sales date range applied (30 days):",
+          "- startDate:",
           enrichedParameters.startDate,
-          "to",
-          enrichedParameters.endDate
+          "Valid:",
+          !isNaN(Date.parse(enrichedParameters.startDate || ""))
+        );
+        console.log(
+          "- endDate:",
+          enrichedParameters.endDate,
+          "Valid:",
+          !isNaN(Date.parse(enrichedParameters.endDate || ""))
         );
       }
-
-      // Extract stock level thresholds for low stock queries
-      const stockThresholdPatterns = [
-        /(?:under|below|less\s+than|lower\s+than)\s+(\d+)\s*(?:units?)?/i,
-        /(?:stock|inventory).*?(?:under|below|less\s+than|lower\s+than)\s+(\d+)/i,
-        /(\d+)\s*(?:units?)?\s+or\s+(?:under|below|less)/i,
-        /threshold.*?(\d+)/i,
-        /limit.*?(\d+)/i,
-      ];
-
-      // Check if this is a stock-related query
-      if (
-        originalQuery.toLowerCase().includes("stock") ||
-        originalQuery.toLowerCase().includes("inventory") ||
-        originalQuery.toLowerCase().includes("low")
-      ) {
-        for (const pattern of stockThresholdPatterns) {
-          const thresholdMatch = originalQuery.match(pattern);
-          if (thresholdMatch && thresholdMatch[1]) {
-            const threshold = parseInt(thresholdMatch[1]);
-            if (!isNaN(threshold) && threshold > 0) {
-              enrichedParameters.threshold = threshold;
-              console.log("Extracted stock threshold:", threshold);
-              break;
-            }
-          }
-        }
-      }
+      console.log("===============================");
 
       // Add query parameters for GET requests or body for POST requests
       if (selectedTool.httpMethod === "POST") {
@@ -1465,6 +1325,219 @@ Available sample tools: ${articles
       .map((word) => word.replace(/[^\w]/g, ""));
 
     return words.slice(0, 3).join(" ").trim() || "*";
+  };
+
+  // Direct date parameter extraction function as fallback
+  const extractDateParametersDirectly = (
+    query: string
+  ): Record<string, any> => {
+    const today = new Date();
+    const currentDate = today.toISOString().split("T")[0];
+    const lowerQuery = query.toLowerCase();
+
+    console.log("=== DIRECT DATE EXTRACTION ===");
+    console.log("Query:", query);
+    console.log("Today's date:", currentDate);
+
+    // Calculate date ranges based on common phrases
+    if (
+      lowerQuery.includes("last month") ||
+      lowerQuery.includes("past month")
+    ) {
+      const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      console.log("Detected 'last month' - calculating 30 days ago to today");
+      console.log(`Date range: ${startDate} to ${currentDate}`);
+      return { startDate, endDate: currentDate };
+    }
+
+    if (
+      lowerQuery.includes("last two months") ||
+      lowerQuery.includes("past two months")
+    ) {
+      const startDate = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      console.log(
+        "Detected 'last two months' - calculating 60 days ago to today"
+      );
+      console.log(`Date range: ${startDate} to ${currentDate}`);
+      return { startDate, endDate: currentDate };
+    }
+
+    if (lowerQuery.includes("last week") || lowerQuery.includes("past week")) {
+      const startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      console.log("Detected 'last week' - calculating 7 days ago to today");
+      console.log(`Date range: ${startDate} to ${currentDate}`);
+      return { startDate, endDate: currentDate };
+    }
+
+    if (lowerQuery.includes("yesterday")) {
+      const yesterdayDate = new Date(Date.now() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      console.log("Detected 'yesterday' - using yesterday's date");
+      console.log(`Date range: ${yesterdayDate} to ${yesterdayDate}`);
+      return { startDate: yesterdayDate, endDate: yesterdayDate };
+    }
+
+    if (lowerQuery.includes("today")) {
+      console.log("Detected 'today' - using today's date");
+      console.log(`Date range: ${currentDate} to ${currentDate}`);
+      return { startDate: currentDate, endDate: currentDate };
+    }
+
+    // Check for "last X days" pattern
+    const daysMatch = lowerQuery.match(/last (\d+) days?/);
+    if (daysMatch) {
+      const numDays = parseInt(daysMatch[1]);
+      const startDate = new Date(Date.now() - numDays * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      console.log(
+        `Detected 'last ${numDays} days' - calculating ${numDays} days ago to today`
+      );
+      console.log(`Date range: ${startDate} to ${currentDate}`);
+      return { startDate, endDate: currentDate };
+    }
+
+    console.log("No date patterns detected");
+    console.log("===============================");
+    return {};
+  };
+
+  // Function to use AI for intelligent parameter extraction
+  const extractParametersWithAI = async (
+    userQuery: string,
+    tool: any
+  ): Promise<Record<string, any>> => {
+    try {
+      const currentDate = new Date().toISOString().split("T")[0];
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+
+      const systemPrompt = `You are a parameter extraction specialist. Extract relevant parameters from the user query for the given tool.
+
+TOOL: ${tool.functionName} - ${tool.description}
+QUERY: "${userQuery}"
+TODAY: ${currentDate}
+
+CRITICAL DATE CALCULATIONS (exact values to use):
+- "last month" → startDate: "${thirtyDaysAgo}", endDate: "${currentDate}"
+- "last two months" → startDate: "${sixtyDaysAgo}", endDate: "${currentDate}"  
+- "last week" → startDate: "${sevenDaysAgo}", endDate: "${currentDate}"
+- "yesterday" → startDate: "${yesterday}", endDate: "${yesterday}"
+- "today" → startDate: "${currentDate}", endDate: "${currentDate}"
+
+For sales queries mentioning time periods, you MUST include both startDate and endDate.
+
+Return ONLY valid JSON with the parameters. Examples:
+
+Input: "What were our total sales for the last month?"
+Output: {"startDate": "${thirtyDaysAgo}", "endDate": "${currentDate}"}
+
+Input: "Show me all dairy products"  
+Output: {"category": "Dairy"}
+
+Input: "Sales from last week"
+Output: {"startDate": "${sevenDaysAgo}", "endDate": "${currentDate}"}
+
+Return {} if no parameters needed.`;
+
+      console.log("=== AI PARAMETER EXTRACTION PROMPT ===");
+      console.log("System prompt:", systemPrompt);
+      console.log("=======================================");
+
+      const response = await askAzureOpenAI(userQuery, systemPrompt);
+
+      console.log("=== AI RESPONSE ===");
+      console.log("Raw AI response:", response.aiMessage);
+      console.log("===================");
+
+      try {
+        // Try to parse the AI response as JSON
+        const jsonMatch = response.aiMessage.match(/\{[\s\S]*?\}/);
+        if (jsonMatch) {
+          const extractedParams = JSON.parse(jsonMatch[0]);
+
+          // Validate extracted dates
+          if (
+            extractedParams.startDate &&
+            !isValidDate(extractedParams.startDate)
+          ) {
+            console.warn(
+              "Invalid startDate extracted:",
+              extractedParams.startDate
+            );
+            delete extractedParams.startDate;
+          }
+          if (
+            extractedParams.endDate &&
+            !isValidDate(extractedParams.endDate)
+          ) {
+            console.warn("Invalid endDate extracted:", extractedParams.endDate);
+            delete extractedParams.endDate;
+          }
+
+          console.log("AI successfully extracted parameters:", extractedParams);
+          return extractedParams;
+        } else {
+          console.log(
+            "AI response doesn't contain valid JSON, trying line-by-line parsing..."
+          );
+
+          // Try to extract JSON from response lines
+          const lines = response.aiMessage.split("\n");
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+              try {
+                const parsed = JSON.parse(trimmed);
+                console.log("Found JSON in line:", trimmed);
+                return parsed;
+              } catch (e) {
+                continue;
+              }
+            }
+          }
+
+          console.log("No valid JSON found in AI response");
+          return {};
+        }
+      } catch (parseError) {
+        console.warn(
+          "Could not parse AI parameter extraction response:",
+          response.aiMessage
+        );
+        return {};
+      }
+    } catch (error) {
+      console.error("Error in AI parameter extraction:", error);
+      return {};
+    }
+  };
+
+  // Helper function to validate date strings
+  const isValidDate = (dateString: string): boolean => {
+    const date = new Date(dateString);
+    return (
+      date instanceof Date &&
+      !isNaN(date.getTime()) &&
+      /^\d{4}-\d{2}-\d{2}$/.test(dateString)
+    );
   };
 
   return (
