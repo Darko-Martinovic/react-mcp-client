@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Chat from "./Chat";
+import "./App.css";
 
 interface Message {
   sender: "user" | "system";
@@ -33,24 +34,38 @@ const App: React.FC = () => {
   useEffect(() => {
     if (didLoadChats.current) return;
     didLoadChats.current = true;
-    // Only load chats if state is empty (prevents double-invocation from StrictMode)
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (stored) {
-      let parsed: ChatSession[] = [];
-      try {
-        parsed = JSON.parse(stored);
-        parsed = parsed.map((chat) => ({
-          ...chat,
-          messages: Array.isArray(chat.messages) ? chat.messages : [],
-          title: typeof chat.title === "string" ? chat.title : "Untitled Chat",
-        }));
-        console.log("Loaded and migrated chats from localStorage:", parsed);
-      } catch {
-        parsed = [];
-      }
-      if (parsed.length > 0) {
-        setChats(parsed);
-        setActiveChatId(parsed[0].id);
+
+    try {
+      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (stored) {
+        let parsed: ChatSession[] = [];
+        try {
+          parsed = JSON.parse(stored);
+          parsed = parsed.map((chat) => ({
+            ...chat,
+            messages: Array.isArray(chat.messages) ? chat.messages : [],
+            title:
+              typeof chat.title === "string" ? chat.title : "Untitled Chat",
+          }));
+          console.log("Loaded and migrated chats from localStorage:", parsed);
+        } catch (parseError) {
+          console.error("Error parsing stored chats:", parseError);
+          parsed = [];
+        }
+
+        if (parsed.length > 0) {
+          setChats(parsed);
+          setActiveChatId(parsed[0].id);
+        } else {
+          const newChat: ChatSession = {
+            id: generateId(),
+            createdAt: new Date().toISOString(),
+            messages: [],
+            title: "New Chat",
+          };
+          setChats([newChat]);
+          setActiveChatId(newChat.id);
+        }
       } else {
         const newChat: ChatSession = {
           id: generateId(),
@@ -61,7 +76,9 @@ const App: React.FC = () => {
         setChats([newChat]);
         setActiveChatId(newChat.id);
       }
-    } else {
+    } catch (error) {
+      console.error("Error loading chats from localStorage:", error);
+      // Fallback: create a new chat
       const newChat: ChatSession = {
         id: generateId(),
         createdAt: new Date().toISOString(),
@@ -71,22 +88,16 @@ const App: React.FC = () => {
       setChats([newChat]);
       setActiveChatId(newChat.id);
     }
-    // eslint-disable-next-line
-  }, []);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
-      }
-    };
   }, []);
 
   // Persist chats to localStorage on change
   useEffect(() => {
-    console.log("Saving chats to localStorage:", chats);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(chats));
+    try {
+      console.log("Saving chats to localStorage:", chats);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(chats));
+    } catch (error) {
+      console.error("Error saving chats to localStorage:", error);
+    }
   }, [chats]);
 
   const activeChat = chats.find((c) => c.id === activeChatId);
@@ -120,7 +131,7 @@ const App: React.FC = () => {
     if (activeChatId === id) {
       // If deleting the active chat, switch to the next available chat
       const remaining = chats.filter((chat) => chat.id !== id);
-      setActiveChatId(remaining[0]?.id || null);
+      setActiveChatId(remaining.length > 0 ? remaining[0].id : null);
     }
   };
 
@@ -157,8 +168,8 @@ const App: React.FC = () => {
 
   const handleTitleBlur = (id: string) => {
     if (editTitle.trim()) {
-      setChats(
-        chats.map((chat) =>
+      setChats((prev) =>
+        prev.map((chat) =>
           chat.id === id ? { ...chat, title: editTitle.trim() } : chat
         )
       );
@@ -193,106 +204,31 @@ const App: React.FC = () => {
         return chat;
       })
     );
-    // Only run when messages change
-    // eslint-disable-next-line
   }, [activeChat?.messages]);
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div className="app-container">
       {/* Sidebar for chat archive */}
-      <div
-        style={{
-          width: 260,
-          borderRight: "1px solid #ccc",
-          padding: 16,
-          background: "#f9f9f9",
-        }}
-      >
-        <button
-          onClick={handleNewChat}
-          style={{
-            width: "100%",
-            marginBottom: 16,
-            padding: 8,
-            borderRadius: 8,
-            border: "none",
-            background: "#1976d2",
-            color: "#fff",
-            fontWeight: "bold",
-            fontSize: 16,
-          }}
-        >
+      <div className="sidebar">
+        <button onClick={handleNewChat} className="new-chat-button">
           <span role="img" aria-label="new">
             🆕
           </span>{" "}
           New Chat
         </button>
-        <div
-          className="chat-title"
-          style={{
-            fontWeight: 600,
-            marginBottom: 12,
-            fontSize: 18,
-            fontFamily: "Inter, system-ui, sans-serif",
-            letterSpacing: "-0.02em",
-            color: "#1a1a1a",
-          }}
-        >
-          Chats
-        </div>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <div className="sidebar-title">Chats</div>
+        <ul className="chat-list">
           {chats.map((chat) => (
-            <li
-              key={chat.id}
-              style={{
-                marginBottom: 10,
-                display: "flex",
-                alignItems: "stretch",
-                gap: 4,
-              }}
-            >
+            <li key={chat.id} className="chat-list-item">
               <div
                 onClick={() => handleChatClick(chat.id)}
                 onDoubleClick={() => handleChatDoubleClick(chat.id, chat.title)}
-                style={{
-                  flex: 1,
-                  minWidth: 0, // Allow flex item to shrink below content size
-                  padding: 8,
-                  borderRadius: 8,
-                  border:
-                    chat.id === activeChatId
-                      ? "2px solid #1976d2"
-                      : "1px solid #ccc",
-                  background: chat.id === activeChatId ? "#e3f2fd" : "#fff",
-                  color: "#333",
-                  cursor: "pointer",
-                  fontWeight: chat.id === activeChatId ? "bold" : "normal",
-                  fontSize: 15,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  gap: 4,
-                  transition:
-                    "background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease",
-                  userSelect: "none", // Prevent text selection on double-click
-                }}
+                className={`chat-item ${
+                  chat.id === activeChatId ? "chat-item--active" : ""
+                }`}
                 title={`${chat.title} (Double-click to edit)`}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.02)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
-                }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    width: "100%",
-                    minWidth: 0,
-                  }}
-                >
+                <div className="chat-item-header">
                   <span role="img" aria-label="chat">
                     💬
                   </span>
@@ -304,64 +240,20 @@ const App: React.FC = () => {
                       onKeyDown={(e) => handleTitleKeyDown(e, chat.id)}
                       autoFocus
                       placeholder="Enter chat title"
-                      style={{
-                        fontSize: 14,
-                        flex: 1,
-                        minWidth: 0,
-                        border: "1px solid #1976d2",
-                        borderRadius: 4,
-                        padding: "2px 4px",
-                      }}
+                      className="chat-title-input"
                     />
                   ) : (
-                    <span
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontSize: 14,
-                        lineHeight: "1.2",
-                      }}
-                    >
-                      {chat.title}
-                    </span>
+                    <span className="chat-item-title">{chat.title}</span>
                   )}
                 </div>
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: "#888",
-                    alignSelf: "flex-end",
-                  }}
-                >
+                <span className="chat-item-date">
                   {new Date(chat.createdAt).toLocaleDateString()}
                 </span>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                  minWidth: "auto",
-                }}
-              >
+              <div className="chat-actions">
                 <button
                   onClick={() => handleEditTitle(chat.id, chat.title)}
-                  style={{
-                    background: "#f5f5f5",
-                    border: "1px solid #ddd",
-                    borderRadius: 4,
-                    cursor: "pointer",
-                    fontSize: 14,
-                    padding: "4px 6px",
-                    height: "auto",
-                    minHeight: "28px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="action-button"
                   title="Rename Chat"
                 >
                   <span role="img" aria-label="edit">
@@ -370,19 +262,7 @@ const App: React.FC = () => {
                 </button>
                 <button
                   onClick={() => handleDeleteChat(chat.id)}
-                  style={{
-                    background: "#ffe6e6",
-                    border: "1px solid #ffcccc",
-                    borderRadius: 4,
-                    cursor: "pointer",
-                    fontSize: 14,
-                    padding: "4px 6px",
-                    height: "auto",
-                    minHeight: "28px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="action-button action-button--delete"
                   title="Delete Chat"
                 >
                   <span role="img" aria-label="delete">
@@ -395,7 +275,7 @@ const App: React.FC = () => {
         </ul>
       </div>
       {/* Main chat area */}
-      <div style={{ flex: 1 }}>
+      <div className="main-chat-area">
         {activeChat && (
           <Chat
             messages={activeChat.messages}

@@ -1,0 +1,492 @@
+/* Main Chat Container */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: #f5f7fa;
+}
+
+/* Export Section */
+.export-section {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 8px 24px 0 24px;
+}
+
+.export-menu-container {
+  position: relative;
+  display: inline-block;
+}
+
+.export-button {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.export-button:hover {
+  background: #1565c0;
+}
+
+.export-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 180px;
+}
+
+.export-option {
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: Inter, system-ui, sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+.export-option:hover {
+  background: #f5f5f5;
+}
+
+.export-option:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+/* Messages Section */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 0 16px 0;
+  width: 100%;
+}
+
+.messages-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.empty-messages {
+  color: #888;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.message-item {
+  margin: 12px 0;
+  position: relative;
+}
+
+.message-item--user {
+  text-align: right;
+}
+
+.message-item--system {
+  text-align: left;
+}
+
+.message-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: Inter, system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.message-label--user {
+  color: #006064;
+}
+
+.message-label--system {
+  color: #2e7d32;
+}
+
+.message-bubble {
+  padding: 12px 20px;
+  border-radius: 20px;
+  display: inline-block;
+  white-space: pre-wrap;
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  max-width: 85%;
+  word-break: break-word;
+}
+
+.message-bubble--user {
+  background: #e0f7fa;
+  font-weight: 500;
+  border: 1px solid #b3e5fc;
+  color: #006064;
+}
+
+.message-bubble--system {
+  background: #f1f8e9;
+  font-weight: 400;
+  border: 1px solid #e8f5e8;
+  color: #2e7d32;
+}
+
+/* Message Actions */
+.message-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.message-actions--user {
+  justify-content: flex-end;
+}
+
+.message-actions--system {
+  justify-content: flex-start;
+}
+
+.copy-button-container {
+  position: relative;
+  display: inline-block;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.copy-tooltip {
+  position: absolute;
+  top: -35px;
+  right: 0;
+  background: #4caf50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.trace-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #666;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 12px;
+}
+
+.trace-toggle input {
+  margin-right: 6px;
+}
+
+/* Trace Panel */
+.trace-panel {
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: monospace;
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: 1.4;
+}
+
+.trace-title {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #495057;
+}
+
+.trace-item {
+  margin-bottom: 6px;
+}
+
+.trace-item--error {
+  color: #dc3545;
+}
+
+.trace-code {
+  margin: 4px 0;
+  padding: 4px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+}
+
+/* Table Styles */
+.table-container {
+  margin: 16px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.table-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #2e7d32;
+  font-size: 16px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 600px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+}
+
+.table-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.table-header-cell {
+  border: none;
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table-row {
+  transition: background-color 0.2s ease;
+}
+
+.table-row--even {
+  background: #ffffff;
+}
+
+.table-row--odd {
+  background: #f8f9fa;
+}
+
+.table-row:hover {
+  background: #e3f2fd !important;
+}
+
+.table-cell {
+  border: none;
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  color: #495057;
+  vertical-align: middle;
+}
+
+.cell-content {
+  font-weight: 400;
+}
+
+.cell-content--name {
+  font-weight: 500;
+}
+
+.cell-content--price {
+  color: #28a745;
+}
+
+.cell-content--low-stock {
+  color: #dc3545;
+}
+
+.cell-content--id {
+  color: #6c757d;
+}
+
+.table-footer {
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  color: #6c757d;
+  font-size: 13px;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* Loading State */
+.loading-message {
+  color: #888;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Input Section */
+.input-form {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid #ddd;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #e1e4e8;
+  font-size: 15px;
+  background: #ffffff;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.chat-input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+  outline: none;
+}
+
+.chat-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.send-button {
+  padding: 14px 32px;
+  border-radius: 12px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+}
+
+.send-button:hover {
+  background: #1565c0;
+}
+
+.send-button:active {
+  transform: scale(0.98);
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .export-section {
+    padding: 8px 16px 0 16px;
+  }
+  
+  .messages-wrapper {
+    padding: 0 16px;
+  }
+  
+  .input-form {
+    padding: 12px 16px;
+    gap: 6px;
+  }
+  
+  .chat-input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  
+  .send-button {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+  
+  .message-bubble {
+    max-width: 90%;
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+  
+  .table-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .export-dropdown {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messages-container {
+    padding: 16px 0 8px 0;
+  }
+  
+  .message-bubble {
+    max-width: 95%;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  
+  .send-button {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  .export-button {
+    font-size: 12px;
+    padding: 4px 12px;
+  }
+  
+  .table-container {
+    margin: 12px 0;
+  }
+  
+  .data-table {
+    font-size: 12px;
+    min-width: 500px;
+  }
+  
+  .table-header-cell {
+    padding: 12px 8px;
+    font-size: 11px;
+  }
+  
+  .table-cell {
+    padding: 8px;
+  }
+}
