@@ -1079,10 +1079,34 @@ Available sample tools: ${articles
         /last\s+(\d+)\s+(days?|weeks?|months?)/i,
         /past\s+(\d+)\s+(days?|weeks?|months?)/i,
         /(\d+)\s+(days?|weeks?|months?)\s+ago/i,
+        // Add patterns for written numbers
+        /last\s+(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(days?|weeks?|months?)/i,
+        /past\s+(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(days?|weeks?|months?)/i,
+        /last\s+(week|month|year)/i,
+        /past\s+(week|month|year)/i,
         /today/i,
         /yesterday/i,
         /this\s+(week|month|year)/i,
       ];
+
+      // Map written numbers to digits
+      const numberMap: Record<string, number> = {
+        one: 1,
+        two: 2,
+        three: 3,
+        four: 4,
+        five: 5,
+        six: 6,
+        seven: 7,
+        eight: 8,
+        nine: 9,
+        ten: 10,
+        eleven: 11,
+        twelve: 12,
+        week: 1,
+        month: 1,
+        year: 1,
+      };
 
       let dateFound = false;
       for (const pattern of datePatterns) {
@@ -1113,8 +1137,22 @@ Available sample tools: ${articles
               .split("T")[0];
             enrichedParameters.endDate = startDate.toISOString().split("T")[0];
           } else if (dateMatch[1]) {
-            const number = parseInt(dateMatch[1]);
-            const unit = dateMatch[2].toLowerCase();
+            // Handle both numeric and written numbers
+            let number: number;
+            let unit: string;
+
+            if (isNaN(parseInt(dateMatch[1]))) {
+              // It's a written number or unit
+              const writtenNumber = dateMatch[1].toLowerCase();
+              number = numberMap[writtenNumber] || 1;
+              unit = dateMatch[2] ? dateMatch[2].toLowerCase() : writtenNumber;
+            } else {
+              // It's a numeric value
+              number = parseInt(dateMatch[1]);
+              unit = dateMatch[2].toLowerCase();
+            }
+
+            console.log(`Parsing date: number=${number}, unit=${unit}`);
 
             if (unit.startsWith("day")) {
               startDate = new Date(
@@ -1128,6 +1166,12 @@ Available sample tools: ${articles
               startDate = new Date(
                 now.getFullYear(),
                 now.getMonth() - number,
+                now.getDate()
+              );
+            } else if (unit.startsWith("year")) {
+              startDate = new Date(
+                now.getFullYear() - number,
+                now.getMonth(),
                 now.getDate()
               );
             }
@@ -1148,14 +1192,14 @@ Available sample tools: ${articles
         }
       }
 
-      // For sales queries without explicit dates, default to last 7 days
+      // For sales queries without explicit dates, default to last 30 days (more reasonable than 7 days)
       if (originalQuery.toLowerCase().includes("sales") && !dateFound) {
         const now = new Date();
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        enrichedParameters.startDate = weekAgo.toISOString().split("T")[0];
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        enrichedParameters.startDate = monthAgo.toISOString().split("T")[0];
         enrichedParameters.endDate = now.toISOString().split("T")[0];
         console.log(
-          "Default sales date range applied:",
+          "Default sales date range applied (30 days):",
           enrichedParameters.startDate,
           "to",
           enrichedParameters.endDate
