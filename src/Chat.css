@@ -219,6 +219,9 @@
 }
 
 .trace-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 8px;
   font-weight: bold;
   color: #495057;
@@ -416,36 +419,36 @@
   .export-section {
     padding: 8px 16px 0 16px;
   }
-  
+
   .messages-wrapper {
     padding: 0 16px;
   }
-  
+
   .input-form {
     padding: 12px 16px;
     gap: 6px;
   }
-  
+
   .chat-input {
     padding: 12px 14px;
     font-size: 14px;
   }
-  
+
   .send-button {
     padding: 12px 24px;
     font-size: 14px;
   }
-  
+
   .message-bubble {
     max-width: 90%;
     font-size: 14px;
     padding: 10px 16px;
   }
-  
+
   .table-wrapper {
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .export-dropdown {
     min-width: 160px;
   }
@@ -455,37 +458,37 @@
   .messages-container {
     padding: 16px 0 8px 0;
   }
-  
+
   .message-bubble {
     max-width: 95%;
     font-size: 13px;
     padding: 8px 12px;
   }
-  
+
   .send-button {
     padding: 12px 16px;
     font-size: 13px;
   }
-  
+
   .export-button {
     font-size: 12px;
     padding: 4px 12px;
   }
-  
+
   .table-container {
     margin: 12px 0;
   }
-  
+
   .data-table {
     font-size: 12px;
     min-width: 500px;
   }
-  
+
   .table-header-cell {
     padding: 12px 8px;
     font-size: 11px;
   }
-  
+
   .table-cell {
     padding: 8px;
   }

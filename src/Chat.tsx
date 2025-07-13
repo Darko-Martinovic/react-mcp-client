@@ -1495,7 +1495,33 @@ Available sample tools: ${articles
                 msg.traceData &&
                 visibleTraces.has(idx) && (
                   <div className="trace-panel">
-                    <div className="trace-title">Trace Information</div>
+                    <div className="trace-title">
+                      <span>Trace Information</span>
+                      <div className="copy-button-container">
+                        <button
+                          onClick={() => {
+                            const traceText = JSON.stringify(
+                              msg.traceData,
+                              null,
+                              2
+                            );
+                            copyToClipboardWithFeedback(
+                              traceText,
+                              `trace-${idx}`
+                            );
+                          }}
+                          className="copy-button"
+                          title="Copy Trace Data"
+                        >
+                          <span role="img" aria-label="copy">
+                            📋
+                          </span>
+                        </button>
+                        {copiedMessageId === `trace-${idx}` && (
+                          <div className="copy-tooltip">Copied!</div>
+                        )}
+                      </div>
+                    </div>
 
                     <div className="trace-item">
                       <strong>Timestamp:</strong> {msg.traceData.timestamp}
