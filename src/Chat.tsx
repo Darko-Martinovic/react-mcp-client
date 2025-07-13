@@ -1037,13 +1037,21 @@ Available sample tools: ${articles
         selectedTool
       );
 
-      // If AI extraction didn't produce date parameters but query mentions time periods,
-      // use direct date calculation as fallback
-      if (!enhancedParameters.startDate && !enhancedParameters.endDate) {
-        const dateParams = extractDateParametersDirectly(originalQuery);
-        if (dateParams.startDate || dateParams.endDate) {
-          enhancedParameters = { ...enhancedParameters, ...dateParams };
-          console.log("Applied direct date calculation fallback:", dateParams);
+      // If AI extraction didn't produce expected parameters, use direct extraction as fallback
+      if (
+        Object.keys(enhancedParameters).length === 0 ||
+        (!enhancedParameters.startDate &&
+          !enhancedParameters.endDate &&
+          !enhancedParameters.supplier &&
+          !enhancedParameters.category)
+      ) {
+        const directParams = extractParametersDirectly(originalQuery);
+        if (Object.keys(directParams).length > 0) {
+          enhancedParameters = { ...enhancedParameters, ...directParams };
+          console.log(
+            "Applied direct parameter extraction fallback:",
+            directParams
+          );
         }
       }
 
@@ -1092,6 +1100,23 @@ Available sample tools: ${articles
           !isNaN(Date.parse(enrichedParameters.endDate || ""))
         );
       }
+
+      // Validate supplier parameters if present
+      if (enrichedParameters.supplier) {
+        console.log("Supplier validation:");
+        console.log("- supplier:", enrichedParameters.supplier);
+        console.log("- supplier length:", enrichedParameters.supplier.length);
+        console.log("- supplier type:", typeof enrichedParameters.supplier);
+      }
+
+      // Validate category parameters if present
+      if (enrichedParameters.category) {
+        console.log("Category validation:");
+        console.log("- category:", enrichedParameters.category);
+        console.log("- category length:", enrichedParameters.category.length);
+        console.log("- category type:", typeof enrichedParameters.category);
+      }
+
       console.log("===============================");
 
       // Add query parameters for GET requests or body for POST requests
@@ -1114,6 +1139,41 @@ Available sample tools: ${articles
 
         const mcpData: MCPResponse = await mcpResponse.json();
         console.log("Real MCP Server response:", mcpData);
+
+        // Check for potential filtering issues in POST requests
+        if (
+          enrichedParameters.supplier &&
+          mcpData.data &&
+          Array.isArray(mcpData.data)
+        ) {
+          const totalItems = mcpData.data.length;
+          const filteredItems = mcpData.data.filter(
+            (item: any) => item.supplier === enrichedParameters.supplier
+          ).length;
+
+          console.log("=== FILTERING VALIDATION ===");
+          console.log("Expected supplier:", enrichedParameters.supplier);
+          console.log("Total items returned:", totalItems);
+          console.log("Items matching supplier:", filteredItems);
+
+          if (totalItems > filteredItems && filteredItems > 0) {
+            console.warn(
+              "⚠️ BACKEND FILTERING ISSUE: Backend returned all items but should have filtered by supplier"
+            );
+            console.warn(
+              "Frontend will display all items but backend filtering is not working correctly"
+            );
+          } else if (filteredItems === 0) {
+            console.warn(
+              "⚠️ NO MATCHING ITEMS: No items found for the specified supplier"
+            );
+          } else {
+            console.log(
+              "✅ FILTERING OK: All returned items match the supplier filter"
+            );
+          }
+          console.log("============================");
+        }
 
         return formatStructuredMCPResponse(
           mcpData,
@@ -1147,6 +1207,41 @@ Available sample tools: ${articles
 
         const mcpData: MCPResponse = await mcpResponse.json();
         console.log("Real MCP Server response:", mcpData);
+
+        // Check for potential filtering issues in GET requests
+        if (
+          enrichedParameters.supplier &&
+          mcpData.data &&
+          Array.isArray(mcpData.data)
+        ) {
+          const totalItems = mcpData.data.length;
+          const filteredItems = mcpData.data.filter(
+            (item: any) => item.supplier === enrichedParameters.supplier
+          ).length;
+
+          console.log("=== FILTERING VALIDATION ===");
+          console.log("Expected supplier:", enrichedParameters.supplier);
+          console.log("Total items returned:", totalItems);
+          console.log("Items matching supplier:", filteredItems);
+
+          if (totalItems > filteredItems && filteredItems > 0) {
+            console.warn(
+              "⚠️ BACKEND FILTERING ISSUE: Backend returned all items but should have filtered by supplier"
+            );
+            console.warn(
+              "Frontend will display all items but backend filtering is not working correctly"
+            );
+          } else if (filteredItems === 0) {
+            console.warn(
+              "⚠️ NO MATCHING ITEMS: No items found for the specified supplier"
+            );
+          } else {
+            console.log(
+              "✅ FILTERING OK: All returned items match the supplier filter"
+            );
+          }
+          console.log("============================");
+        }
 
         return formatStructuredMCPResponse(
           mcpData,
@@ -1216,6 +1311,19 @@ Available sample tools: ${articles
         let summary = `✅ **${toolName}** executed successfully${paramInfo}\n\n📊 **Results (${
           data.count || tableData.length
         }):**`;
+
+        // Check for potential filtering issues and add warning to summary
+        if (parameters?.supplier && tableData.length > 0) {
+          const filteredItems = tableData.filter(
+            (item: any) => item.supplier === parameters.supplier
+          ).length;
+
+          if (tableData.length > filteredItems && filteredItems > 0) {
+            summary += `\n\n⚠️ **Note:** Backend returned ${tableData.length} items but only ${filteredItems} match the supplier filter. Backend filtering may not be working correctly.`;
+          } else if (filteredItems === 0) {
+            summary += `\n\n⚠️ **Note:** No items match the specified supplier "${parameters.supplier}". Backend may not be filtering correctly.`;
+          }
+        }
 
         if (data.timestamp) {
           summary += `\n⏰ **Timestamp:** ${data.timestamp}`;
@@ -1327,17 +1435,76 @@ Available sample tools: ${articles
     return words.slice(0, 3).join(" ").trim() || "*";
   };
 
-  // Direct date parameter extraction function as fallback
-  const extractDateParametersDirectly = (
-    query: string
-  ): Record<string, any> => {
+  // Direct parameter extraction function as fallback
+  const extractParametersDirectly = (query: string): Record<string, any> => {
     const today = new Date();
     const currentDate = today.toISOString().split("T")[0];
     const lowerQuery = query.toLowerCase();
 
-    console.log("=== DIRECT DATE EXTRACTION ===");
+    console.log("=== DIRECT PARAMETER EXTRACTION ===");
     console.log("Query:", query);
     console.log("Today's date:", currentDate);
+
+    const params: Record<string, any> = {};
+
+    // Extract numeric thresholds for stock level queries
+    const thresholdPatterns = [
+      /(?:under|below|less than|fewer than)\s+(\d+)/i,
+      /(\d+)\s+(?:units?|items?|or less|or fewer)/i,
+      /stock.*?(?:under|below|less than|fewer than)\s+(\d+)/i,
+      /(?:under|below|less than|fewer than)\s+(\d+).*?(?:units?|items?)/i,
+    ];
+
+    for (const pattern of thresholdPatterns) {
+      const match = query.match(pattern);
+      if (match) {
+        const threshold = parseInt(match[1]);
+        if (!isNaN(threshold) && threshold > 0) {
+          params.threshold = threshold;
+          console.log("Detected stock threshold:", threshold);
+          break;
+        }
+      }
+    }
+
+    // Extract supplier information first
+    const supplierPatterns = [
+      /from\s+([A-Z][^.?]*(?:Co\.|Corp\.|Inc\.|Ltd\.|LLC|Company))/i,
+      /supplier\s+([A-Z][^.?]*(?:Co\.|Corp\.|Inc\.|Ltd\.|LLC|Company))/i,
+      /([A-Z][A-Za-z\s]*(?:Co\.|Corp\.|Inc\.|Ltd\.|LLC|Company))/g,
+    ];
+
+    for (const pattern of supplierPatterns) {
+      const match = query.match(pattern);
+      if (match) {
+        const supplier = match[1] || match[0];
+        if (supplier && supplier.length > 3) {
+          params.supplier = supplier.trim();
+          console.log("Detected supplier:", params.supplier);
+          break;
+        }
+      }
+    }
+
+    // Extract category information (but not if it looks like a supplier)
+    const categoryKeywords = [
+      "dairy",
+      "meat",
+      "fruits",
+      "vegetables",
+      "beverages",
+      "bakery",
+    ];
+    for (const category of categoryKeywords) {
+      if (
+        lowerQuery.includes(category) &&
+        !lowerQuery.includes(category + " co")
+      ) {
+        params.category = category.charAt(0).toUpperCase() + category.slice(1);
+        console.log("Detected category:", params.category);
+        break;
+      }
+    }
 
     // Calculate date ranges based on common phrases
     if (
@@ -1349,7 +1516,8 @@ Available sample tools: ${articles
         .split("T")[0];
       console.log("Detected 'last month' - calculating 30 days ago to today");
       console.log(`Date range: ${startDate} to ${currentDate}`);
-      return { startDate, endDate: currentDate };
+      params.startDate = startDate;
+      params.endDate = currentDate;
     }
 
     if (
@@ -1363,7 +1531,8 @@ Available sample tools: ${articles
         "Detected 'last two months' - calculating 60 days ago to today"
       );
       console.log(`Date range: ${startDate} to ${currentDate}`);
-      return { startDate, endDate: currentDate };
+      params.startDate = startDate;
+      params.endDate = currentDate;
     }
 
     if (lowerQuery.includes("last week") || lowerQuery.includes("past week")) {
@@ -1372,7 +1541,8 @@ Available sample tools: ${articles
         .split("T")[0];
       console.log("Detected 'last week' - calculating 7 days ago to today");
       console.log(`Date range: ${startDate} to ${currentDate}`);
-      return { startDate, endDate: currentDate };
+      params.startDate = startDate;
+      params.endDate = currentDate;
     }
 
     if (lowerQuery.includes("yesterday")) {
@@ -1381,13 +1551,15 @@ Available sample tools: ${articles
         .split("T")[0];
       console.log("Detected 'yesterday' - using yesterday's date");
       console.log(`Date range: ${yesterdayDate} to ${yesterdayDate}`);
-      return { startDate: yesterdayDate, endDate: yesterdayDate };
+      params.startDate = yesterdayDate;
+      params.endDate = yesterdayDate;
     }
 
     if (lowerQuery.includes("today")) {
       console.log("Detected 'today' - using today's date");
       console.log(`Date range: ${currentDate} to ${currentDate}`);
-      return { startDate: currentDate, endDate: currentDate };
+      params.startDate = currentDate;
+      params.endDate = currentDate;
     }
 
     // Check for "last X days" pattern
@@ -1401,12 +1573,13 @@ Available sample tools: ${articles
         `Detected 'last ${numDays} days' - calculating ${numDays} days ago to today`
       );
       console.log(`Date range: ${startDate} to ${currentDate}`);
-      return { startDate, endDate: currentDate };
+      params.startDate = startDate;
+      params.endDate = currentDate;
     }
 
-    console.log("No date patterns detected");
+    console.log("Extracted parameters:", params);
     console.log("===============================");
-    return {};
+    return params;
   };
 
   // Function to use AI for intelligent parameter extraction
@@ -1435,14 +1608,32 @@ TOOL: ${tool.functionName} - ${tool.description}
 QUERY: "${userQuery}"
 TODAY: ${currentDate}
 
-CRITICAL DATE CALCULATIONS (exact values to use):
-- "last month" → startDate: "${thirtyDaysAgo}", endDate: "${currentDate}"
-- "last two months" → startDate: "${sixtyDaysAgo}", endDate: "${currentDate}"  
-- "last week" → startDate: "${sevenDaysAgo}", endDate: "${currentDate}"
-- "yesterday" → startDate: "${yesterday}", endDate: "${yesterday}"
-- "today" → startDate: "${currentDate}", endDate: "${currentDate}"
+CRITICAL PARAMETER EXTRACTION RULES:
 
-For sales queries mentioning time periods, you MUST include both startDate and endDate.
+1. SUPPLIERS vs CATEGORIES:
+   - SUPPLIERS are company names ending in "Co.", "Corp.", "Inc.", "Ltd.", "LLC", or containing "Company"
+   - CATEGORIES are product types like "Dairy", "Meat", "Fruits", "Vegetables", "Beverages", "Bakery"
+   - "Fresh Dairy Co." = supplier (NOT category)
+   - "Premium Meats Inc." = supplier (NOT category)
+   - "Dairy" = category (NOT supplier)
+
+2. DATE CALCULATIONS (exact values to use):
+   - "last month" → startDate: "${thirtyDaysAgo}", endDate: "${currentDate}"
+   - "last two months" → startDate: "${sixtyDaysAgo}", endDate: "${currentDate}"  
+   - "last week" → startDate: "${sevenDaysAgo}", endDate: "${currentDate}"
+   - "yesterday" → startDate: "${yesterday}", endDate: "${yesterday}"
+   - "today" → startDate: "${currentDate}", endDate: "${currentDate}"
+
+3. LOW STOCK QUERIES:
+   - Extract numeric thresholds for stock level queries
+   - Use "threshold", "maxStockLevel", "stockThreshold", or "limit" parameter names
+   - Examples: "under 30", "below 50", "less than 25" → extract the number
+
+4. PARAMETER NAMING:
+   - Use "supplier" for company names
+   - Use "category" for product types
+   - Use "threshold" or "maxStockLevel" for stock level limits
+   - For sales queries, ALWAYS include both startDate and endDate
 
 Return ONLY valid JSON with the parameters. Examples:
 
@@ -1452,8 +1643,26 @@ Output: {"startDate": "${thirtyDaysAgo}", "endDate": "${currentDate}"}
 Input: "Show me all dairy products"  
 Output: {"category": "Dairy"}
 
+Input: "What products do we get from Fresh Dairy Co.?"
+Output: {"supplier": "Fresh Dairy Co."}
+
+Input: "Products from Premium Meats Inc."
+Output: {"supplier": "Premium Meats Inc."}
+
+Input: "Show me dairy products from Fresh Dairy Co."
+Output: {"category": "Dairy", "supplier": "Fresh Dairy Co."}
+
 Input: "Sales from last week"
 Output: {"startDate": "${sevenDaysAgo}", "endDate": "${currentDate}"}
+
+Input: "Which products have low stock levels under 30 units?"
+Output: {"threshold": 30}
+
+Input: "Show me products with stock below 50"
+Output: {"maxStockLevel": 50}
+
+Input: "Low stock dairy products under 25 units"
+Output: {"category": "Dairy", "threshold": 25}
 
 Return {} if no parameters needed.`;
 

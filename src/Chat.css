@@ -217,6 +217,7 @@
   overflow-y: auto;
   line-height: 1.4;
   position: relative; /* Ensure proper positioning context */
+  width: 100%; /* Ensure full width usage */
 }
 
 .trace-title {
@@ -230,6 +231,7 @@
 
 .trace-item {
   margin-bottom: 6px;
+  width: 100%; /* Ensure full width */
 }
 
 .trace-item--error {
@@ -238,10 +240,19 @@
 
 .trace-code {
   margin: 4px 0;
-  padding: 4px;
+  padding: 8px;
   background-color: #ffffff;
   border: 1px solid #dee2e6;
   border-radius: 3px;
+  width: 100%; /* Dock to full width */
+  box-sizing: border-box; /* Include padding in width calculation */
+  overflow-x: auto; /* Allow horizontal scrolling for very long lines */
+  white-space: pre-wrap; /* Preserve formatting but allow wrapping */
+  word-wrap: break-word; /* Break long words */
+  max-width: 100%; /* Prevent overflow */
+  font-family: "Courier New", Consolas, monaco, monospace; /* Better monospace font */
+  font-size: 10px; /* Slightly smaller for better fit */
+  line-height: 1.3;
 }
 
 /* Special positioning for tooltips inside trace panel */
