@@ -27,7 +27,7 @@ app.get("/api/tools/schema", async (req, res) => {
   console.log("Received request to /api/tools/schema");
 
   const mcpServerUrl =
-    process.env.VITE_MCP_SERVER_URL || "http://localhost:5000";
+    process.env.VITE_MCP_SERVER_URL || "http://localhost:9090";
 
   try {
     console.log("Making request to MCP server for schema...");
@@ -74,6 +74,55 @@ app.post("/api/search", async (req, res) => {
     );
     console.log("Azure Search response status:", azureRes.status);
     const data = azureRes.data;
+
+    // Enhanced debugging for category filtering issues
+    console.log("=== AZURE SEARCH DEBUG ===");
+    console.log("Search query:", query);
+    console.log(
+      "Raw Azure Search response structure:",
+      JSON.stringify(data, null, 2)
+    );
+    console.log("Number of results:", data.value?.length || 0);
+
+    if (data.value && data.value.length > 0) {
+      console.log("Available tools found:");
+      data.value.forEach((tool, index) => {
+        console.log(`\n--- Tool ${index + 1} ---`);
+        console.log(
+          `Function Name: ${tool.functionName || tool.name || "N/A"}`
+        );
+        console.log(
+          `Description: ${tool.description?.substring(0, 150) || "N/A"}...`
+        );
+        console.log(`Endpoint: ${tool.endpoint || "N/A"}`);
+        console.log(`HTTP Method: ${tool.httpMethod || "N/A"}`);
+        console.log(`Category: ${tool.category || "N/A"}`);
+        console.log(
+          `Is Active: ${tool.isActive !== undefined ? tool.isActive : "N/A"}`
+        );
+        if (tool.parameters) {
+          console.log(`Parameters: ${tool.parameters.substring(0, 200)}...`);
+        }
+
+        // Check for category-related tools
+        const isCategoryTool =
+          (tool.functionName &&
+            (tool.functionName.toLowerCase().includes("category") ||
+              tool.functionName.toLowerCase().includes("filter") ||
+              tool.functionName.toLowerCase().includes("bycategory"))) ||
+          (tool.description &&
+            (tool.description.toLowerCase().includes("category") ||
+              tool.description.toLowerCase().includes("filter by")));
+
+        if (isCategoryTool) {
+          console.log(`*** CATEGORY TOOL DETECTED ***`);
+        }
+      });
+    } else {
+      console.log("No tools found in Azure Search response!");
+    }
+    console.log("=== END AZURE SEARCH DEBUG ===");
+
     console.log("Azure Search response received, sending back to client");
     res.json(data);
   } catch (err) {

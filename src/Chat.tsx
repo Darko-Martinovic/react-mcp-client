@@ -55,6 +55,11 @@ interface SearchResult {
     description?: string;
     endpoint?: string;
     httpMethod?: string;
+    parameters?: string;
+    category?: string;
+    isActive?: boolean;
+    responseType?: string;
+    lastUpdated?: string;
   }>;
 }
 
@@ -818,6 +823,37 @@ Available sample tools: ${articles
         },
       });
     });
+
+    // Special debugging for category queries
+    const originalQuery = mcpCall.parameters.query || "";
+    if (originalQuery.toLowerCase().includes("dairy")) {
+      console.log("=== DAIRY CATEGORY QUERY DEBUG ===");
+      console.log(
+        "Looking for tools that might handle category filtering better..."
+      );
+      const categorySpecificTools = searchData.value?.filter(
+        (tool) =>
+          tool.functionName &&
+          (tool.functionName.toLowerCase().includes("category") ||
+            tool.functionName.toLowerCase().includes("filter") ||
+            tool.functionName.toLowerCase().includes("bycategory") ||
+            tool.description?.toLowerCase().includes("category") ||
+            tool.description?.toLowerCase().includes("filter"))
+      );
+      console.log(
+        "Category-specific tools found:",
+        categorySpecificTools?.length || 0
+      );
+      categorySpecificTools?.forEach((tool, idx) => {
+        console.log(`Category Tool ${idx}:`, {
+          functionName: tool.functionName,
+          description: tool.description?.substring(0, 150),
+          endpoint: tool.endpoint,
+        });
+      });
+      console.log("===================================");
+    }
+
     console.log("=====================================");
 
     // Extract the best matching tool and its endpoint
@@ -847,39 +883,110 @@ Available sample tools: ${articles
 
       // Try to find the most appropriate tool with schema validation
       if (isGeneralInventoryQuery) {
-        // Look for general inventory/products tools first
-        const inventoryTool = searchData.value.find(
-          (tool) =>
-            tool.functionName &&
-            tool.endpoint && // Ensure we have required fields
-            (tool.functionName.toLowerCase().includes("inventory") ||
-              tool.functionName.toLowerCase().includes("products") ||
-              tool.functionName.toLowerCase().includes("getproduct")) &&
-            !tool.functionName.toLowerCase().includes("low") &&
-            !tool.functionName.toLowerCase().includes("stock")
-        );
+        // First, check if there are category-specific tools for this query
+        let selectedCategoryTool = null;
+        if (
+          originalQuery.toLowerCase().includes("dairy") ||
+          originalQuery.toLowerCase().includes("meat") ||
+          originalQuery.toLowerCase().includes("fruits") ||
+          originalQuery.toLowerCase().includes("vegetables") ||
+          originalQuery.toLowerCase().includes("beverages") ||
+          originalQuery.toLowerCase().includes("bakery")
+        ) {
+          selectedCategoryTool = searchData.value.find(
+            (tool) =>
+              tool.functionName &&
+              tool.endpoint &&
+              (tool.functionName.toLowerCase().includes("category") ||
+                tool.functionName.toLowerCase().includes("filter") ||
+                tool.functionName.toLowerCase().includes("bycategory") ||
+                (tool.description &&
+                  (tool.description.toLowerCase().includes("category") ||
+                    tool.description.toLowerCase().includes("filter by"))))
+          );
 
-        if (inventoryTool) {
-          selectedTool = inventoryTool;
-          console.log(
-            "Override: Selected general inventory tool with validation:",
-            {
+          if (selectedCategoryTool) {
+            selectedTool = selectedCategoryTool;
+            console.log("Override: Selected category-specific tool:", {
               functionName: selectedTool.functionName,
+              description: selectedTool.description?.substring(0, 100),
               endpoint: selectedTool.endpoint,
-              hasEndpoint: !!selectedTool.endpoint,
-              isValid: !!(selectedTool.functionName && selectedTool.endpoint),
+            });
+          }
+        }
+
+        // If no category-specific tool found, look for general inventory/products tools
+        if (!selectedCategoryTool) {
+          // For category queries, prefer GetProducts tool which supports category filtering
+          let inventoryTool = null;
+
+          // First priority: GetProducts tool (best for category filtering)
+          if (
+            originalQuery.toLowerCase().includes("dairy") ||
+            originalQuery.toLowerCase().includes("meat") ||
+            originalQuery.toLowerCase().includes("fruits") ||
+            originalQuery.toLowerCase().includes("vegetables") ||
+            originalQuery.toLowerCase().includes("beverages") ||
+            originalQuery.toLowerCase().includes("bakery")
+          ) {
+            inventoryTool = searchData.value.find(
+              (tool) =>
+                tool.functionName &&
+                tool.endpoint &&
+                tool.functionName.toLowerCase() === "getproducts" &&
+                tool.parameters &&
+                tool.parameters.toLowerCase().includes("category")
+            );
+
+            if (inventoryTool) {
+              console.log(
+                "Priority: Selected GetProducts for category filtering:",
+                {
+                  functionName: inventoryTool.functionName,
+                  parameters: inventoryTool.parameters,
+                  reason: "Best tool for category filtering",
+                }
+              );
             }
-          );
-        } else {
-          // Fallback to first tool with required fields
-          selectedTool =
-            searchData.value.find(
-              (tool) => tool.functionName && tool.endpoint
-            ) || searchData.value[0];
-          console.log(
-            "Fallback: Using highest scoring tool with validation:",
-            selectedTool
-          );
+          }
+
+          // Second priority: Other inventory/products tools
+          if (!inventoryTool) {
+            inventoryTool = searchData.value.find(
+              (tool) =>
+                tool.functionName &&
+                tool.endpoint && // Ensure we have required fields
+                (tool.functionName.toLowerCase().includes("inventory") ||
+                  tool.functionName.toLowerCase().includes("products") ||
+                  tool.functionName.toLowerCase().includes("getproduct")) &&
+                !tool.functionName.toLowerCase().includes("low") &&
+                !tool.functionName.toLowerCase().includes("stock")
+            );
+          }
+
+          if (inventoryTool) {
+            selectedTool = inventoryTool;
+            console.log(
+              "Override: Selected general inventory tool with validation:",
+              {
+                functionName: selectedTool.functionName,
+                endpoint: selectedTool.endpoint,
+                hasEndpoint: !!selectedTool.endpoint,
+                isValid: !!(selectedTool.functionName && selectedTool.endpoint),
+                parameters: selectedTool.parameters,
+              }
+            );
+          } else {
+            // Fallback to first tool with required fields
+            selectedTool =
+              searchData.value.find(
+                (tool) => tool.functionName && tool.endpoint
+              ) || searchData.value[0];
+            console.log(
+              "Fallback: Using highest scoring tool with validation:",
+              selectedTool
+            );
+          }
         }
       } else {
         // Use the highest scoring result with required fields for other queries
