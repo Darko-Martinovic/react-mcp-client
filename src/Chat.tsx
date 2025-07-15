@@ -391,7 +391,7 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
 
   // Function to handle emoji selection
   const handleEmojiSelect = (emoji: string) => {
-    setInput(prevInput => prevInput + emoji);
+    setInput((prevInput) => prevInput + emoji);
     setShowEmojiPicker(false);
     // Focus back on input after emoji selection
     if (inputRef.current) {
@@ -401,7 +401,7 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
 
   // Function to toggle emoji picker
   const toggleEmojiPicker = () => {
-    setShowEmojiPicker(prev => !prev);
+    setShowEmojiPicker((prev) => !prev);
   };
 
   // Scroll to bottom when messages change
@@ -2341,7 +2341,7 @@ Return {} if no parameters needed.`;
             {loading ? "Processing..." : "Send"}
           </button>
         </form>
-        
+
         {/* Emoji Picker */}
         <EmojiPicker
           isOpen={showEmojiPicker}
