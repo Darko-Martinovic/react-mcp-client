@@ -146,7 +146,9 @@ const renderTable = (data: Record<string, unknown>[], toolName?: string) => {
 
   return (
     <div className={styles.tableContainer}>
-      {toolName && <div className={styles.tableTitle}>📊 {toolName} Results</div>}
+      {toolName && (
+        <div className={styles.tableTitle}>📊 {toolName} Results</div>
+      )}
       <div className={styles.tableWrapper}>
         <table className={styles.dataTable}>
           <thead className={styles.tableHeader}>
@@ -2303,7 +2305,9 @@ Return {} if no parameters needed.`;
                     )}
 
                     {msg.traceData.error && (
-                      <div className={`${styles.traceItem} ${styles.traceItemError}`}>
+                      <div
+                        className={`${styles.traceItem} ${styles.traceItemError}`}
+                      >
                         <strong>Error:</strong> {msg.traceData.error}
                       </div>
                     )}
@@ -2337,7 +2341,11 @@ Return {} if no parameters needed.`;
           >
             😀
           </button>
-          <button type="submit" className={styles.sendButton} disabled={loading}>
+          <button
+            type="submit"
+            className={styles.sendButton}
+            disabled={loading}
+          >
             {loading ? "Processing..." : "Send"}
           </button>
         </form>
