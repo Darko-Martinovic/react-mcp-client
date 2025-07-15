@@ -1,5 +1,5 @@
-/* EmojiPicker.css */
-.emoji-picker {
+/* EmojiPicker.module.css */
+.emojiPicker {
   position: absolute;
   bottom: 60px;
   right: 10px;
@@ -15,7 +15,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.emoji-picker-header {
+.emojiPickerHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,14 +25,14 @@
   border-radius: 12px 12px 0 0;
 }
 
-.emoji-picker-header h4 {
+.emojiPickerHeader h4 {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
   color: #333;
 }
 
-.emoji-picker-close {
+.emojiPickerClose {
   background: none;
   border: none;
   font-size: 20px;
@@ -48,12 +48,12 @@
   transition: background-color 0.2s ease;
 }
 
-.emoji-picker-close:hover {
+.emojiPickerClose:hover {
   background-color: #e9ecef;
   color: #333;
 }
 
-.emoji-picker-categories {
+.emojiPickerCategories {
   display: flex;
   padding: 8px;
   gap: 4px;
@@ -61,7 +61,7 @@
   background: #f8f9fa;
 }
 
-.emoji-category-tab {
+.emojiCategoryTab {
   background: none;
   border: none;
   font-size: 20px;
@@ -72,24 +72,24 @@
   opacity: 0.6;
 }
 
-.emoji-category-tab:hover {
+.emojiCategoryTab:hover {
   background-color: #e9ecef;
   opacity: 0.8;
 }
 
-.emoji-category-tab.active {
+.emojiCategoryTab.active {
   background-color: #007bff;
   opacity: 1;
 }
 
-.emoji-picker-content {
+.emojiPickerContent {
   flex: 1;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-.emoji-category-name {
+.emojiCategoryName {
   padding: 8px 16px;
   font-size: 12px;
   font-weight: 600;
@@ -98,7 +98,7 @@
   border-bottom: 1px solid #e1e5e9;
 }
 
-.emoji-grid {
+.emojiGrid {
   flex: 1;
   padding: 12px;
   display: grid;
@@ -109,24 +109,24 @@
   scrollbar-color: #ccc transparent;
 }
 
-.emoji-grid::-webkit-scrollbar {
+.emojiGrid::-webkit-scrollbar {
   width: 6px;
 }
 
-.emoji-grid::-webkit-scrollbar-track {
+.emojiGrid::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.emoji-grid::-webkit-scrollbar-thumb {
+.emojiGrid::-webkit-scrollbar-thumb {
   background-color: #ccc;
   border-radius: 3px;
 }
 
-.emoji-grid::-webkit-scrollbar-thumb:hover {
+.emojiGrid::-webkit-scrollbar-thumb:hover {
   background-color: #999;
 }
 
-.emoji-button {
+.emojiButton {
   background: none;
   border: none;
   font-size: 20px;
@@ -140,70 +140,70 @@
   aspect-ratio: 1;
 }
 
-.emoji-button:hover {
+.emojiButton:hover {
   background-color: #f1f3f4;
   transform: scale(1.1);
 }
 
-.emoji-button:active {
+.emojiButton:active {
   transform: scale(0.95);
 }
 
 /* Dark theme support */
 @media (prefers-color-scheme: dark) {
-  .emoji-picker {
+  .emojiPicker {
     background: #2c2c2c;
     border-color: #404040;
   }
 
-  .emoji-picker-header,
-  .emoji-picker-categories,
-  .emoji-category-name {
+  .emojiPickerHeader,
+  .emojiPickerCategories,
+  .emojiCategoryName {
     background: #404040;
     border-color: #555;
   }
 
-  .emoji-picker-header h4 {
+  .emojiPickerHeader h4 {
     color: #fff;
   }
 
-  .emoji-picker-close {
+  .emojiPickerClose {
     color: #ccc;
   }
 
-  .emoji-picker-close:hover {
+  .emojiPickerClose:hover {
     background-color: #555;
     color: #fff;
   }
 
-  .emoji-category-tab:hover {
+  .emojiCategoryTab:hover {
     background-color: #555;
   }
 
-  .emoji-category-tab.active {
+  .emojiCategoryTab.active {
     background-color: #0056b3;
   }
 
-  .emoji-category-name {
+  .emojiCategoryName {
     color: #ccc;
   }
 
-  .emoji-button:hover {
+  .emojiButton:hover {
     background-color: #404040;
   }
 
-  .emoji-grid::-webkit-scrollbar-thumb {
+  .emojiGrid::-webkit-scrollbar-thumb {
     background-color: #666;
   }
 
-  .emoji-grid::-webkit-scrollbar-thumb:hover {
+  .emojiGrid::-webkit-scrollbar-thumb:hover {
     background-color: #888;
   }
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-  .emoji-picker {
+  .emojiPicker {
     width: calc(100vw - 20px);
     height: 350px;
     right: 10px;
@@ -211,11 +211,11 @@
     bottom: 60px;
   }
 
-  .emoji-grid {
+  .emojiGrid {
     grid-template-columns: repeat(6, 1fr);
   }
 
-  .emoji-button {
+  .emojiButton {
     font-size: 18px;
     padding: 4px;
   }

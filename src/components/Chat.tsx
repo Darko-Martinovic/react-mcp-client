@@ -5,16 +5,16 @@ import React, {
   useRef,
   useEffect,
 } from "react";
-import { askAzureOpenAI } from "./services/azureOpenAI";
-import { callMcpTool } from "./services/mcpServer";
+import styles from "./Chat.module.css";
+import { askAzureOpenAI } from "../services/azureOpenAI";
+import { callMcpTool } from "../services/mcpServer";
 import {
   fetchArticlesFromAzureSearch,
   fetchAzureSearchSchema,
   getSearchableFields,
   getFilterableFields,
-} from "./services/azureSearch";
+} from "../services/azureSearch";
 import EmojiPicker from "./EmojiPicker";
-import "./Chat.css";
 
 interface Message {
   sender: "user" | "system";
@@ -126,33 +126,33 @@ const renderTable = (data: Record<string, unknown>[], toolName?: string) => {
 
   // Function to get cell content class based on column type and value
   const getCellContentClass = (col: string, value: unknown): string => {
-    let className = "cell-content";
+    let className = styles.cellContent;
 
     if (col.toLowerCase().includes("name")) {
-      className += " cell-content--name";
+      className += ` ${styles.cellContentName}`;
     } else if (
       col.toLowerCase().includes("price") ||
       col.toLowerCase().includes("amount")
     ) {
-      className += " cell-content--price";
+      className += ` ${styles.cellContentPrice}`;
     } else if (col.toLowerCase().includes("stock") && Number(value) < 30) {
-      className += " cell-content--low-stock";
+      className += ` ${styles.cellContentLowStock}`;
     } else if (col.toLowerCase().includes("id")) {
-      className += " cell-content--id";
+      className += ` ${styles.cellContentId}`;
     }
 
     return className;
   };
 
   return (
-    <div className="table-container">
-      {toolName && <div className="table-title">📊 {toolName} Results</div>}
-      <div className="table-wrapper">
-        <table className="data-table">
-          <thead className="table-header">
+    <div className={styles.tableContainer}>
+      {toolName && <div className={styles.tableTitle}>📊 {toolName} Results</div>}
+      <div className={styles.tableWrapper}>
+        <table className={styles.dataTable}>
+          <thead className={styles.tableHeader}>
             <tr>
               {columns.map((col) => (
-                <th key={col} className="table-header-cell">
+                <th key={col} className={styles.tableHeaderCell}>
                   {getColumnHeader(col)}
                 </th>
               ))}
@@ -162,12 +162,12 @@ const renderTable = (data: Record<string, unknown>[], toolName?: string) => {
             {data.map((row, idx) => (
               <tr
                 key={idx}
-                className={`table-row ${
-                  idx % 2 === 0 ? "table-row--even" : "table-row--odd"
+                className={`${styles.tableRow} ${
+                  idx % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd
                 }`}
               >
                 {columns.map((col) => (
-                  <td key={col} className="table-cell">
+                  <td key={col} className={styles.tableCell}>
                     <span className={getCellContentClass(col, row[col])}>
                       {formatCellValue(row[col])}
                     </span>
@@ -178,7 +178,7 @@ const renderTable = (data: Record<string, unknown>[], toolName?: string) => {
           </tbody>
         </table>
       </div>
-      <div className="table-footer">
+      <div className={styles.tableFooter}>
         📋 Showing {data.length} result{data.length !== 1 ? "s" : ""}
       </div>
     </div>
@@ -2029,13 +2029,13 @@ Return {} if no parameters needed.`;
   };
 
   return (
-    <div className="chat-container">
+    <div className={styles.chatContainer}>
       {/* Export Chat Button */}
-      <div className="export-section">
-        <div ref={exportMenuRef} className="export-menu-container">
+      <div className={styles.exportSection}>
+        <div ref={exportMenuRef} className={styles.exportMenuContainer}>
           <button
             onClick={() => setShowExportMenu(!showExportMenu)}
-            className="export-button"
+            className={styles.exportButton}
           >
             <span role="img" aria-label="export">
               📤
@@ -2045,13 +2045,13 @@ Return {} if no parameters needed.`;
           </button>
 
           {showExportMenu && (
-            <div className="export-dropdown">
+            <div className={styles.exportDropdown}>
               <button
                 onClick={() => {
                   exportChat(safeMessages, title || "chat");
                   setShowExportMenu(false);
                 }}
-                className="export-option"
+                className={styles.exportOption}
               >
                 📋 JSON Format
               </button>
@@ -2060,7 +2060,7 @@ Return {} if no parameters needed.`;
                   exportChatAsText(safeMessages, title || "chat");
                   setShowExportMenu(false);
                 }}
-                className="export-option"
+                className={styles.exportOption}
               >
                 📄 Text Format
               </button>
@@ -2069,7 +2069,7 @@ Return {} if no parameters needed.`;
                   exportChatAsMarkdown(safeMessages, title || "chat");
                   setShowExportMenu(false);
                 }}
-                className="export-option"
+                className={styles.exportOption}
               >
                 📝 Markdown Format
               </button>
@@ -2079,26 +2079,26 @@ Return {} if no parameters needed.`;
       </div>
 
       {/* Message list */}
-      <div className="messages-container">
-        <div className="messages-wrapper">
+      <div className={styles.messagesContainer}>
+        <div className={styles.messagesWrapper}>
           {safeMessages.length === 0 && (
-            <div className="empty-messages">No messages yet.</div>
+            <div className={styles.emptyMessages}>No messages yet.</div>
           )}
           {safeMessages.map((msg, idx) => (
             <div
               key={idx}
-              className={`message-item ${
+              className={`${styles.messageItem} ${
                 msg.sender === "user"
-                  ? "message-item--user"
-                  : "message-item--system"
+                  ? styles.messageItemUser
+                  : styles.messageItemSystem
               }`}
             >
               {/* Message label */}
               <div
-                className={`message-label ${
+                className={`${styles.messageLabel} ${
                   msg.sender === "user"
-                    ? "message-label--user"
-                    : "message-label--system"
+                    ? styles.messageLabelUser
+                    : styles.messageLabelSystem
                 }`}
               >
                 {msg.sender === "user" ? "You" : "AI"}
@@ -2109,10 +2109,10 @@ Return {} if no parameters needed.`;
                   {/* Show summary text above the table if it exists */}
                   {msg.text && (
                     <span
-                      className={`message-bubble ${
+                      className={`${styles.messageBubble} ${
                         msg.sender === "user"
-                          ? "message-bubble--user"
-                          : "message-bubble--system"
+                          ? styles.messageBubbleUser
+                          : styles.messageBubbleSystem
                       }`}
                       style={{ marginBottom: "10px", display: "block" }}
                     >
@@ -2122,13 +2122,13 @@ Return {} if no parameters needed.`;
                   {renderTable(msg.tableData, msg.toolName)}
                   {/* Copy button for table data */}
                   <div
-                    className={`message-actions ${
+                    className={`${styles.messageActions} ${
                       msg.sender === "user"
-                        ? "message-actions--user"
-                        : "message-actions--system"
+                        ? styles.messageActionsUser
+                        : styles.messageActionsSystem
                     }`}
                   >
-                    <div className="copy-button-container">
+                    <div className={styles.copyButtonContainer}>
                       <button
                         onClick={() =>
                           copyToClipboardWithFeedback(
@@ -2136,7 +2136,7 @@ Return {} if no parameters needed.`;
                             `table-${idx}`
                           )
                         }
-                        className="copy-button"
+                        className={styles.copyButton}
                         title="Copy Table"
                       >
                         <span role="img" aria-label="copy">
@@ -2144,13 +2144,13 @@ Return {} if no parameters needed.`;
                         </span>
                       </button>
                       {copiedMessageId === `table-${idx}` && (
-                        <div className="copy-tooltip">Copied!</div>
+                        <div className={styles.copyTooltip}>Copied!</div>
                       )}
                     </div>
 
                     {/* Trace Call checkbox - only show for system messages with trace data */}
                     {msg.sender === "system" && msg.traceData && (
-                      <label className="trace-toggle">
+                      <label className={styles.traceToggle}>
                         <input
                           type="checkbox"
                           checked={visibleTraces.has(idx)}
@@ -2164,23 +2164,23 @@ Return {} if no parameters needed.`;
               ) : (
                 <>
                   <span
-                    className={`message-bubble ${
+                    className={`${styles.messageBubble} ${
                       msg.sender === "user"
-                        ? "message-bubble--user"
-                        : "message-bubble--system"
+                        ? styles.messageBubbleUser
+                        : styles.messageBubbleSystem
                     }`}
                   >
                     {msg.text}
                   </span>
                   {/* Copy button for text messages */}
                   <div
-                    className={`message-actions ${
+                    className={`${styles.messageActions} ${
                       msg.sender === "user"
-                        ? "message-actions--user"
-                        : "message-actions--system"
+                        ? styles.messageActionsUser
+                        : styles.messageActionsSystem
                     }`}
                   >
-                    <div className="copy-button-container">
+                    <div className={styles.copyButtonContainer}>
                       <button
                         onClick={() =>
                           copyToClipboardWithFeedback(
@@ -2188,7 +2188,7 @@ Return {} if no parameters needed.`;
                             `text-${idx}`
                           )
                         }
-                        className="copy-button"
+                        className={styles.copyButton}
                         title="Copy Message"
                       >
                         <span role="img" aria-label="copy">
@@ -2196,13 +2196,13 @@ Return {} if no parameters needed.`;
                         </span>
                       </button>
                       {copiedMessageId === `text-${idx}` && (
-                        <div className="copy-tooltip">Copied!</div>
+                        <div className={styles.copyTooltip}>Copied!</div>
                       )}
                     </div>
 
                     {/* Trace Call checkbox - only show for system messages with trace data */}
                     {msg.sender === "system" && msg.traceData && (
-                      <label className="trace-toggle">
+                      <label className={styles.traceToggle}>
                         <input
                           type="checkbox"
                           checked={visibleTraces.has(idx)}
@@ -2219,10 +2219,10 @@ Return {} if no parameters needed.`;
               {msg.sender === "system" &&
                 msg.traceData &&
                 visibleTraces.has(idx) && (
-                  <div className="trace-panel">
-                    <div className="trace-title">
+                  <div className={styles.tracePanel}>
+                    <div className={styles.traceTitle}>
                       <span>Trace Information</span>
-                      <div className="copy-button-container">
+                      <div className={styles.copyButtonContainer}>
                         <button
                           onClick={() => {
                             const traceText = JSON.stringify(
@@ -2235,7 +2235,7 @@ Return {} if no parameters needed.`;
                               `trace-${idx}`
                             );
                           }}
-                          className="copy-button"
+                          className={styles.copyButton}
                           title="Copy Trace Data"
                         >
                           <span role="img" aria-label="copy">
@@ -2243,23 +2243,23 @@ Return {} if no parameters needed.`;
                           </span>
                         </button>
                         {copiedMessageId === `trace-${idx}` && (
-                          <div className="copy-tooltip">Copied!</div>
+                          <div className={styles.copyTooltip}>Copied!</div>
                         )}
                       </div>
                     </div>
 
-                    <div className="trace-item">
+                    <div className={styles.traceItem}>
                       <strong>Timestamp:</strong> {msg.traceData.timestamp}
                     </div>
 
                     {msg.traceData.userInput && (
-                      <div className="trace-item">
+                      <div className={styles.traceItem}>
                         <strong>User Input:</strong> {msg.traceData.userInput}
                       </div>
                     )}
 
                     {msg.traceData.selectedTool && (
-                      <div className="trace-item">
+                      <div className={styles.traceItem}>
                         <strong>Selected Tool:</strong>{" "}
                         {msg.traceData.selectedTool}
                       </div>
@@ -2267,43 +2267,43 @@ Return {} if no parameters needed.`;
 
                     {msg.traceData.parameters &&
                       Object.keys(msg.traceData.parameters).length > 0 && (
-                        <div className="trace-item">
+                        <div className={styles.traceItem}>
                           <strong>Parameters:</strong>
-                          <pre className="trace-code">
+                          <pre className={styles.traceCode}>
                             {JSON.stringify(msg.traceData.parameters, null, 2)}
                           </pre>
                         </div>
                       )}
 
                     {msg.traceData.aiResponse && (
-                      <div className="trace-item">
+                      <div className={styles.traceItem}>
                         <strong>AI Response:</strong>
-                        <pre className="trace-code">
+                        <pre className={styles.traceCode}>
                           {JSON.stringify(msg.traceData.aiResponse, null, 2)}
                         </pre>
                       </div>
                     )}
 
                     {msg.traceData.mcpCall && (
-                      <div className="trace-item">
+                      <div className={styles.traceItem}>
                         <strong>MCP Call:</strong>
-                        <pre className="trace-code">
+                        <pre className={styles.traceCode}>
                           {JSON.stringify(msg.traceData.mcpCall, null, 2)}
                         </pre>
                       </div>
                     )}
 
                     {msg.traceData.mcpResponse && (
-                      <div className="trace-item">
+                      <div className={styles.traceItem}>
                         <strong>MCP Response:</strong>
-                        <pre className="trace-code">
+                        <pre className={styles.traceCode}>
                           {JSON.stringify(msg.traceData.mcpResponse, null, 2)}
                         </pre>
                       </div>
                     )}
 
                     {msg.traceData.error && (
-                      <div className="trace-item trace-item--error">
+                      <div className={`${styles.traceItem} ${styles.traceItemError}`}>
                         <strong>Error:</strong> {msg.traceData.error}
                       </div>
                     )}
@@ -2313,41 +2313,42 @@ Return {} if no parameters needed.`;
           ))}
           <div ref={messagesEndRef} />
         </div>
-        {loading && <div className="loading-message">Processing...</div>}
+        {loading && <div className={styles.loadingMessage}>Processing...</div>}
       </div>
 
       {/* Input area */}
-      <div className="input-area">
-        <form onSubmit={handleSend} className="input-form">
+      <div className={styles.inputArea}>
+        <form onSubmit={handleSend} className={styles.inputForm}>
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={handleInputChange}
             placeholder="Type your message..."
-            className="chat-input"
+            className={styles.chatInput}
             disabled={loading}
           />
           <button
             type="button"
-            className="emoji-button"
+            className={styles.emojiButton}
             onClick={toggleEmojiPicker}
             disabled={loading}
             title="Add emoji"
           >
             😀
           </button>
-          <button type="submit" className="send-button" disabled={loading}>
+          <button type="submit" className={styles.sendButton} disabled={loading}>
             {loading ? "Processing..." : "Send"}
           </button>
         </form>
 
         {/* Emoji Picker */}
-        <EmojiPicker
-          isOpen={showEmojiPicker}
-          onEmojiSelect={handleEmojiSelect}
-          onClose={() => setShowEmojiPicker(false)}
-        />
+        {showEmojiPicker && (
+          <EmojiPicker
+            onEmojiSelect={handleEmojiSelect}
+            onClose={() => setShowEmojiPicker(false)}
+          />
+        )}
       </div>
     </div>
   );
