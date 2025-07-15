@@ -13,6 +13,7 @@ import {
   getSearchableFields,
   getFilterableFields,
 } from "./services/azureSearch";
+import EmojiPicker from "./EmojiPicker";
 import "./Chat.css";
 
 interface Message {
@@ -334,6 +335,7 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [visibleTraces, setVisibleTraces] = useState<Set<number>>(new Set());
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const exportMenuRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -385,6 +387,21 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
       newVisibleTraces.add(messageIndex);
     }
     setVisibleTraces(newVisibleTraces);
+  };
+
+  // Function to handle emoji selection
+  const handleEmojiSelect = (emoji: string) => {
+    setInput(prevInput => prevInput + emoji);
+    setShowEmojiPicker(false);
+    // Focus back on input after emoji selection
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  // Function to toggle emoji picker
+  const toggleEmojiPicker = () => {
+    setShowEmojiPicker(prev => !prev);
   };
 
   // Scroll to bottom when messages change
@@ -2300,20 +2317,38 @@ Return {} if no parameters needed.`;
       </div>
 
       {/* Input area */}
-      <form onSubmit={handleSend} className="input-form">
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Type your message..."
-          className="chat-input"
-          disabled={loading}
+      <div className="input-area">
+        <form onSubmit={handleSend} className="input-form">
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={handleInputChange}
+            placeholder="Type your message..."
+            className="chat-input"
+            disabled={loading}
+          />
+          <button
+            type="button"
+            className="emoji-button"
+            onClick={toggleEmojiPicker}
+            disabled={loading}
+            title="Add emoji"
+          >
+            😀
+          </button>
+          <button type="submit" className="send-button" disabled={loading}>
+            {loading ? "Processing..." : "Send"}
+          </button>
+        </form>
+        
+        {/* Emoji Picker */}
+        <EmojiPicker
+          isOpen={showEmojiPicker}
+          onEmojiSelect={handleEmojiSelect}
+          onClose={() => setShowEmojiPicker(false)}
         />
-        <button type="submit" className="send-button" disabled={loading}>
-          {loading ? "Processing..." : "Send"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };
