@@ -59,6 +59,7 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   min-height: 50px;
+  gap: 8px; /* Add gap between chatInfo and chatActions */
 }
 
 .chatItem:hover {
@@ -76,6 +77,7 @@
   flex-direction: column;
   gap: 4px;
   min-width: 0;
+  max-width: calc(100% - 70px); /* Reserve space for action buttons */
 }
 
 .chatTitle {
@@ -97,6 +99,7 @@
   background: #fff;
   outline: none;
   width: 100%;
+  max-width: 180px; /* Limit input width to prevent overlap */
 }
 
 .chatDate {
@@ -107,26 +110,33 @@
 .chatActions {
   display: flex;
   gap: 4px;
-  opacity: 0;
+  opacity: 0.7; /* Always visible but slightly transparent */
   transition: opacity 0.2s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+  min-width: 60px; /* Ensure minimum width for buttons */
 }
 
 .chatItem:hover .chatActions {
-  opacity: 1;
+  opacity: 1; /* Full opacity on hover */
 }
 
 .chatActionButton {
-  padding: 4px;
+  padding: 6px;
   border: none;
-  background: none;
+  background: rgba(0, 0, 0, 0.05);
   cursor: pointer;
   border-radius: 4px;
   transition: background-color 0.2s ease;
   font-size: 14px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chatActionButton:hover {
-  background: #e0e0e0;
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .mainContent {
@@ -178,6 +188,15 @@
 
   .chatItem {
     padding: 10px 12px;
+    gap: 6px;
+  }
+
+  .chatInfo {
+    max-width: calc(100% - 60px); /* Adjust for mobile */
+  }
+
+  .chatTitleInput {
+    max-width: 150px; /* Smaller max width on mobile */
   }
 
   .chatTitle {
@@ -186,5 +205,15 @@
 
   .chatDate {
     font-size: 11px;
+  }
+
+  .chatActionButton {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  .chatActions {
+    min-width: 52px; /* Adjust for smaller buttons on mobile */
   }
 }
