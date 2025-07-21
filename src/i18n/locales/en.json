@@ -1,0 +1,116 @@
+{
+  "app": {
+    "title": "MCP Client",
+    "loading": "Processing...",
+    "send": "Send",
+    "processing": "Processing...",
+    "error": "An error occurred. Please try again.",
+    "noMessages": "No messages yet.",
+    "you": "You",
+    "ai": "AI",
+    "newChat": "New Chat",
+    "chats": "Chats",
+    "selectChat": "Select a chat or create a new one to get started"
+  },
+  "export": {
+    "button": "Export Chat",
+    "json": "JSON Format",
+    "text": "Text Format",
+    "markdown": "Markdown Format",
+    "excel": "Excel",
+    "excelTitle": "Download as Excel file"
+  },
+  "table": {
+    "showing": "Showing",
+    "results": "results",
+    "result": "result",
+    "title": "Results",
+    "download": "Download as Excel file",
+    "copy": "Copy Table",
+    "copied": "Copied!",
+    "headers": {
+      "productId": "ID",
+      "productName": "Product Name",
+      "stockQuantity": "Stock",
+      "unitPrice": "Unit Price",
+      "totalAmount": "Total",
+      "saleDate": "Sale Date",
+      "saleId": "Sale ID"
+    }
+  },
+  "chart": {
+    "title": {
+      "salesDistribution": "Sales Distribution",
+      "salesTrends": "Sales Trends",
+      "salesComparison": "Sales Comparison",
+      "inventoryDistribution": "Inventory Distribution",
+      "stockLevelsOverTime": "Stock Levels Over Time",
+      "stockComparison": "Stock Comparison",
+      "productDistribution": "Product Distribution",
+      "productAnalysis": "Product Analysis",
+      "distributionAnalysis": "Distribution Analysis",
+      "trendAnalysis": "Trend Analysis",
+      "comparisonAnalysis": "Comparison Analysis"
+    }
+  },
+  "trace": {
+    "showTrace": "Show Trace Call",
+    "title": "Trace Information",
+    "timestamp": "Timestamp",
+    "userInput": "User Input",
+    "selectedTool": "Selected Tool",
+    "parameters": "Parameters",
+    "aiResponse": "AI Response",
+    "mcpCall": "MCP Call",
+    "mcpResponse": "MCP Response",
+    "error": "Error",
+    "copy": "Copy Trace Data"
+  },
+  "language": {
+    "selector": "Language",
+    "english": "English",
+    "french": "Français",
+    "dutch": "Nederlands"
+  },
+  "messages": {
+    "copy": "Copy Message",
+    "errorMcp": "Sorry, I couldn't process your request through the MCP server. Please try again.",
+    "errorSchema": "Could not retrieve Azure Search index schema. The schema endpoint may not be available."
+  },
+  "schema": {
+    "title": "Azure Search Index Schema",
+    "indexName": "Index Name",
+    "availableFields": "Available Fields",
+    "fieldLegend": "Field Legend",
+    "keyField": "Key field",
+    "searchable": "Searchable",
+    "filterable": "Filterable",
+    "sortable": "Sortable",
+    "searchableFields": "Searchable Fields",
+    "filterableFields": "Filterable Fields",
+    "totalFields": "Total Fields",
+    "lastUpdated": "Last Updated"
+  },
+  "systemPrompts": {
+    "aiAssistant": "You are an intelligent assistant that helps users interact with MCP (Model Context Protocol) tools.",
+    "structuredFormat": "CRITICAL: You MUST respond in this EXACT structured format:",
+    "function": "Function",
+    "parameters": "Parameters",
+    "reasoning": "Reasoning",
+    "noOtherFormat": "DO NOT provide any other response format. DO NOT format results or explain tools. Just provide the structured function call.",
+    "yourJob": "Your ONLY job is to:",
+    "understandIntent": "Understand the user's intent",
+    "returnStructured": "Return the structured function call format above",
+    "extractTerms": "Extract appropriate search terms for the Parameters based on intent",
+    "intentGuidelines": "Query Intent Guidelines:",
+    "examples": "Examples:",
+    "visualizationOptions": "VISUALIZATION OPTIONS (users can specify these in their queries):",
+    "tableOnly": "Shows data table without visualization",
+    "chartOnly": "Shows visualization without data table",
+    "barChart": "Forces bar chart visualization",
+    "pieChart": "Forces pie chart visualization",
+    "lineChart": "Forces line chart visualization",
+    "anyChart": "Lets system choose best visualization type",
+    "remember": "REMEMBER: Always respond with the structured format. Never format or display the actual results - that will be handled separately."
+  }
+}

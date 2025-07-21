@@ -1,0 +1,116 @@
+{
+  "app": {
+    "title": "MCP Client",
+    "loading": "Verwerken...",
+    "send": "Verzenden",
+    "processing": "Verwerken...",
+    "error": "Er is een fout opgetreden. Probeer het opnieuw.",
+    "noMessages": "Nog geen berichten.",
+    "you": "Jij",
+    "ai": "AI",
+    "newChat": "Nieuwe Chat",
+    "chats": "Chats",
+    "selectChat": "Selecteer een chat of maak een nieuwe om te beginnen"
+  },
+  "export": {
+    "button": "Chat Exporteren",
+    "json": "JSON Formaat",
+    "text": "Tekst Formaat",
+    "markdown": "Markdown Formaat",
+    "excel": "Excel",
+    "excelTitle": "Downloaden als Excel-bestand"
+  },
+  "table": {
+    "showing": "Toont",
+    "results": "resultaten",
+    "result": "resultaat",
+    "title": "Resultaten",
+    "download": "Download als Excel bestand",
+    "copy": "Tabel Kopiëren",
+    "copied": "Gekopieerd!",
+    "headers": {
+      "productId": "ID",
+      "productName": "Productnaam",
+      "stockQuantity": "Voorraad",
+      "unitPrice": "Eenheidsprijs",
+      "totalAmount": "Totaal",
+      "saleDate": "Verkoopdatum",
+      "saleId": "Verkoop ID"
+    }
+  },
+  "chart": {
+    "title": {
+      "salesDistribution": "Verkoop Verdeling",
+      "salesTrends": "Verkoop Trends",
+      "salesComparison": "Verkoop Vergelijking",
+      "inventoryDistribution": "Voorraad Verdeling",
+      "stockLevelsOverTime": "Voorraadniveaus Over Tijd",
+      "stockComparison": "Voorraad Vergelijking",
+      "productDistribution": "Product Verdeling",
+      "productAnalysis": "Product Analyse",
+      "distributionAnalysis": "Verdelings Analyse",
+      "trendAnalysis": "Trend Analyse",
+      "comparisonAnalysis": "Vergelijkings Analyse"
+    }
+  },
+  "trace": {
+    "showTrace": "Trace Oproep Tonen",
+    "title": "Trace Informatie",
+    "timestamp": "Tijdstempel",
+    "userInput": "Gebruiker Invoer",
+    "selectedTool": "Geselecteerde Tool",
+    "parameters": "Parameters",
+    "aiResponse": "AI Reactie",
+    "mcpCall": "MCP Oproep",
+    "mcpResponse": "MCP Reactie",
+    "error": "Fout",
+    "copy": "Trace Data Kopiëren"
+  },
+  "language": {
+    "selector": "Taal",
+    "english": "English",
+    "french": "Français",
+    "dutch": "Nederlands"
+  },
+  "messages": {
+    "copy": "Bericht Kopiëren",
+    "errorMcp": "Sorry, ik kon uw verzoek niet verwerken via de MCP server. Probeer het opnieuw.",
+    "errorSchema": "Kon het Azure Search index schema niet ophalen. Het schema endpoint is mogelijk niet beschikbaar."
+  },
+  "schema": {
+    "title": "Azure Search Index Schema",
+    "indexName": "Index Naam",
+    "availableFields": "Beschikbare Velden",
+    "fieldLegend": "Veld Legenda",
+    "keyField": "Sleutelveld",
+    "searchable": "Doorzoekbaar",
+    "filterable": "Filterbaar",
+    "sortable": "Sorteerbaar",
+    "searchableFields": "Doorzoekbare Velden",
+    "filterableFields": "Filterbare Velden",
+    "totalFields": "Totaal Velden",
+    "lastUpdated": "Laatst Bijgewerkt"
+  },
+  "systemPrompts": {
+    "aiAssistant": "Je bent een intelligente assistent die gebruikers helpt bij het interacteren met MCP (Model Context Protocol) tools.",
+    "structuredFormat": "KRITIEK: Je MOET reageren in dit EXACTE gestructureerde format:",
+    "function": "Functie",
+    "parameters": "Parameters",
+    "reasoning": "Redenering",
+    "noOtherFormat": "Geef GEEN ander antwoordformaat. Formateer GEEN resultaten of leg tools uit. Geef alleen de gestructureerde functie-oproep.",
+    "yourJob": "Je ENIGE taak is om:",
+    "understandIntent": "De intentie van de gebruiker begrijpen",
+    "returnStructured": "Het gestructureerde functie-oproep formaat hierboven teruggeven",
+    "extractTerms": "Passende zoektermen voor de Parameters extraheren gebaseerd op intentie",
+    "intentGuidelines": "Query Intentie Richtlijnen:",
+    "examples": "Voorbeelden:",
+    "visualizationOptions": "VISUALISATIE OPTIES (gebruikers kunnen deze specificeren in hun queries):",
+    "tableOnly": "Toont data tabel zonder visualisatie",
+    "chartOnly": "Toont visualisatie zonder data tabel",
+    "barChart": "Forceert staafgrafiek visualisatie",
+    "pieChart": "Forceert cirkeldiagram visualisatie",
+    "lineChart": "Forceert lijngrafiek visualisatie",
+    "anyChart": "Laat systeem beste visualisatie type kiezen",
+    "remember": "ONTHOUD: Reageer altijd met het gestructureerde formaat. Formateer of toon nooit de werkelijke resultaten - dat wordt apart afgehandeld."
+  }
+}

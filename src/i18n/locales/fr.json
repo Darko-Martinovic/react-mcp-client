@@ -1,0 +1,116 @@
+{
+  "app": {
+    "title": "Client MCP",
+    "loading": "Traitement en cours...",
+    "send": "Envoyer",
+    "processing": "Traitement...",
+    "error": "Une erreur s'est produite. Veuillez réessayer.",
+    "noMessages": "Aucun message pour le moment.",
+    "you": "Vous",
+    "ai": "IA",
+    "newChat": "Nouvelle Conversation",
+    "chats": "Conversations",
+    "selectChat": "Sélectionnez une conversation ou créez-en une nouvelle pour commencer"
+  },
+  "export": {
+    "button": "Exporter la Conversation",
+    "json": "Format JSON",
+    "text": "Format Texte",
+    "markdown": "Format Markdown",
+    "excel": "Excel",
+    "excelTitle": "Télécharger en fichier Excel"
+  },
+  "table": {
+    "showing": "Affichage de",
+    "results": "résultats",
+    "result": "résultat",
+    "title": "Résultats",
+    "download": "Télécharger en fichier Excel",
+    "copy": "Copier le Tableau",
+    "copied": "Copié !",
+    "headers": {
+      "productId": "ID",
+      "productName": "Nom du Produit",
+      "stockQuantity": "Stock",
+      "unitPrice": "Prix Unitaire",
+      "totalAmount": "Total",
+      "saleDate": "Date de Vente",
+      "saleId": "ID Vente"
+    }
+  },
+  "chart": {
+    "title": {
+      "salesDistribution": "Répartition des Ventes",
+      "salesTrends": "Tendances des Ventes",
+      "salesComparison": "Comparaison des Ventes",
+      "inventoryDistribution": "Répartition des Stocks",
+      "stockLevelsOverTime": "Niveaux de Stock dans le Temps",
+      "stockComparison": "Comparaison des Stocks",
+      "productDistribution": "Répartition des Produits",
+      "productAnalysis": "Analyse des Produits",
+      "distributionAnalysis": "Analyse de Répartition",
+      "trendAnalysis": "Analyse des Tendances",
+      "comparisonAnalysis": "Analyse Comparative"
+    }
+  },
+  "trace": {
+    "showTrace": "Afficher l'Appel de Trace",
+    "title": "Informations de Trace",
+    "timestamp": "Horodatage",
+    "userInput": "Saisie Utilisateur",
+    "selectedTool": "Outil Sélectionné",
+    "parameters": "Paramètres",
+    "aiResponse": "Réponse IA",
+    "mcpCall": "Appel MCP",
+    "mcpResponse": "Réponse MCP",
+    "error": "Erreur",
+    "copy": "Copier les Données de Trace"
+  },
+  "language": {
+    "selector": "Langue",
+    "english": "English",
+    "french": "Français",
+    "dutch": "Nederlands"
+  },
+  "messages": {
+    "copy": "Copier le Message",
+    "errorMcp": "Désolé, je n'ai pas pu traiter votre demande via le serveur MCP. Veuillez réessayer.",
+    "errorSchema": "Impossible de récupérer le schéma de l'index Azure Search. Le point de terminaison du schéma pourrait ne pas être disponible."
+  },
+  "schema": {
+    "title": "Schéma de l'Index Azure Search",
+    "indexName": "Nom de l'Index",
+    "availableFields": "Champs Disponibles",
+    "fieldLegend": "Légende des Champs",
+    "keyField": "Champ clé",
+    "searchable": "Recherchable",
+    "filterable": "Filtrable",
+    "sortable": "Triable",
+    "searchableFields": "Champs Recherchables",
+    "filterableFields": "Champs Filtrables",
+    "totalFields": "Total des Champs",
+    "lastUpdated": "Dernière Mise à Jour"
+  },
+  "systemPrompts": {
+    "aiAssistant": "Vous êtes un assistant intelligent qui aide les utilisateurs à interagir avec les outils MCP (Model Context Protocol).",
+    "structuredFormat": "CRITIQUE : Vous DEVEZ répondre dans ce format structuré EXACT :",
+    "function": "Fonction",
+    "parameters": "Paramètres",
+    "reasoning": "Raisonnement",
+    "noOtherFormat": "NE fournissez AUCUN autre format de réponse. NE formatez PAS les résultats ni n'expliquez les outils. Fournissez simplement l'appel de fonction structuré.",
+    "yourJob": "Votre SEUL travail consiste à :",
+    "understandIntent": "Comprendre l'intention de l'utilisateur",
+    "returnStructured": "Retourner le format d'appel de fonction structuré ci-dessus",
+    "extractTerms": "Extraire les termes de recherche appropriés pour les Paramètres basés sur l'intention",
+    "intentGuidelines": "Directives d'Intention de Requête :",
+    "examples": "Exemples :",
+    "visualizationOptions": "OPTIONS DE VISUALISATION (les utilisateurs peuvent les spécifier dans leurs requêtes) :",
+    "tableOnly": "Affiche le tableau de données sans visualisation",
+    "chartOnly": "Affiche la visualisation sans tableau de données",
+    "barChart": "Force la visualisation en graphique à barres",
+    "pieChart": "Force la visualisation en graphique circulaire",
+    "lineChart": "Force la visualisation en graphique linéaire",
+    "anyChart": "Laisse le système choisir le meilleur type de visualisation",
+    "remember": "RAPPELEZ-VOUS : Répondez toujours avec le format structuré. Ne formatez jamais ni n'affichez les résultats réels - cela sera géré séparément."
+  }
+}

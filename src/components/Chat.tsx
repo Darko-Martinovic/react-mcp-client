@@ -5,6 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./Chat.module.css";
 import { askAzureOpenAI } from "../services/azureOpenAI";
 import { callMcpTool } from "../services/mcpServer";
@@ -218,7 +219,11 @@ const exportToExcel = (
   XLSX.writeFile(workbook, finalFilename);
 };
 
-const renderTable = (data: Record<string, unknown>[], toolName?: string) => {
+const renderTable = (
+  data: Record<string, unknown>[],
+  toolName?: string,
+  t?: (key: string) => string
+) => {
   if (!Array.isArray(data) || data.length === 0) return null;
   const columns = Object.keys(data[0]);
 
@@ -289,7 +294,9 @@ const renderTable = (data: Record<string, unknown>[], toolName?: string) => {
   return (
     <div className={styles.tableContainer}>
       {toolName && (
-        <div className={styles.tableTitle}>📊 {toolName} Results</div>
+        <div className={styles.tableTitle}>
+          📊 {toolName} {t?.("table.title") || "Results"}
+        </div>
       )}
       <div className={styles.tableWrapper}>
         <table className={styles.dataTable}>
@@ -324,7 +331,10 @@ const renderTable = (data: Record<string, unknown>[], toolName?: string) => {
       </div>
       <div className={styles.tableFooter}>
         <span>
-          📋 Showing {data.length} result{data.length !== 1 ? "s" : ""}
+          📋 {t?.("table.showing") || "Showing"} {data.length}{" "}
+          {data.length !== 1
+            ? t?.("table.results") || "results"
+            : t?.("table.result") || "result"}
         </span>
         <button
           onClick={() => {
@@ -334,9 +344,9 @@ const renderTable = (data: Record<string, unknown>[], toolName?: string) => {
             exportToExcel(data, filename, toolName);
           }}
           className={styles.excelButton}
-          title="Download as Excel file"
+          title={t?.("export.excelTitle") || "Download as Excel file"}
         >
-          📊 Excel
+          📊 {t?.("export.excel") || "Excel"}
         </button>
       </div>
     </div>
@@ -912,6 +922,7 @@ const exportChatAsMarkdown = (messages: Message[], title: string) => {
 };
 
 const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
+  const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -1178,7 +1189,7 @@ ${schema.fields
       setMessages([
         ...baseMessages,
         userMsg,
-        { sender: "system", text: "An error occurred. Please try again." },
+        { sender: "system", text: t("app.error") },
       ]);
     } finally {
       setLoading(false);
@@ -2646,7 +2657,7 @@ Return {} if no parameters needed.`;
             <span role="img" aria-label="export">
               📤
             </span>
-            Export Chat
+            {t("export.button")}
             <span style={{ marginLeft: 4 }}>▼</span>
           </button>
 
@@ -2659,7 +2670,7 @@ Return {} if no parameters needed.`;
                 }}
                 className={styles.exportOption}
               >
-                📋 JSON Format
+                📋 {t("export.json")}
               </button>
               <button
                 onClick={() => {
@@ -2668,7 +2679,7 @@ Return {} if no parameters needed.`;
                 }}
                 className={styles.exportOption}
               >
-                📄 Text Format
+                📄 {t("export.text")}
               </button>
               <button
                 onClick={() => {
@@ -2677,7 +2688,7 @@ Return {} if no parameters needed.`;
                 }}
                 className={styles.exportOption}
               >
-                📝 Markdown Format
+                📝 {t("export.markdown")}
               </button>
             </div>
           )}
@@ -2688,7 +2699,7 @@ Return {} if no parameters needed.`;
       <div className={styles.messagesContainer}>
         <div className={styles.messagesWrapper}>
           {safeMessages.length === 0 && (
-            <div className={styles.emptyMessages}>No messages yet.</div>
+            <div className={styles.emptyMessages}>{t("app.noMessages")}</div>
           )}
           {safeMessages.map((msg, idx) => (
             <div
@@ -2707,7 +2718,7 @@ Return {} if no parameters needed.`;
                     : styles.messageLabelSystem
                 }`}
               >
-                {msg.sender === "user" ? "You" : "AI"}
+                {msg.sender === "user" ? t("app.you") : t("app.ai")}
               </div>
 
               {msg.tableData ? (
@@ -2731,7 +2742,7 @@ Return {} if no parameters needed.`;
                     const originalQuery = msg.traceData?.userInput || msg.text;
                     return (
                       shouldShowTable(originalQuery) &&
-                      renderTable(msg.tableData, msg.toolName)
+                      renderTable(msg.tableData, msg.toolName, t)
                     );
                   })()}
 
@@ -2771,7 +2782,9 @@ Return {} if no parameters needed.`;
                         </span>
                       </button>
                       {copiedMessageId === `table-${idx}` && (
-                        <div className={styles.copyTooltip}>Copied!</div>
+                        <div className={styles.copyTooltip}>
+                          {t("table.copied") || "Copied!"}
+                        </div>
                       )}
                     </div>
 
@@ -2783,7 +2796,7 @@ Return {} if no parameters needed.`;
                           checked={visibleTraces.has(idx)}
                           onChange={() => toggleTraceVisibility(idx)}
                         />
-                        Show Trace Call
+                        {t("trace.showTrace") || "Show Trace Call"}
                       </label>
                     )}
                   </div>
@@ -2835,7 +2848,7 @@ Return {} if no parameters needed.`;
                           checked={visibleTraces.has(idx)}
                           onChange={() => toggleTraceVisibility(idx)}
                         />
-                        Show Trace Call
+                        {t("trace.showTrace") || "Show Trace Call"}
                       </label>
                     )}
                   </div>
@@ -2942,7 +2955,9 @@ Return {} if no parameters needed.`;
           ))}
           <div ref={messagesEndRef} />
         </div>
-        {loading && <div className={styles.loadingMessage}>Processing...</div>}
+        {loading && (
+          <div className={styles.loadingMessage}>{t("app.processing")}</div>
+        )}
       </div>
 
       {/* Input area */}
@@ -2971,7 +2986,7 @@ Return {} if no parameters needed.`;
             className={styles.sendButton}
             disabled={loading}
           >
-            {loading ? "Processing..." : "Send"}
+            {loading ? t("app.processing") : t("app.send")}
           </button>
         </form>
 

@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import Chat from "./Chat";
+import LanguageSelector from "./LanguageSelector";
+import { getLanguageStorageKey } from "../i18n/i18n";
 import styles from "./App.module.css";
 
 interface Message {
@@ -33,6 +36,7 @@ function generateId() {
 }
 
 const App: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [chats, setChats] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -40,45 +44,59 @@ const App: React.FC = () => {
   const didLoadChats = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load chats from localStorage on mount
-  useEffect(() => {
-    if (didLoadChats.current) return;
-    didLoadChats.current = true;
+  // Get current language storage key
+  const getCurrentStorageKey = () =>
+    getLanguageStorageKey(LOCAL_STORAGE_KEY, i18n.language);
 
-    try {
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (stored) {
-        let parsed: ChatSession[] = [];
-        try {
-          parsed = JSON.parse(stored);
-          if (!Array.isArray(parsed)) {
-            console.warn("Invalid chat data format, starting fresh");
+  // Load chats from localStorage on mount and when language changes
+  useEffect(() => {
+    const loadChats = () => {
+      try {
+        const storageKey = getCurrentStorageKey();
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          let parsed: ChatSession[] = [];
+          try {
+            parsed = JSON.parse(stored);
+            if (!Array.isArray(parsed)) {
+              console.warn("Invalid chat data format, starting fresh");
+              parsed = [];
+            }
+          } catch (error) {
+            console.error("Error parsing stored chats:", error);
             parsed = [];
           }
-        } catch (error) {
-          console.error("Error parsing stored chats:", error);
-          parsed = [];
+          setChats(parsed);
+          if (parsed.length > 0) {
+            setActiveChatId(parsed[0].id);
+          } else {
+            setActiveChatId(null);
+          }
+        } else {
+          // No chats for this language, start fresh
+          setChats([]);
+          setActiveChatId(null);
         }
-        setChats(parsed);
-        if (parsed.length > 0) {
-          setActiveChatId(parsed[0].id);
-        }
+      } catch (error) {
+        console.error("Error loading chats from localStorage:", error);
       }
-    } catch (error) {
-      console.error("Error loading chats from localStorage:", error);
-    }
-  }, []);
+    };
+
+    loadChats();
+  }, [i18n.language]);
 
   // Save chats to localStorage whenever chats change
   useEffect(() => {
-    if (didLoadChats.current) {
+    if (chats.length >= 0) {
+      // Always save, even empty array
       try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(chats));
+        const storageKey = getCurrentStorageKey();
+        localStorage.setItem(storageKey, JSON.stringify(chats));
       } catch (error) {
         console.error("Error saving chats to localStorage:", error);
       }
     }
-  }, [chats]);
+  }, [chats, i18n.language]);
 
   const activeChat = chats.find((chat) => chat.id === activeChatId) || null;
 
@@ -177,17 +195,26 @@ const App: React.FC = () => {
     );
   }, [activeChat?.messages]);
 
+  // Handle language change - will trigger useEffect to load language-specific chats
+  const handleLanguageChange = (newLanguage: string) => {
+    console.log(`Language changed to: ${newLanguage}`);
+    // The useEffect with i18n.language dependency will handle loading the appropriate chats
+  };
+
   return (
     <div className={styles.appContainer}>
       {/* Sidebar for chat archive */}
       <div className={styles.sidebar}>
-        <button onClick={handleNewChat} className={styles.newChatButton}>
-          <span role="img" aria-label="new">
-            🆕
-          </span>{" "}
-          New Chat
-        </button>
-        <div className={styles.sidebarTitle}>Chats</div>
+        <div className={styles.sidebarHeader}>
+          <button onClick={handleNewChat} className={styles.newChatButton}>
+            <span role="img" aria-label="new">
+              🆕
+            </span>{" "}
+            {t("app.newChat", "New Chat")}
+          </button>
+          <LanguageSelector onLanguageChange={handleLanguageChange} />
+        </div>
+        <div className={styles.sidebarTitle}>{t("app.chats", "Chats")}</div>
         <ul className={styles.chatList}>
           {chats.map((chat) => (
             <li
@@ -255,7 +282,10 @@ const App: React.FC = () => {
           <div className={styles.placeholder}>
             <div>
               <div className={styles.placeholderIcon}>💬</div>
-              Select a chat or create a new one to get started
+              {t(
+                "app.selectChat",
+                "Select a chat or create a new one to get started"
+              )}
             </div>
           </div>
         )}
