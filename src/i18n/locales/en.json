@@ -10,7 +10,8 @@
     "ai": "AI",
     "newChat": "New Chat",
     "chats": "Chats",
-    "selectChat": "Select a chat or create a new one to get started"
+    "selectChat": "Select a chat or create a new one to get started",
+    "placeholder": "Type your message..."
   },
   "export": {
     "button": "Export Chat",

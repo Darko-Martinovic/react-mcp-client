@@ -10,7 +10,8 @@
     "ai": "IA",
     "newChat": "Nouvelle Conversation",
     "chats": "Conversations",
-    "selectChat": "Sélectionnez une conversation ou créez-en une nouvelle pour commencer"
+    "selectChat": "Sélectionnez une conversation ou créez-en une nouvelle pour commencer",
+    "placeholder": "Tapez votre message..."
   },
   "export": {
     "button": "Exporter la Conversation",

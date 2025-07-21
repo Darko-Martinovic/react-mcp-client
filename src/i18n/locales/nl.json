@@ -10,7 +10,8 @@
     "ai": "AI",
     "newChat": "Nieuwe Chat",
     "chats": "Chats",
-    "selectChat": "Selecteer een chat of maak een nieuwe om te beginnen"
+    "selectChat": "Selecteer een chat of maak een nieuwe om te beginnen",
+    "placeholder": "Typ je bericht..."
   },
   "export": {
     "button": "Chat Exporteren",

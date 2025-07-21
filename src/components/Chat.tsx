@@ -2968,7 +2968,7 @@ Return {} if no parameters needed.`;
             type="text"
             value={input}
             onChange={handleInputChange}
-            placeholder="Type your message..."
+            placeholder={t('app.placeholder') || 'Type your message...'}
             className={styles.chatInput}
             disabled={loading}
           />
