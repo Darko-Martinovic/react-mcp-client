@@ -1,18 +1,44 @@
 # React MCP Client
 
-A modern React-based client application for interacting with Model Context Protocol (MCP) servers, featuring AI-powered chat interface with Azure OpenAI integration and advanced trace debugging capabilities.
+A modern React-based client application for interacting with Model Context Protocol (MCP) servers, featuring AI-powered chat interface with Azure OpenAI integration, advanced trace debugging capabilities, comprehensive internationalization support, and powerful data visualization tools.
 
 ## 🚀 Features
+
+### 💬 **Core Chat Interface**
 
 - **AI-Powered Chat Interface**: Interactive chat with Azure OpenAI integration
 - **MCP Server Integration**: Direct communication with Model Context Protocol servers
 - **Advanced Trace Debugging**: Comprehensive trace functionality for AI-MCP request/response flows
-- **Smart Table Rendering**: Automatic detection and beautiful rendering of structured data
-- **Azure Search Integration**: RAG (Retrieval-Augmented Generation) capabilities with Azure Cognitive Search
 - **Chat Session Management**: Create, manage, and export multiple chat sessions
-- **Multiple Export Formats**: Export conversations in JSON, Text, or Markdown formats
 - **Real-time Visual Feedback**: Copy-to-clipboard functionality with visual confirmation
 - **Responsive Design**: Modern, mobile-friendly interface with smooth animations
+
+### 🌍 **Internationalization (i18n)**
+
+- **Multi-Language Support**: Full localization for 3 languages
+  - 🇺🇸 **English** - Default language
+  - 🇫🇷 **French** (Français) - Complete translations
+  - 🇳🇱 **Dutch** (Nederlands) - Complete translations
+- **Language-Specific Storage**: Separate chat histories for each language
+- **Dynamic Language Switching**: Instant UI updates with flag indicators
+- **Comprehensive Translation**: All UI elements, error messages, and system prompts
+
+### 📊 **Data Visualization & Export**
+
+- **Smart Table Rendering**: Automatic detection and beautiful rendering of structured data
+- **Advanced Chart Visualization**: Multiple chart types for data analysis
+  - 📊 **Bar Charts** - For categorical data comparison
+  - 🥧 **Pie Charts** - For distribution visualization
+  - 📈 **Line Charts** - For trend analysis over time
+- **Excel Export**: Professional Excel files with formatting, styling, and metadata
+- **Multiple Export Formats**: Export conversations in JSON, Text, Markdown, and Excel formats
+- **Interactive Table Controls**: Copy, export, and format tabular data
+
+### 🔍 **Azure Search Integration**
+
+- **RAG Capabilities**: Retrieval-Augmented Generation with Azure Cognitive Search
+- **Schema Information**: Dynamic index schema display and field analysis
+- **Smart Query Processing**: Intelligent search parameter extraction
 
 ### 🧠 Enhanced AI Capabilities
 
@@ -36,9 +62,12 @@ A modern React-based client application for interacting with Model Context Proto
 
 - **Frontend**: React 19.1.0 with TypeScript
 - **Build Tool**: Vite 7.0.4
-- **Styling**: Custom CSS with modern design patterns
+- **Styling**: CSS Modules with modern design patterns
 - **State Management**: React hooks (useState, useEffect, useRef)
 - **HTTP Client**: Axios for API requests
+- **Internationalization**: react-i18next with browser language detection
+- **Data Export**: XLSX library for Excel export functionality
+- **Charts & Visualization**: Recharts library for interactive data visualization
 - **Development**: ESLint for code quality
 
 ## 📋 Prerequisites
@@ -63,6 +92,13 @@ A modern React-based client application for interacting with Model Context Proto
    ```bash
    npm install
    ```
+
+   **Key Dependencies Installed:**
+
+   - `react-i18next` - Internationalization framework
+   - `i18next-browser-languagedetector` - Browser language detection
+   - `xlsx` - Excel file generation and formatting
+   - `recharts` - Interactive chart visualization library
 
 3. **Environment Configuration**
 
@@ -145,16 +181,28 @@ react-mcp-client/
 │   ├── assets/
 │   │   ├── react.svg           # React logo
 │   │   └── Screen.jpg          # Application screenshot
+│   ├── components/
+│   │   ├── App.tsx             # Main application component & session management
+│   │   ├── App.module.css      # Application-specific styling
+│   │   ├── Chat.tsx            # Chat interface, tables, charts & trace debugging
+│   │   ├── Chat.module.css     # Chat-specific styling & responsive design
+│   │   ├── EmojiPicker.tsx     # Emoji selection component
+│   │   ├── EmojiPicker.module.css # Emoji picker styling
+│   │   ├── LanguageSelector.tsx # Language switching component
+│   │   └── LanguageSelector.module.css # Language selector styling
+│   ├── i18n/
+│   │   ├── i18n.ts             # i18next configuration & language helpers
+│   │   └── locales/
+│   │       ├── en.json         # English translations
+│   │       ├── fr.json         # French translations
+│   │       └── nl.json         # Dutch translations
 │   ├── services/
 │   │   ├── azureOpenAI.ts      # Azure OpenAI integration & AI parameter extraction
 │   │   ├── azureSearch.ts      # Azure Search integration (RAG capabilities)
 │   │   └── mcpServer.ts        # MCP server communication & response formatting
-│   ├── App.tsx                 # Main application component & session management
-│   ├── Chat.tsx                # Chat interface, trace debugging & table rendering
-│   ├── Chat.css                # Chat-specific styling & responsive design
-│   ├── App.css                 # Global application styling
 │   ├── index.css               # Base styles & CSS variables
-│   └── main.tsx                # Application entry point & React setup
+│   ├── main.tsx                # Application entry point & React setup
+│   └── vite-env.d.ts           # TypeScript environment declarations
 ├── search-proxy.cjs            # Express proxy for Azure Search (CORS handling)
 ├── vite.config.js              # Vite configuration & development settings
 ├── eslint.config.js            # ESLint configuration for code quality
@@ -166,10 +214,51 @@ react-mcp-client/
 
 ### Key Components
 
-- **`Chat.tsx`** - Core chat interface with AI-powered parameter extraction, trace debugging, and smart response formatting
-- **`App.tsx`** - Session management, chat persistence, and export functionality
+- **`Chat.tsx`** - Core chat interface with AI-powered parameter extraction, trace debugging, table rendering, chart visualization, and Excel export
+- **`App.tsx`** - Session management, chat persistence, language-aware storage, and export functionality
+- **`LanguageSelector.tsx`** - Multi-language support with flag indicators and dropdown interface
+- **`i18n/`** - Complete internationalization infrastructure with translation files for English, French, and Dutch
 - **`services/`** - Modular service layer for external integrations (Azure OpenAI, Azure Search, MCP servers)
 - **`search-proxy.cjs`** - Backend proxy to handle CORS and Azure Search requests
+
+## 🌟 Advanced Features
+
+### 📊 **Data Visualization**
+
+The application includes sophisticated chart visualization capabilities:
+
+- **Automatic Chart Selection**: AI-powered selection of the most appropriate chart type based on data structure
+- **Interactive Charts**: Built with Recharts for responsive, interactive data exploration
+- **Chart Types**:
+  - **Bar Charts**: Perfect for comparing categories, sales by product, inventory levels
+  - **Pie Charts**: Ideal for showing distribution, market share, category breakdowns
+  - **Line Charts**: Excellent for trends over time, sales progression, stock movements
+- **Customizable Display**: Users can specify chart preferences in queries (e.g., "show as pie chart", "bar chart only")
+- **Professional Styling**: Color-coded, responsive charts with tooltips and legends
+
+### 🌍 **Internationalization (i18n)**
+
+Complete multi-language support with advanced features:
+
+- **Language-Specific Storage**: Each language maintains separate chat histories using dedicated localStorage keys
+- **Comprehensive Translation Coverage**:
+  - All UI elements (buttons, labels, placeholders)
+  - System messages and error handling
+  - Export functionality and table headers
+  - Trace debugging information
+- **Dynamic Language Switching**: Instant UI updates when switching languages
+- **Browser Language Detection**: Automatically detects and sets user's preferred language
+- **Professional Language Selector**: Dropdown interface with country flags and native language names
+
+### 📈 **Excel Export Capabilities**
+
+Professional Excel export functionality:
+
+- **Rich Formatting**: Auto-sized columns, styled headers, alternating row colors
+- **Multiple Worksheets**: Data sheet with source information and metadata sheet
+- **Comprehensive Metadata**: Export timestamp, source tool, record counts, and column information
+- **Smart File Naming**: Automatic generation of descriptive filenames with timestamps
+- **Data Preservation**: Maintains data types, formatting, and structure in Excel format
 
 ## 🔄 How It Works
 
@@ -332,7 +421,9 @@ Located in `src/services/mcpServer.ts`
 
 - **AI Assistant Development**: Test and debug AI-powered applications
 - **MCP Protocol Testing**: Validate MCP server implementations
-- **Data Exploration**: Interactive exploration of structured datasets
+- **Data Exploration**: Interactive exploration of structured datasets with charts and tables
+- **Multi-Language Applications**: Test internationalization and localization features
+- **Data Analysis & Reporting**: Export data to Excel for further analysis and reporting
 - **API Testing**: Test and document API endpoints through conversational interface
 - **RAG System Development**: Build and test retrieval-augmented generation systems
 
@@ -357,36 +448,57 @@ Located in `src/services/mcpServer.ts`
    - Check browser console for JavaScript errors
    - Verify the response structure matches the expected format
 
-4. **Applied filters not visible**
+4. **Language switching not working**
+
+   - ✅ **NEW FEATURE**: Multi-language support with separate storage
+   - Check browser localStorage for language-specific keys (e.g., `chatMessages_fr`)
+   - Verify translation files are loading correctly in browser network tab
+   - Language selector appears in top-right corner with flag indicators
+
+5. **Charts not displaying**
+
+   - ✅ **NEW FEATURE**: Automatic chart generation based on data structure
+   - Ensure data has appropriate structure for visualization (numeric values, categories)
+   - Check console for Recharts rendering errors
+   - Try specifying chart type in query (e.g., "show as bar chart")
+
+6. **Excel export not working**
+
+   - ✅ **NEW FEATURE**: Professional Excel export with formatting
+   - Check browser's download folder for generated Excel files
+   - Verify XLSX library is properly loaded (check browser console)
+   - Ensure data table is visible before attempting export
+
+7. **Applied filters not visible**
 
    - ✅ **FIXED**: Applied filters are now displayed above table data
    - Date ranges are shown in both human-readable (6/13/2025) and ISO formats (2025-06-13)
    - Auto-applied defaults are clearly marked with explanatory notes
 
-5. **Parameter extraction issues**
+8. **Parameter extraction issues**
 
    - ✅ **ENHANCED**: AI-powered parameter extraction with comprehensive examples
    - Threshold detection for queries like "under 30 units"
    - Smart supplier and category name extraction
    - Fallback to regex-based extraction when AI extraction fails
 
-6. **Category performance HTTP 400 errors**
+9. **Category performance HTTP 400 errors**
 
    - ✅ **RESOLVED**: Auto-applied 30-day date ranges for category queries
    - Enhanced parameter validation and debugging
    - Clear error messages with parameter validation details
 
-7. **Summary vs detailed data confusion**
+10. **Summary vs detailed data confusion**
 
-   - ✅ **IMPLEMENTED**: Smart detection of summary vs detailed requests
-   - Revenue queries automatically show totals and summaries
-   - Category breakdowns show detailed data with applied filters
-   - Clear indicators of which format is being used
+    - ✅ **IMPLEMENTED**: Smart detection of summary vs detailed requests
+    - Revenue queries automatically show totals and summaries
+    - Category breakdowns show detailed data with applied filters
+    - Clear indicators of which format is being used
 
-8. **Trace panel not showing**
-   - Click the checkbox next to the copy button to toggle trace visibility
-   - Check that the message contains `traceData` in the response
-   - Enhanced trace data now includes parameter extraction debugging
+11. **Trace panel not showing**
+    - Click the checkbox next to the copy button to toggle trace visibility
+    - Check that the message contains `traceData` in the response
+    - Enhanced trace data now includes parameter extraction debugging
 
 ### Debug Mode
 
@@ -416,6 +528,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Azure Cognitive Search Documentation](https://docs.microsoft.com/en-us/azure/search/)
 - [React Documentation](https://react.dev/)
 - [Vite Documentation](https://vitejs.dev/)
+- [react-i18next Documentation](https://react.i18next.com/)
+- [Recharts Documentation](https://recharts.org/)
+- [XLSX Documentation](https://sheetjs.com/)
 
 ## 🆘 Support
 
@@ -429,3 +544,5 @@ For questions, issues, or contributions, please:
 ---
 
 **Built with ❤️ using React, TypeScript, and the Model Context Protocol**
+
+_Features: Multi-language support (🇺🇸🇫🇷🇳🇱) • Excel Export • Interactive Charts • Advanced Data Visualization_
