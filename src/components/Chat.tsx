@@ -17,6 +17,7 @@ import {
 } from "../services/azureSearch";
 import { getSystemPromptConfig } from "./SystemPromptEditor";
 import EmojiPicker from "./EmojiPicker";
+import QuestionPicker from "./QuestionPicker";
 import * as XLSX from "xlsx";
 import {
   BarChart,
@@ -932,6 +933,7 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [visibleTraces, setVisibleTraces] = useState<Set<number>>(new Set());
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showQuestionPicker, setShowQuestionPicker] = useState(false);
   const [systemConfig, setSystemConfig] = useState(() =>
     getSystemPromptConfig()
   );
@@ -1020,6 +1022,29 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
   // Function to toggle emoji picker
   const toggleEmojiPicker = () => {
     setShowEmojiPicker((prev) => !prev);
+    // Close question picker when opening emoji picker
+    if (!showEmojiPicker) {
+      setShowQuestionPicker(false);
+    }
+  };
+
+  // Function to handle question selection
+  const handleQuestionSelect = (question: string) => {
+    setInput(question);
+    setShowQuestionPicker(false);
+    // Focus on input after question selection
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
+  // Function to toggle question picker
+  const toggleQuestionPicker = () => {
+    setShowQuestionPicker((prev) => !prev);
+    // Close emoji picker when opening question picker
+    if (!showQuestionPicker) {
+      setShowEmojiPicker(false);
+    }
   };
 
   // Scroll to bottom when messages change
@@ -2953,6 +2978,15 @@ Return {} if no parameters needed.`;
           />
           <button
             type="button"
+            className={styles.questionButton}
+            onClick={toggleQuestionPicker}
+            disabled={loading}
+            title="Standard questions"
+          >
+            ❓
+          </button>
+          <button
+            type="button"
             className={styles.emojiButton}
             onClick={toggleEmojiPicker}
             disabled={loading}
@@ -2968,6 +3002,14 @@ Return {} if no parameters needed.`;
             {loading ? t("app.processing") : t("app.send")}
           </button>
         </form>
+
+        {/* Question Picker */}
+        {showQuestionPicker && (
+          <QuestionPicker
+            onQuestionSelect={handleQuestionSelect}
+            onClose={() => setShowQuestionPicker(false)}
+          />
+        )}
 
         {/* Emoji Picker */}
         {showEmojiPicker && (

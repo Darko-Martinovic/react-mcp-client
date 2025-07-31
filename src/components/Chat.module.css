@@ -479,6 +479,38 @@
   transform: none;
 }
 
+.questionButton {
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #e1e4e8;
+  background: #ffffff;
+  color: #666;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+}
+
+.questionButton:hover {
+  background: #f8f9fa;
+  border-color: #d1d5da;
+  transform: scale(1.05);
+}
+
+.questionButton:active {
+  transform: scale(0.95);
+}
+
+.questionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .sendButton {
   padding: 14px 32px;
   border-radius: 12px;
@@ -529,6 +561,12 @@
   }
 
   .emojiButton {
+    padding: 12px 14px;
+    font-size: 16px;
+    min-width: 46px;
+  }
+
+  .questionButton {
     padding: 12px 14px;
     font-size: 16px;
     min-width: 46px;
