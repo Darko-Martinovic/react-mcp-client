@@ -32,7 +32,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.userInput.detail"),
       icon: "�",
       type: "input",
-      position: { x: 10, y: 20 },
+      position: { x: 15, y: 15 },
     },
     {
       id: "azure-ai",
@@ -41,7 +41,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.azureOpenAI.detail"),
       icon: "🧠",
       type: "ai",
-      position: { x: 35, y: 20 },
+      position: { x: 45, y: 15 },
     },
     {
       id: "parameter-extraction",
@@ -50,7 +50,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.parameterExtraction.detail"),
       icon: "🔍",
       type: "processing",
-      position: { x: 60, y: 20 },
+      position: { x: 75, y: 15 },
     },
     {
       id: "mcp-server",
@@ -59,7 +59,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.mcpServer.detail"),
       icon: "�",
       type: "mcp",
-      position: { x: 85, y: 20 },
+      position: { x: 75, y: 50 },
     },
     {
       id: "data-processing",
@@ -68,7 +68,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.dataProcessing.detail"),
       icon: "⚙️",
       type: "processing",
-      position: { x: 10, y: 60 },
+      position: { x: 45, y: 50 },
     },
     {
       id: "visualization",
@@ -77,7 +77,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.visualization.detail"),
       icon: "📊",
       type: "output",
-      position: { x: 35, y: 60 },
+      position: { x: 15, y: 50 },
     },
   ];
 
