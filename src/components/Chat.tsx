@@ -410,7 +410,7 @@ const getVisualizationType = (
   query?: string
 ): ChartType => {
   const systemConfig = getSystemPromptConfig();
-  
+
   if (!data || data.length === 0) return "none";
 
   const queryLower = query?.toLowerCase() || "";
@@ -932,7 +932,9 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [visibleTraces, setVisibleTraces] = useState<Set<number>>(new Set());
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [systemConfig, setSystemConfig] = useState(() => getSystemPromptConfig());
+  const [systemConfig, setSystemConfig] = useState(() =>
+    getSystemPromptConfig()
+  );
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const exportMenuRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -943,10 +945,16 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
       setSystemConfig(event.detail);
     };
 
-    window.addEventListener('systemPromptConfigChanged', handleConfigChange as EventListener);
-    
+    window.addEventListener(
+      "systemPromptConfigChanged",
+      handleConfigChange as EventListener
+    );
+
     return () => {
-      window.removeEventListener('systemPromptConfigChanged', handleConfigChange as EventListener);
+      window.removeEventListener(
+        "systemPromptConfigChanged",
+        handleConfigChange as EventListener
+      );
     };
   }, []);
 
@@ -1224,7 +1232,7 @@ ${schema.fields
   ): Promise<AIResponse> => {
     // Get system configuration first
     const systemConfig = getSystemPromptConfig();
-    
+
     // Fetch schema first to understand the index structure
     const schema = await fetchAzureSearchSchema();
     console.log("=== AZURE SEARCH SCHEMA ===");
@@ -1302,7 +1310,7 @@ Available sample tools: ${articles
       .join(", ")}`;
 
     // Add custom prompt addition if configured
-    const finalSystemPrompt = systemConfig.customPromptAddition 
+    const finalSystemPrompt = systemConfig.customPromptAddition
       ? `${baseSystemPrompt}
 
 CUSTOM INSTRUCTIONS:
@@ -1686,7 +1694,9 @@ ${systemConfig.customPromptAddition}`
       ) {
         // Default to configured days for sales queries without explicit date range
         const defaultDays = systemConfig.defaultDateRangeDays || 30;
-        const defaultDaysAgo = new Date(Date.now() - defaultDays * 24 * 60 * 60 * 1000)
+        const defaultDaysAgo = new Date(
+          Date.now() - defaultDays * 24 * 60 * 60 * 1000
+        )
           .toISOString()
           .split("T")[0];
         const currentDate = new Date().toISOString().split("T")[0];
