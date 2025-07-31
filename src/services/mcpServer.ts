@@ -16,12 +16,8 @@ export async function callMcpTool(
   tool: string,
   args: Record<string, unknown>
 ): Promise<McpToolResult> {
-  const mcpUrl = import.meta.env.VITE_MCP_SERVER_URL;
-  if (!mcpUrl) {
-    throw new Error("MCP server URL not set in environment variables.");
-  }
-
-  const response = await fetch(`${mcpUrl}/api/tool`, {
+  // Use relative URL so Vite proxy can handle it
+  const response = await fetch(`/api/tool`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

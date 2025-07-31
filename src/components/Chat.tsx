@@ -1157,7 +1157,96 @@ ${schema.fields
       console.log("AI Function Calls:", aiResponse.functionCalls);
       console.log("========================");
 
-      // Step 2: Parse AI response to extract MCP server call
+      // Check if AI generated function calls
+      if (aiResponse.functionCalls && aiResponse.functionCalls.length > 0) {
+        console.log("=== PROCESSING FUNCTION CALLS ===");
+
+        // Find search_azure_cognitive function call
+        const searchCall = aiResponse.functionCalls.find(
+          (call: any) => call.name === "search_azure_cognitive"
+        );
+
+        if (searchCall && searchCall.arguments?.query) {
+          console.log("Found search_azure_cognitive call:", searchCall);
+
+          // Create MCP call from function call, including original user input for parameter extraction
+          const mcpCall = {
+            function: "multi_tool_use",
+            parameters: {
+              query: searchCall.arguments.query,
+              originalUserInput: input, // Add original user input for parameter extraction
+            },
+          };
+
+          traceData.mcpCall = mcpCall;
+          traceData.selectedTool = mcpCall.function;
+          traceData.parameters = mcpCall.parameters;
+
+          console.log("Generated MCP call from function call:", mcpCall);
+
+          // Execute the MCP call
+          try {
+            const mcpResponse = await callMCPServer(mcpCall);
+            traceData.mcpResponse = mcpResponse;
+
+            // Handle the response
+            if (typeof mcpResponse === "object" && mcpResponse.tableData) {
+              setMessages([
+                ...baseMessages,
+                userMsg,
+                {
+                  sender: "system",
+                  text: mcpResponse.summary,
+                  tableData: mcpResponse.tableData,
+                  toolName: mcpResponse.toolName,
+                  traceData: traceData,
+                },
+              ]);
+            } else if (typeof mcpResponse === "object" && mcpResponse.text) {
+              setMessages([
+                ...baseMessages,
+                userMsg,
+                {
+                  sender: "system",
+                  text: mcpResponse.text,
+                  traceData: traceData,
+                },
+              ]);
+            } else {
+              setMessages([
+                ...baseMessages,
+                userMsg,
+                {
+                  sender: "system",
+                  text:
+                    typeof mcpResponse === "string"
+                      ? mcpResponse
+                      : JSON.stringify(mcpResponse),
+                  traceData: traceData,
+                },
+              ]);
+            }
+            return; // Exit here since we handled the function call
+          } catch (mcpError) {
+            console.error("MCP Server Error:", mcpError);
+            traceData.error =
+              mcpError instanceof Error ? mcpError.message : String(mcpError);
+            setMessages([
+              ...baseMessages,
+              userMsg,
+              {
+                sender: "system",
+                text: "Sorry, I couldn't process your request through the MCP server. Please try again.",
+                traceData: traceData,
+              },
+            ]);
+            return;
+          }
+        }
+        console.log("=================================");
+      }
+
+      // Step 2: Parse AI response to extract MCP server call (fallback)
       const mcpCall = parseAIResponseForMCPCall(aiResponse.aiMessage);
       traceData.mcpCall = mcpCall;
       traceData.selectedTool = mcpCall?.function;
@@ -1289,45 +1378,30 @@ Index Schema Information:
     }
 
     // Build system prompt with MCP function instruction
-    const baseSystemPrompt = `You are an intelligent assistant that helps users interact with MCP (Model Context Protocol) tools.
+    const baseSystemPrompt = `You are an intelligent assistant that helps users interact with MCP (Model Context Protocol) tools through Azure Search.
 
-CRITICAL: You MUST respond in this EXACT structured format:
+When users ask questions about products, inventory, sales, or business data, you should call the search_azure_cognitive function to find relevant tools and data.
 
-Function: search
-Parameters: {"query": "search_terms"}
-Reasoning: Brief explanation
+Your job is to:
+1. Understand the user's intent
+2. Call the search_azure_cognitive function with appropriate search terms
+3. The system will automatically find the best MCP tool and execute it
 
-DO NOT provide any other response format. DO NOT format results or explain tools. Just provide the structured function call.
+Query Intent Guidelines:
+- For product listings/inventory: search for "products inventory" to find GetProducts or GetDetailedInventory tools
+- For specific suppliers: include supplier name in search
+- For specific categories: include category name in search  
+- For sales data: search for "sales data" to find GetSalesData tools
+- For low stock alerts: search for "low stock" to find GetLowStockProducts tool
+- For general inventory/stock levels: search for "detailed inventory" to find GetDetailedInventory tool
+- For revenue data: search for "revenue" to find GetTotalRevenue tool
+- For category performance: search for "sales category" to find GetSalesByCategory tool
+- For daily summaries: search for "daily summary" to find GetDailySummary tool
+- For inventory status: search for "inventory status" to find GetInventoryStatus tool
 
 Available MCP tools in the search index: ${articles
       .map((a: any) => a.functionName || a.name)
       .join(", ")}${schemaInfo}
-
-Your ONLY job is to:
-1. Understand the user's intent
-2. Return the structured function call format above
-3. Extract appropriate search terms for the Parameters based on intent
-
-Query Intent Guidelines:
-- For product listings/inventory: use "products" or "inventory" or "detailed inventory"
-- For specific suppliers: include supplier name in search
-- For specific categories: include category name in search  
-- For sales data: use "sales" or "sales data"
-- For low stock alerts: use "low stock" or "stock" (only when user specifically asks about LOW stock)
-- For general inventory/stock levels: use "detailed inventory" or "products inventory"
-- For TOTAL/SUMMARY queries (total revenue, total sales, how much): use "sales data" - the system will automatically provide summary format
-- For DETAILED/BREAKDOWN queries (show all sales, list transactions, breakdown): use "detailed sales" or "sales breakdown"
-- For CATEGORY PERFORMANCE queries (how categories are performing, category sales): use "sales data product categories" - system will auto-apply date range
-
-VISUALIZATION OPTIONS (users can specify these in their queries):
-- "table only" or "no chart" - Shows data table without visualization
-- "chart only" or "no table" - Shows visualization without data table  
-- "bar chart" or "bar graph" - Forces bar chart visualization
-- "pie chart" or "pie" - Forces pie chart visualization
-- "line chart" or "line graph" - Forces line chart visualization
-- "chart" or "graph" - Lets system choose best visualization type
-
-REMEMBER: Always respond with the structured format. Never format or display the actual results - that will be handled separately.
 
 Available sample tools: ${articles
       .map((a: any) => `${a.functionName}: ${a.description}`)
@@ -1361,14 +1435,14 @@ ${systemConfig.customPromptAddition}`
       console.log("AI Response Length:", aiResponse.length);
 
       // Look for structured function calls in AI response
-      const functionMatch = aiResponse.match(/Function:\s*(\w+)/i);
+      const functionMatch = aiResponse.match(/Function:\s*([\w.]+)/i);
       const parametersMatch = aiResponse.match(/Parameters:\s*({.*?})/s);
 
       console.log("Function Match:", functionMatch);
       console.log("Parameters Match:", parametersMatch);
 
       if (functionMatch) {
-        const functionName = functionMatch[1].toLowerCase();
+        const functionName = functionMatch[1];
         let parameters: Record<string, any> = {};
 
         if (parametersMatch) {
@@ -1386,8 +1460,28 @@ ${systemConfig.customPromptAddition}`
           }
         }
 
+        // Handle multi_tool_use.parallel function calls
+        if (
+          functionName === "multi_tool_use.parallel" &&
+          parameters.tool_uses
+        ) {
+          // Extract the query from the first tool use
+          const firstTool = parameters.tool_uses[0];
+          if (firstTool && firstTool.parameters && firstTool.parameters.query) {
+            const result: MCPCall = {
+              function: "multi_tool_use",
+              parameters: { query: firstTool.parameters.query },
+            };
+            console.log(
+              "Multi-tool function call extracted successfully:",
+              result
+            );
+            return result;
+          }
+        }
+
         const result: MCPCall = {
-          function: functionName,
+          function: functionName.toLowerCase(),
           parameters,
         };
         console.log("Function call extracted successfully:", result);
@@ -1659,309 +1753,61 @@ ${systemConfig.customPromptAddition}`
       return { text: errorMsg };
     }
 
-    // Get MCP server URL from configuration
-    const mcpServerUrl = systemConfig.mcpServerUrl || "http://localhost:5000";
-    const fullEndpoint = `${mcpServerUrl}${selectedTool.endpoint}`;
-
-    console.log(
-      `Calling MCP server endpoint: ${selectedTool.httpMethod} ${fullEndpoint}`
-    );
-    console.log("Selected tool validation:", {
+    console.log("Selected tool for MCP call:", {
       functionName: selectedTool.functionName,
       endpoint: selectedTool.endpoint,
       httpMethod: selectedTool.httpMethod,
       description: selectedTool.description?.substring(0, 100) + "...",
     });
 
-    // Now call the actual MCP server endpoint
+    // Use the mcpServer service to make the actual call through the proxy
     try {
-      const requestOptions: RequestInit = {
-        method: selectedTool.httpMethod || "GET",
-        headers: { "Content-Type": "application/json" },
-      };
-
-      // Prepare the parameters by extracting meaningful search terms from the original query
-      const enrichedParameters = { ...mcpCall.parameters };
-      const originalQuery = mcpCall.parameters.query || "";
-
-      // Use AI to intelligently extract parameters instead of regex patterns
-      let enhancedParameters = await extractParametersWithAI(
-        originalQuery,
-        selectedTool
-      );
-
-      // If AI extraction didn't produce expected parameters, use direct extraction as fallback
-      if (
-        Object.keys(enhancedParameters).length === 0 ||
-        (!enhancedParameters.startDate &&
-          !enhancedParameters.endDate &&
-          !enhancedParameters.supplier &&
-          !enhancedParameters.category &&
-          !enhancedParameters.threshold)
-      ) {
-        const directParams = extractParametersDirectly(originalQuery);
-        if (Object.keys(directParams).length > 0) {
-          enhancedParameters = { ...enhancedParameters, ...directParams };
-          console.log(
-            "Applied direct parameter extraction fallback:",
-            directParams
-          );
-        }
-      }
-
-      // For sales-related tools, ensure we have date parameters if none specified
-      if (
-        selectedTool.functionName &&
-        (selectedTool.functionName.toLowerCase().includes("sales") ||
-          selectedTool.functionName.toLowerCase().includes("revenue")) &&
-        !enhancedParameters.startDate &&
-        !enhancedParameters.endDate
-      ) {
-        // Default to configured days for sales queries without explicit date range
-        const defaultDays = systemConfig.defaultDateRangeDays || 30;
-        const defaultDaysAgo = new Date(
-          Date.now() - defaultDays * 24 * 60 * 60 * 1000
-        )
-          .toISOString()
-          .split("T")[0];
-        const currentDate = new Date().toISOString().split("T")[0];
-
-        enhancedParameters.startDate = defaultDaysAgo;
-        enhancedParameters.endDate = currentDate;
-
-        console.log("=== AUTO-APPLIED DATE RANGE ===");
-        console.log("Tool requires date range for sales analysis");
-        console.log("Applied default range:", {
-          startDate: enhancedParameters.startDate,
-          endDate: enhancedParameters.endDate,
-          reason: `Default ${defaultDays}-day range for sales analysis`,
-        });
-        console.log("===============================");
-      }
-
-      // Merge AI-extracted parameters with original query parameters
-      Object.assign(enrichedParameters, enhancedParameters);
-
-      // Clean up parameters - remove any undefined/null values that might cause 400 errors
-      Object.keys(enrichedParameters).forEach((key) => {
-        if (
-          enrichedParameters[key] === undefined ||
-          enrichedParameters[key] === null ||
-          enrichedParameters[key] === ""
-        ) {
-          delete enrichedParameters[key];
-        }
-      });
-
-      console.log("=== AI PARAMETER EXTRACTION ===");
+      console.log("=== CALLING MCP SERVER VIA PROXY ===");
+      console.log("Tool name:", selectedTool.functionName);
       console.log("Original query:", originalQuery);
-      console.log("Selected tool:", selectedTool.functionName);
-      console.log("AI-extracted parameters:", enhancedParameters);
-      console.log("Final enriched parameters:", enrichedParameters);
-      console.log("================================");
+      console.log("Parameters:", mcpCall.parameters);
 
-      // Enhanced debugging for HTTP 400 errors
-      console.log("=== PARAMETER VALIDATION ===");
-      console.log("Tool parameters spec:", selectedTool.parameters);
-      console.log("Tool description:", selectedTool.description);
-      console.log("HTTP Method:", selectedTool.httpMethod);
-      console.log("Endpoint:", selectedTool.endpoint);
-      console.log("Parameters being sent:", enrichedParameters);
+      // Use originalUserInput for parameter extraction if available (from function calls)
+      const queryForExtraction =
+        mcpCall.parameters.originalUserInput || originalQuery;
+      console.log("Query used for parameter extraction:", queryForExtraction);
 
-      // Validate date parameters if present
-      if (enrichedParameters.startDate || enrichedParameters.endDate) {
-        console.log("Date validation:");
-        console.log(
-          "- startDate:",
-          enrichedParameters.startDate,
-          "Valid:",
-          !isNaN(Date.parse(enrichedParameters.startDate || ""))
-        );
-        console.log(
-          "- endDate:",
-          enrichedParameters.endDate,
-          "Valid:",
-          !isNaN(Date.parse(enrichedParameters.endDate || ""))
-        );
+      // Extract parameters from the original query for this specific tool
+      const extractedParams = extractParametersDirectly(queryForExtraction);
+      console.log("Extracted parameters from query:", extractedParams);
+
+      // Merge the extracted parameters with the original query parameters
+      const finalParameters = { ...mcpCall.parameters, ...extractedParams };
+
+      // Remove the 'query' and 'originalUserInput' parameters as they're not needed for the actual MCP call
+      delete finalParameters.query;
+      delete finalParameters.originalUserInput;
+
+      console.log("Final parameters for MCP call:", finalParameters);
+      console.log("====================================");
+
+      // Call the MCP server through our proxy using the mcpServer service
+      const toolName = selectedTool.functionName || "UnknownTool";
+      const mcpData = await callMcpTool(toolName, finalParameters);
+
+      console.log("MCP response received:", mcpData);
+
+      // Extract the actual data from the MCP response wrapper
+      let actualData: any = mcpData;
+      if (mcpData && mcpData.data && typeof mcpData.data === "object") {
+        // If the response has a nested data structure, use the inner data
+        actualData = mcpData.data;
+        console.log("Extracted inner data from MCP response:", actualData);
       }
 
-      // Validate supplier parameters if present
-      if (enrichedParameters.supplier) {
-        console.log("Supplier validation:");
-        console.log("- supplier:", enrichedParameters.supplier);
-        console.log("- supplier length:", enrichedParameters.supplier.length);
-        console.log("- supplier type:", typeof enrichedParameters.supplier);
-      }
-
-      // Validate category parameters if present
-      if (enrichedParameters.category) {
-        console.log("Category validation:");
-        console.log("- category:", enrichedParameters.category);
-        console.log("- category length:", enrichedParameters.category.length);
-        console.log("- category type:", typeof enrichedParameters.category);
-      }
-
-      // Validate threshold parameters if present
-      if (enrichedParameters.threshold) {
-        console.log("Threshold validation:");
-        console.log("- threshold:", enrichedParameters.threshold);
-        console.log("- threshold type:", typeof enrichedParameters.threshold);
-        console.log("- threshold value:", enrichedParameters.threshold);
-      }
-
-      // Special debugging for category performance tools
-      if (
-        selectedTool.functionName &&
-        selectedTool.functionName.toLowerCase().includes("category")
-      ) {
-        console.log("=== CATEGORY TOOL DEBUGGING ===");
-        console.log("Tool function name:", selectedTool.functionName);
-        console.log("Tool parameters spec:", selectedTool.parameters);
-        console.log(
-          "Expected parameters based on description:",
-          selectedTool.description
-        );
-        console.log("Current parameters being sent:", enrichedParameters);
-        console.log("==============================");
-      }
-
-      console.log("===============================");
-
-      // Add query parameters for GET requests or body for POST requests
-      if (selectedTool.httpMethod === "POST") {
-        console.log("=== SENDING POST REQUEST ===");
-        console.log("Final enriched parameters:", enrichedParameters);
-        console.log("POST body:", JSON.stringify(enrichedParameters, null, 2));
-        console.log("=============================");
-
-        requestOptions.body = JSON.stringify(enrichedParameters);
-
-        const mcpResponse = await fetch(fullEndpoint, requestOptions);
-
-        if (!mcpResponse.ok) {
-          console.error(`MCP Server responded with ${mcpResponse.status}`);
-          return {
-            text: `Error calling ${selectedTool.functionName}: HTTP ${mcpResponse.status}. Tool description: ${selectedTool.description}`,
-          };
-        }
-
-        const mcpData: MCPResponse = await mcpResponse.json();
-        console.log("Real MCP Server response:", mcpData);
-
-        // Check for potential filtering issues in POST requests
-        if (
-          enrichedParameters.supplier &&
-          mcpData.data &&
-          Array.isArray(mcpData.data)
-        ) {
-          const totalItems = mcpData.data.length;
-          const filteredItems = mcpData.data.filter(
-            (item: any) => item.supplier === enrichedParameters.supplier
-          ).length;
-
-          console.log("=== FILTERING VALIDATION ===");
-          console.log("Expected supplier:", enrichedParameters.supplier);
-          console.log("Total items returned:", totalItems);
-          console.log("Items matching supplier:", filteredItems);
-
-          if (totalItems > filteredItems && filteredItems > 0) {
-            console.warn(
-              "⚠️ BACKEND FILTERING ISSUE: Backend returned all items but should have filtered by supplier"
-            );
-            console.warn(
-              "Frontend will display all items but backend filtering is not working correctly"
-            );
-          } else if (filteredItems === 0) {
-            console.warn(
-              "⚠️ NO MATCHING ITEMS: No items found for the specified supplier"
-            );
-          } else {
-            console.log(
-              "✅ FILTERING OK: All returned items match the supplier filter"
-            );
-          }
-          console.log("============================");
-        }
-
-        return formatStructuredMCPResponse(
-          mcpData,
-          selectedTool.functionName || "Unknown Tool",
-          enrichedParameters,
-          originalQuery
-        );
-      } else {
-        // For GET requests, add query parameters to URL
-        console.log("=== SENDING GET REQUEST ===");
-        console.log("Final enriched parameters:", enrichedParameters);
-        console.log("=============================");
-
-        const url = new URL(fullEndpoint);
-        Object.entries(enrichedParameters).forEach(([key, value]) => {
-          if (value && key !== "query") {
-            console.log(`Adding URL parameter: ${key} = ${value}`);
-            url.searchParams.append(key, String(value));
-          }
-        });
-        const finalUrl = url.toString();
-        console.log("Final GET URL with parameters:", finalUrl);
-
-        const mcpResponse = await fetch(finalUrl, requestOptions);
-
-        if (!mcpResponse.ok) {
-          console.error(`MCP Server responded with ${mcpResponse.status}`);
-          return {
-            text: `Error calling ${selectedTool.functionName}: HTTP ${mcpResponse.status}. Tool description: ${selectedTool.description}`,
-          };
-        }
-
-        const mcpData: MCPResponse = await mcpResponse.json();
-        console.log("Real MCP Server response:", mcpData);
-
-        // Check for potential filtering issues in GET requests
-        if (
-          enrichedParameters.supplier &&
-          mcpData.data &&
-          Array.isArray(mcpData.data)
-        ) {
-          const totalItems = mcpData.data.length;
-          const filteredItems = mcpData.data.filter(
-            (item: any) => item.supplier === enrichedParameters.supplier
-          ).length;
-
-          console.log("=== FILTERING VALIDATION ===");
-          console.log("Expected supplier:", enrichedParameters.supplier);
-          console.log("Total items returned:", totalItems);
-          console.log("Items matching supplier:", filteredItems);
-
-          if (totalItems > filteredItems && filteredItems > 0) {
-            console.warn(
-              "⚠️ BACKEND FILTERING ISSUE: Backend returned all items but should have filtered by supplier"
-            );
-            console.warn(
-              "Frontend will display all items but backend filtering is not working correctly"
-            );
-          } else if (filteredItems === 0) {
-            console.warn(
-              "⚠️ NO MATCHING ITEMS: No items found for the specified supplier"
-            );
-          } else {
-            console.log(
-              "✅ FILTERING OK: All returned items match the supplier filter"
-            );
-          }
-          console.log("============================");
-        }
-
-        return formatStructuredMCPResponse(
-          mcpData,
-          selectedTool.functionName || "Unknown Tool",
-          enrichedParameters,
-          originalQuery
-        );
-      }
+      return formatStructuredMCPResponse(
+        actualData,
+        selectedTool.functionName || "Unknown Tool",
+        finalParameters,
+        originalQuery
+      );
     } catch (mcpError) {
-      console.error("Error calling real MCP server:", mcpError);
-      console.log("Falling back to tool description");
+      console.error("Error calling MCP server via proxy:", mcpError);
       return {
         text: `Error connecting to MCP server: ${
           mcpError instanceof Error ? mcpError.message : String(mcpError)
