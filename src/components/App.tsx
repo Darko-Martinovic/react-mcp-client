@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Chat from "./Chat";
 import LanguageSelector from "./LanguageSelector";
+import WorkflowVisualization from "./WorkflowVisualization";
 import { getLanguageStorageKey } from "../i18n/i18n";
 import styles from "./App.module.css";
 
@@ -41,6 +42,7 @@ const App: React.FC = () => {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+  const [showWorkflow, setShowWorkflow] = useState(false);
   const didLoadChats = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -212,7 +214,16 @@ const App: React.FC = () => {
             </span>{" "}
             {t("app.newChat", "New Chat")}
           </button>
-          <LanguageSelector onLanguageChange={handleLanguageChange} />
+          <div className={styles.headerActions}>
+            <button
+              onClick={() => setShowWorkflow(true)}
+              className={styles.workflowButton}
+              title={t("workflow.title", "System Workflow")}
+            >
+              ⚙️
+            </button>
+            <LanguageSelector onLanguageChange={handleLanguageChange} />
+          </div>
         </div>
         <div className={styles.sidebarTitle}>{t("app.chats", "Chats")}</div>
         <ul className={styles.chatList}>
@@ -290,6 +301,14 @@ const App: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Workflow Visualization Modal */}
+      {showWorkflow && (
+        <WorkflowVisualization
+          isOpen={showWorkflow}
+          onClose={() => setShowWorkflow(false)}
+        />
+      )}
     </div>
   );
 };

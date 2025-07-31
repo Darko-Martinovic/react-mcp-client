@@ -113,5 +113,48 @@
     "lineChart": "Force la visualisation en graphique linéaire",
     "anyChart": "Laisse le système choisir le meilleur type de visualisation",
     "remember": "RAPPELEZ-VOUS : Répondez toujours avec le format structuré. Ne formatez jamais ni n'affichez les résultats réels - cela sera géré séparément."
+  },
+  "workflow": {
+    "title": "Flux de Travail du Système",
+    "instructions": "Cliquez sur n'importe quelle étape pour en savoir plus sur la façon dont le système traite vos demandes",
+    "steps": {
+      "userInput": {
+        "title": "Saisie Utilisateur",
+        "description": "Requête en langage naturel",
+        "detail": "Les utilisateurs saisissent des questions en langage naturel sur leurs données métier. Le système accepte les requêtes dans plusieurs langues et peut comprendre des demandes complexes d'intelligence métier telles que l'analyse des ventes, les métriques de performance et les comparaisons de données."
+      },
+      "azureOpenAI": {
+        "title": "Azure OpenAI",
+        "description": "Traitement et analyse IA",
+        "detail": "Azure OpenAI traite l'entrée en langage naturel en utilisant des modèles de langage avancés. Il comprend l'intention de l'utilisateur, identifie les métriques métier clés et détermine quel type d'analyse de données est nécessaire pour fournir des insights précis."
+      },
+      "parameterExtraction": {
+        "title": "Extraction de Paramètres",
+        "description": "Extraire les paramètres de requête",
+        "detail": "L'IA extrait des paramètres spécifiques de la requête utilisateur tels que les plages de dates, catégories de produits, régions ou métriques de performance. Ces paramètres sont structurés pour permettre une récupération précise des données depuis les systèmes connectés."
+      },
+      "mcpServer": {
+        "title": "Serveur MCP",
+        "description": "Récupération et traitement des données",
+        "detail": "Le serveur Model Context Protocol (MCP) se connecte à diverses sources de données incluant bases de données, APIs et systèmes métier. Il récupère les données demandées en utilisant les paramètres extraits et applique le filtrage et les agrégations nécessaires."
+      },
+      "dataProcessing": {
+        "title": "Traitement des Données",
+        "description": "Analyse et calcul",
+        "detail": "Les données brutes sont traitées, analysées et transformées en insights métier significatifs. Cela inclut les calculs, l'analyse statistique, l'identification des tendances et la préparation pour la visualisation ou l'export."
+      },
+      "visualization": {
+        "title": "Visualisation",
+        "description": "Graphiques et export de données",
+        "detail": "Les données traitées sont présentées à travers des graphiques interactifs, tableaux et visualisations. Les utilisateurs peuvent exporter les données vers Excel avec un formatage professionnel ou voir des graphiques en temps réel pour des insights immédiats et la prise de décision."
+      }
+    },
+    "legend": {
+      "input": "Entrée",
+      "ai": "Traitement IA",
+      "processing": "Traitement des Données",
+      "mcp": "Source de Données",
+      "output": "Sortie"
+    }
   }
 }

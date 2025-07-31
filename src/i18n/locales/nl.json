@@ -113,5 +113,48 @@
     "lineChart": "Forceert lijngrafiek visualisatie",
     "anyChart": "Laat systeem beste visualisatie type kiezen",
     "remember": "ONTHOUD: Reageer altijd met het gestructureerde formaat. Formateer of toon nooit de werkelijke resultaten - dat wordt apart afgehandeld."
+  },
+  "workflow": {
+    "title": "Systeem Workflow",
+    "instructions": "Klik op elke stap om meer te leren over hoe het systeem uw verzoeken verwerkt",
+    "steps": {
+      "userInput": {
+        "title": "Gebruiker Invoer",
+        "description": "Natuurlijke taal vraag",
+        "detail": "Gebruikers voeren vragen in natuurlijke taal in over hun bedrijfsgegevens. Het systeem accepteert vragen in meerdere talen en kan complexe business intelligence verzoeken begrijpen zoals verkoopanalyse, prestatie metrieken en data vergelijkingen."
+      },
+      "azureOpenAI": {
+        "title": "Azure OpenAI",
+        "description": "AI verwerking & analyse",
+        "detail": "Azure OpenAI verwerkt de natuurlijke taal invoer met geavanceerde taalmodellen. Het begrijpt de intentie van de gebruiker, identificeert belangrijke bedrijfs metrieken en bepaalt welk type data-analyse nodig is om nauwkeurige inzichten te bieden."
+      },
+      "parameterExtraction": {
+        "title": "Parameter Extractie",
+        "description": "Vraag parameters extraheren",
+        "detail": "De AI extraheert specifieke parameters uit de gebruikersvraag zoals datumbereiken, productcategorieën, regio's of prestatie metrieken. Deze parameters worden gestructureerd om precieze data ophaling uit de verbonden systemen mogelijk te maken."
+      },
+      "mcpServer": {
+        "title": "MCP Server",
+        "description": "Data ophaling & verwerking",
+        "detail": "De Model Context Protocol (MCP) server verbindt met verschillende databronnen inclusief databases, API's en bedrijfssystemen. Het haalt de gevraagde data op met de geëxtraheerde parameters en past noodzakelijke filtering en aggregaties toe."
+      },
+      "dataProcessing": {
+        "title": "Data Verwerking",
+        "description": "Analyse & berekening",
+        "detail": "Ruwe data wordt verwerkt, geanalyseerd en getransformeerd tot betekenisvolle bedrijfsinzichten. Dit omvat berekeningen, statistische analyse, trend identificatie en voorbereiding voor visualisatie of export."
+      },
+      "visualization": {
+        "title": "Visualisatie",
+        "description": "Grafieken & data export",
+        "detail": "Verwerkte data wordt gepresenteerd door interactieve grafieken, tabellen en visualisaties. Gebruikers kunnen data exporteren naar Excel met professionele formattering of real-time grafieken bekijken voor onmiddellijke inzichten en besluitvorming."
+      }
+    },
+    "legend": {
+      "input": "Invoer",
+      "ai": "AI Verwerking",
+      "processing": "Data Verwerking",
+      "mcp": "Data Bron",
+      "output": "Uitvoer"
+    }
   }
 }

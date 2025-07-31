@@ -113,5 +113,48 @@
     "lineChart": "Forces line chart visualization",
     "anyChart": "Lets system choose best visualization type",
     "remember": "REMEMBER: Always respond with the structured format. Never format or display the actual results - that will be handled separately."
+  },
+  "workflow": {
+    "title": "System Workflow",
+    "instructions": "Click on any step to learn more about how the system processes your requests",
+    "steps": {
+      "userInput": {
+        "title": "User Input",
+        "description": "Natural language query",
+        "detail": "Users enter natural language questions about their business data. The system accepts queries in multiple languages and can understand complex business intelligence requests such as sales analysis, performance metrics, and data comparisons."
+      },
+      "azureOpenAI": {
+        "title": "Azure OpenAI",
+        "description": "AI processing & analysis",
+        "detail": "Azure OpenAI processes the natural language input using advanced language models. It understands the user's intent, identifies key business metrics, and determines what type of data analysis is needed to provide accurate insights."
+      },
+      "parameterExtraction": {
+        "title": "Parameter Extraction",
+        "description": "Extract query parameters",
+        "detail": "The AI extracts specific parameters from the user query such as date ranges, product categories, regions, or performance metrics. These parameters are structured to enable precise data retrieval from the connected systems."
+      },
+      "mcpServer": {
+        "title": "MCP Server",
+        "description": "Data retrieval & processing",
+        "detail": "The Model Context Protocol (MCP) server connects to various data sources including databases, APIs, and business systems. It retrieves the requested data using the extracted parameters and applies necessary filtering and aggregations."
+      },
+      "dataProcessing": {
+        "title": "Data Processing",
+        "description": "Analysis & computation",
+        "detail": "Raw data is processed, analyzed, and transformed into meaningful business insights. This includes calculations, statistical analysis, trend identification, and preparation for visualization or export."
+      },
+      "visualization": {
+        "title": "Visualization",
+        "description": "Charts & data export",
+        "detail": "Processed data is presented through interactive charts, tables, and visualizations. Users can export data to Excel with professional formatting or view real-time charts for immediate insights and decision-making."
+      }
+    },
+    "legend": {
+      "input": "Input",
+      "ai": "AI Processing",
+      "processing": "Data Processing",
+      "mcp": "Data Source",
+      "output": "Output"
+    }
   }
 }
