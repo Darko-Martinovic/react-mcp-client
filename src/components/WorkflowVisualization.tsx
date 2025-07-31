@@ -27,102 +27,57 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
   const workflowSteps: WorkflowStep[] = [
     {
       id: "user-input",
-      title: t("workflow.userInput.title") || "User Input",
-      description:
-        t("workflow.userInput.description") || "Natural language question",
-      details:
-        t("workflow.userInput.details") ||
-        'User types a business question in plain English, such as "What were our dairy sales last month?" or "Which products are low in stock?" The system supports multiple languages (English, French, Dutch) and various query types including analysis, reporting, and data visualization requests.',
-      icon: "💬",
+      title: t("workflow.steps.userInput.title"),
+      description: t("workflow.steps.userInput.description"),
+      details: t("workflow.steps.userInput.detail"),
+      icon: "�",
       type: "input",
       position: { x: 10, y: 20 },
     },
     {
       id: "azure-ai",
-      title: t("workflow.azureAI.title") || "Azure OpenAI",
-      description:
-        t("workflow.azureAI.description") ||
-        "Intent analysis & function extraction",
-      details:
-        t("workflow.azureAI.details") ||
-        "Azure OpenAI processes the user query to understand intent and extract structured function calls. It analyzes the request type (sales data, inventory, low stock, etc.), identifies the appropriate MCP tool to call, and extracts relevant parameters like date ranges, suppliers, categories, and thresholds using advanced AI reasoning.",
+      title: t("workflow.steps.azureOpenAI.title"),
+      description: t("workflow.steps.azureOpenAI.description"),
+      details: t("workflow.steps.azureOpenAI.detail"),
       icon: "🧠",
       type: "ai",
       position: { x: 35, y: 20 },
     },
     {
       id: "parameter-extraction",
-      title: t("workflow.parameterExtraction.title") || "Parameter Extraction",
-      description:
-        t("workflow.parameterExtraction.description") ||
-        "Smart parameter processing",
-      details:
-        t("workflow.parameterExtraction.details") ||
-        'The system intelligently extracts parameters from natural language using both AI-powered analysis and regex patterns. It handles date calculations ("last month" → specific dates), supplier names ("Fresh Dairy Co."), categories ("Dairy"), and numeric thresholds ("under 30 units"). Failed AI extraction falls back to direct pattern matching.',
-      icon: "⚙️",
+      title: t("workflow.steps.parameterExtraction.title"),
+      description: t("workflow.steps.parameterExtraction.description"),
+      details: t("workflow.steps.parameterExtraction.detail"),
+      icon: "🔍",
       type: "processing",
       position: { x: 60, y: 20 },
     },
     {
       id: "mcp-server",
-      title: t("workflow.mcpServer.title") || "MCP Server",
-      description:
-        t("workflow.mcpServer.description") || "Database query execution",
-      details:
-        t("workflow.mcpServer.details") ||
-        "The MCP server receives the structured function call and executes the appropriate database queries. It handles various endpoints like inventory management, sales analytics, category performance, and low stock alerts. The server processes filters, applies date ranges, and returns structured JSON data with comprehensive metadata.",
-      icon: "🗄️",
+      title: t("workflow.steps.mcpServer.title"),
+      description: t("workflow.steps.mcpServer.description"),
+      details: t("workflow.steps.mcpServer.detail"),
+      icon: "�",
       type: "mcp",
       position: { x: 85, y: 20 },
     },
     {
       id: "data-processing",
-      title: t("workflow.dataProcessing.title") || "Data Processing",
-      description:
-        t("workflow.dataProcessing.description") ||
-        "Response formatting & enrichment",
-      details:
-        t("workflow.dataProcessing.details") ||
-        "Raw MCP server responses are processed and enriched. The system determines whether to show summary or detailed data based on user intent, formats currency and dates, validates filtering results, and prepares data for visualization. It also handles error cases and provides meaningful feedback.",
-      icon: "🔄",
+      title: t("workflow.steps.dataProcessing.title"),
+      description: t("workflow.steps.dataProcessing.description"),
+      details: t("workflow.steps.dataProcessing.detail"),
+      icon: "⚙️",
       type: "processing",
       position: { x: 10, y: 60 },
     },
     {
       id: "visualization",
-      title: t("workflow.visualization.title") || "Data Visualization",
-      description:
-        t("workflow.visualization.description") || "Charts & tables generation",
-      details:
-        t("workflow.visualization.details") ||
-        "The system automatically selects the best visualization type based on data structure and user preferences. It generates interactive charts (bar, pie, line) using Recharts library, creates professional data tables with sorting and filtering, and provides export options. Users can specify visualization preferences in their queries.",
+      title: t("workflow.steps.visualization.title"),
+      description: t("workflow.steps.visualization.description"),
+      details: t("workflow.steps.visualization.detail"),
       icon: "📊",
       type: "output",
       position: { x: 35, y: 60 },
-    },
-    {
-      id: "excel-export",
-      title: t("workflow.excelExport.title") || "Excel Export",
-      description:
-        t("workflow.excelExport.description") || "Professional reporting",
-      details:
-        t("workflow.excelExport.details") ||
-        "Data can be exported to professionally formatted Excel files using the XLSX library. The export includes styled headers, auto-sized columns, alternating row colors, and comprehensive metadata sheets. Files are automatically named with timestamps and include source information, making them perfect for business reporting.",
-      icon: "📈",
-      type: "output",
-      position: { x: 60, y: 60 },
-    },
-    {
-      id: "user-interface",
-      title: t("workflow.userInterface.title") || "User Interface",
-      description:
-        t("workflow.userInterface.description") || "Multilingual display",
-      details:
-        t("workflow.userInterface.details") ||
-        "The final results are displayed in the user's selected language (English, French, or Dutch) with interactive tables, responsive charts, copy-to-clipboard functionality, and comprehensive trace debugging. Users can switch languages dynamically, with separate chat histories maintained for each language.",
-      icon: "🖥️",
-      type: "output",
-      position: { x: 85, y: 60 },
     },
   ];
 
@@ -132,9 +87,6 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
     { from: "parameter-extraction", to: "mcp-server" },
     { from: "mcp-server", to: "data-processing" },
     { from: "data-processing", to: "visualization" },
-    { from: "data-processing", to: "excel-export" },
-    { from: "visualization", to: "user-interface" },
-    { from: "excel-export", to: "user-interface" },
   ];
 
   const handleStepClick = (stepId: string) => {
