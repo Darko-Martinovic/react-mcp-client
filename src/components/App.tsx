@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import Chat from "./Chat";
 import LanguageSelector from "./LanguageSelector";
 import WorkflowVisualization from "./WorkflowVisualization";
+import SystemPromptEditor from "./SystemPromptEditor";
 import { getLanguageStorageKey } from "../i18n/i18n";
 import styles from "./App.module.css";
 
@@ -43,6 +44,7 @@ const App: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [showWorkflow, setShowWorkflow] = useState(false);
+  const [showSystemPrompt, setShowSystemPrompt] = useState(false);
   const didLoadChats = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -222,6 +224,13 @@ const App: React.FC = () => {
             >
               ⚙️
             </button>
+            <button
+              onClick={() => setShowSystemPrompt(true)}
+              className={styles.systemPromptButton}
+              title="System Configuration"
+            >
+              🔧
+            </button>
             <LanguageSelector onLanguageChange={handleLanguageChange} />
           </div>
         </div>
@@ -307,6 +316,14 @@ const App: React.FC = () => {
         <WorkflowVisualization
           isOpen={showWorkflow}
           onClose={() => setShowWorkflow(false)}
+        />
+      )}
+
+      {/* System Prompt Editor Modal */}
+      {showSystemPrompt && (
+        <SystemPromptEditor
+          isOpen={showSystemPrompt}
+          onClose={() => setShowSystemPrompt(false)}
         />
       )}
     </div>

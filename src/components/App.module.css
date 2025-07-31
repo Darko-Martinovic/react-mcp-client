@@ -30,7 +30,8 @@
   justify-content: space-between;
 }
 
-.workflowButton {
+.workflowButton,
+.systemPromptButton {
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #e1e5e9;
@@ -46,7 +47,8 @@
   height: 40px;
 }
 
-.workflowButton:hover {
+.workflowButton:hover,
+.systemPromptButton:hover {
   background: #e9ecef;
   border-color: #dee2e6;
   transform: translateY(-1px);

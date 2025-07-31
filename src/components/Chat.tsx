@@ -15,6 +15,7 @@ import {
   getSearchableFields,
   getFilterableFields,
 } from "../services/azureSearch";
+import { getSystemPromptConfig } from "./SystemPromptEditor";
 import EmojiPicker from "./EmojiPicker";
 import * as XLSX from "xlsx";
 import {
@@ -408,6 +409,8 @@ const getVisualizationType = (
   data: Record<string, unknown>[],
   query?: string
 ): ChartType => {
+  const systemConfig = getSystemPromptConfig();
+  
   if (!data || data.length === 0) return "none";
 
   const queryLower = query?.toLowerCase() || "";
@@ -494,7 +497,7 @@ const getVisualizationType = (
       return "bar";
     }
 
-    return "bar"; // Default when visualization is requested
+    return systemConfig?.defaultVisualizationType || "bar"; // Default when visualization is requested
   }
 
   // Auto-detection for implicit requests (current behavior)
@@ -929,9 +932,23 @@ const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [visibleTraces, setVisibleTraces] = useState<Set<number>>(new Set());
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [systemConfig, setSystemConfig] = useState(() => getSystemPromptConfig());
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const exportMenuRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Listen for system prompt config changes
+  useEffect(() => {
+    const handleConfigChange = (event: CustomEvent) => {
+      setSystemConfig(event.detail);
+    };
+
+    window.addEventListener('systemPromptConfigChanged', handleConfigChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('systemPromptConfigChanged', handleConfigChange as EventListener);
+    };
+  }, []);
 
   // Close export menu when clicking outside
   useEffect(() => {
@@ -1205,6 +1222,9 @@ ${schema.fields
     userMessage: string,
     previousMessages: Message[]
   ): Promise<AIResponse> => {
+    // Get system configuration first
+    const systemConfig = getSystemPromptConfig();
+    
     // Fetch schema first to understand the index structure
     const schema = await fetchAzureSearchSchema();
     console.log("=== AZURE SEARCH SCHEMA ===");
@@ -1236,7 +1256,7 @@ Index Schema Information:
     }
 
     // Build system prompt with MCP function instruction
-    const systemPrompt = `You are an intelligent assistant that helps users interact with MCP (Model Context Protocol) tools.
+    const baseSystemPrompt = `You are an intelligent assistant that helps users interact with MCP (Model Context Protocol) tools.
 
 CRITICAL: You MUST respond in this EXACT structured format:
 
@@ -1266,57 +1286,6 @@ Query Intent Guidelines:
 - For DETAILED/BREAKDOWN queries (show all sales, list transactions, breakdown): use "detailed sales" or "sales breakdown"
 - For CATEGORY PERFORMANCE queries (how categories are performing, category sales): use "sales data product categories" - system will auto-apply date range
 
-Examples:
-User: "What kind of tools do we have?"
-Function: search
-Parameters: {"query": "tools"}
-Reasoning: User wants to search for available tools
-
-User: "Show me all dairy products"
-Function: search  
-Parameters: {"query": "products dairy inventory"}
-Reasoning: User wants to search for dairy products in inventory
-
-User: "Show me all dairy products and their current stock levels"
-Function: search  
-Parameters: {"query": "detailed inventory dairy"}
-Reasoning: User wants detailed inventory information for dairy products
-
-User: "What products do we get from Fresh Dairy Co.?"
-Function: search
-Parameters: {"query": "products Fresh Dairy Co. inventory"}
-Reasoning: User wants products from specific supplier
-
-User: "Show me sales from last week"
-Function: search
-Parameters: {"query": "sales data"}
-Reasoning: User wants sales information
-
-User: "What products are low in stock?"
-Function: search
-Parameters: {"query": "low stock products"}
-Reasoning: User wants low stock information
-
-User: "Which products have stock levels under 30 units?"
-Function: search
-Parameters: {"query": "low stock levels under 30 units"}
-Reasoning: User wants products with stock below specific threshold
-
-User: "What was our total revenue for the last month?"
-Function: search
-Parameters: {"query": "sales data total revenue last month"}
-Reasoning: User wants total revenue summary for last month
-
-User: "Show me all sales transactions from last week"
-Function: search
-Parameters: {"query": "detailed sales breakdown last week"}
-Reasoning: User wants detailed transaction list for last week
-
-User: "How are our different product categories performing in sales?"
-Function: search
-Parameters: {"query": "sales data product categories"}
-Reasoning: User wants category performance analysis
-
 VISUALIZATION OPTIONS (users can specify these in their queries):
 - "table only" or "no chart" - Shows data table without visualization
 - "chart only" or "no table" - Shows visualization without data table  
@@ -1325,22 +1294,6 @@ VISUALIZATION OPTIONS (users can specify these in their queries):
 - "line chart" or "line graph" - Forces line chart visualization
 - "chart" or "graph" - Lets system choose best visualization type
 
-Examples with visualization preferences:
-User: "Show me dairy products table only"
-Function: search
-Parameters: {"query": "products dairy inventory table only"}
-Reasoning: User wants dairy products data without visualization
-
-User: "Sales by category as a pie chart"
-Function: search
-Parameters: {"query": "sales data product categories pie chart"}
-Reasoning: User wants category sales with pie chart visualization
-
-User: "Revenue trends line chart"
-Function: search
-Parameters: {"query": "sales data revenue trends line chart"}
-Reasoning: User wants revenue data with line chart visualization
-
 REMEMBER: Always respond with the structured format. Never format or display the actual results - that will be handled separately.
 
 Available sample tools: ${articles
@@ -1348,7 +1301,23 @@ Available sample tools: ${articles
       .slice(0, 3)
       .join(", ")}`;
 
-    return await askAzureOpenAI(userMessage, systemPrompt);
+    // Add custom prompt addition if configured
+    const finalSystemPrompt = systemConfig.customPromptAddition 
+      ? `${baseSystemPrompt}
+
+CUSTOM INSTRUCTIONS:
+${systemConfig.customPromptAddition}`
+      : baseSystemPrompt;
+
+    if (systemConfig.enableDetailedLogging) {
+      console.log("=== SYSTEM PROMPT ===");
+      console.log("Base prompt length:", baseSystemPrompt.length);
+      console.log("Custom addition:", systemConfig.customPromptAddition);
+      console.log("Final prompt length:", finalSystemPrompt.length);
+      console.log("=====================");
+    }
+
+    return await askAzureOpenAI(userMessage, finalSystemPrompt);
   };
 
   // Function to parse AI response and extract MCP server call
@@ -1657,9 +1626,8 @@ Available sample tools: ${articles
       return { text: errorMsg };
     }
 
-    // Get MCP server URL from environment
-    const mcpServerUrl =
-      (import.meta as any).env.VITE_MCP_SERVER_URL || "http://localhost:5000";
+    // Get MCP server URL from configuration
+    const mcpServerUrl = systemConfig.mcpServerUrl || "http://localhost:5000";
     const fullEndpoint = `${mcpServerUrl}${selectedTool.endpoint}`;
 
     console.log(
@@ -1716,13 +1684,14 @@ Available sample tools: ${articles
         !enhancedParameters.startDate &&
         !enhancedParameters.endDate
       ) {
-        // Default to last 30 days for sales queries without explicit date range
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        // Default to configured days for sales queries without explicit date range
+        const defaultDays = systemConfig.defaultDateRangeDays || 30;
+        const defaultDaysAgo = new Date(Date.now() - defaultDays * 24 * 60 * 60 * 1000)
           .toISOString()
           .split("T")[0];
         const currentDate = new Date().toISOString().split("T")[0];
 
-        enhancedParameters.startDate = thirtyDaysAgo;
+        enhancedParameters.startDate = defaultDaysAgo;
         enhancedParameters.endDate = currentDate;
 
         console.log("=== AUTO-APPLIED DATE RANGE ===");
@@ -1730,7 +1699,7 @@ Available sample tools: ${articles
         console.log("Applied default range:", {
           startDate: enhancedParameters.startDate,
           endDate: enhancedParameters.endDate,
-          reason: "Default 30-day range for sales analysis",
+          reason: `Default ${defaultDays}-day range for sales analysis`,
         });
         console.log("===============================");
       }
