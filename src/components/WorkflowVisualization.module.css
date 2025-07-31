@@ -33,21 +33,21 @@
   align-items: center;
   padding: 20px 30px;
   border-bottom: 2px solid #e9ecef;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #e8f4fd 0%, #f3e5f5 100%);
   border-radius: 20px 20px 0 0;
-  color: white;
+  color: #1f2937;
 }
 
 .title {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .closeButton {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(31, 41, 55, 0.1);
+  border: 2px solid rgba(31, 41, 55, 0.2);
   color: white;
   border-radius: 50%;
   width: 40px;
@@ -180,6 +180,12 @@
   border: 2px solid #81c784;
 }
 
+.workflowStep.search {
+  background: linear-gradient(135deg, #e1f5fe 0%, #81d4fa 100%);
+  color: #0277bd;
+  border: 2px solid #4fc3f7;
+}
+
 .stepIcon {
   font-size: 2.5rem;
   margin-bottom: 8px;
@@ -205,8 +211,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+  color: #1f2937;
   padding: 25px;
   border-radius: 15px 15px 0 0;
   box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.2);
@@ -236,7 +242,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   flex: 1;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .stepType {
@@ -276,6 +282,12 @@
   background: rgba(129, 199, 132, 0.2);
   border: 1px solid rgba(129, 199, 132, 0.4);
   color: #2e7d32;
+}
+
+.stepType.search {
+  background: rgba(79, 195, 247, 0.2);
+  border: 1px solid rgba(79, 195, 247, 0.4);
+  color: #0277bd;
 }
 
 .detailText {
@@ -339,6 +351,11 @@
 .legendColor.output {
   background: linear-gradient(135deg, #e8f5e8 0%, #a5d6a7 100%);
   border: 1px solid #81c784;
+}
+
+.legendColor.search {
+  background: linear-gradient(135deg, #e1f5fe 0%, #81d4fa 100%);
+  border: 1px solid #4fc3f7;
 }
 
 /* Responsive design */

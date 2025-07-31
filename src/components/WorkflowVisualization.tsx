@@ -8,7 +8,7 @@ interface WorkflowStep {
   description: string;
   details: string;
   icon: string;
-  type: "input" | "ai" | "mcp" | "processing" | "output";
+  type: "input" | "ai" | "mcp" | "processing" | "output" | "search";
   position: { x: number; y: number };
 }
 
@@ -30,9 +30,9 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       title: t("workflow.steps.userInput.title"),
       description: t("workflow.steps.userInput.description"),
       details: t("workflow.steps.userInput.detail"),
-      icon: "�",
+      icon: "👤",
       type: "input",
-      position: { x: 15, y: 15 },
+      position: { x: 10, y: 10 },
     },
     {
       id: "azure-ai",
@@ -41,52 +41,74 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.azureOpenAI.detail"),
       icon: "🧠",
       type: "ai",
-      position: { x: 45, y: 15 },
+      position: { x: 35, y: 10 },
+    },
+    {
+      id: "azure-search",
+      title: "Azure Search",
+      description: "Tool discovery & indexing",
+      details:
+        "Azure Search maintains an indexed registry of all available MCP tools with their descriptions, parameters, and endpoints. When the AI determines the user's intent, it searches this index to find the most appropriate tools that can fulfill the request. The index contains 8 registered tools including GetProducts, GetSalesData, GetTotalRevenue, GetLowStockProducts, GetSalesByCategory, GetInventoryStatus, GetDailySummary, and GetDetailedInventory.",
+      icon: "🔍",
+      type: "search",
+      position: { x: 60, y: 10 },
     },
     {
       id: "parameter-extraction",
       title: t("workflow.steps.parameterExtraction.title"),
       description: t("workflow.steps.parameterExtraction.description"),
       details: t("workflow.steps.parameterExtraction.detail"),
-      icon: "🔍",
+      icon: "⚙️",
       type: "processing",
-      position: { x: 75, y: 15 },
+      position: { x: 85, y: 10 },
     },
     {
       id: "mcp-server",
       title: t("workflow.steps.mcpServer.title"),
       description: t("workflow.steps.mcpServer.description"),
       details: t("workflow.steps.mcpServer.detail"),
-      icon: "�",
+      icon: "🔗",
       type: "mcp",
-      position: { x: 75, y: 50 },
+      position: { x: 85, y: 40 },
     },
     {
       id: "data-processing",
       title: t("workflow.steps.dataProcessing.title"),
       description: t("workflow.steps.dataProcessing.description"),
       details: t("workflow.steps.dataProcessing.detail"),
-      icon: "⚙️",
+      icon: "📊",
       type: "processing",
-      position: { x: 45, y: 50 },
+      position: { x: 60, y: 40 },
     },
     {
       id: "visualization",
       title: t("workflow.steps.visualization.title"),
       description: t("workflow.steps.visualization.description"),
       details: t("workflow.steps.visualization.detail"),
-      icon: "📊",
+      icon: "📈",
       type: "output",
-      position: { x: 15, y: 50 },
+      position: { x: 35, y: 40 },
+    },
+    {
+      id: "user-result",
+      title: "User Interface",
+      description: "Interactive results & export",
+      details:
+        "The final step presents processed data through interactive tables, charts, and visualizations in the user interface. Users can interact with the data, sort tables, view trace information for debugging, and export results to Excel with professional formatting for further analysis.",
+      icon: "💼",
+      type: "output",
+      position: { x: 10, y: 40 },
     },
   ];
 
   const connections = [
     { from: "user-input", to: "azure-ai" },
-    { from: "azure-ai", to: "parameter-extraction" },
+    { from: "azure-ai", to: "azure-search" },
+    { from: "azure-search", to: "parameter-extraction" },
     { from: "parameter-extraction", to: "mcp-server" },
     { from: "mcp-server", to: "data-processing" },
     { from: "data-processing", to: "visualization" },
+    { from: "visualization", to: "user-result" },
   ];
 
   const handleStepClick = (stepId: string) => {
@@ -224,6 +246,10 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
             <div className={styles.legendItem}>
               <div className={`${styles.legendColor} ${styles.ai}`}></div>
               <span>{t("workflow.legend.ai") || "AI Processing"}</span>
+            </div>
+            <div className={styles.legendItem}>
+              <div className={`${styles.legendColor} ${styles.search}`}></div>
+              <span>{"Azure Search"}</span>
             </div>
             <div className={styles.legendItem}>
               <div
