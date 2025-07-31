@@ -107,15 +107,15 @@
 }
 
 .connectionLine {
-  stroke: #bdbdbd;
-  stroke-width: 2;
-  stroke-dasharray: 5, 5;
-  opacity: 0.5;
+  stroke: #757575;
+  stroke-width: 3;
+  stroke-dasharray: 6, 4;
+  opacity: 0.8;
 }
 
 .arrowHead {
-  fill: #bdbdbd;
-  opacity: 0.5;
+  fill: #757575;
+  opacity: 0.8;
 }
 
 .workflowStep {

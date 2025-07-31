@@ -32,7 +32,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.userInput.detail"),
       icon: "👤",
       type: "input",
-      position: { x: 10, y: 10 },
+      position: { x: 10, y: 25 },
     },
     {
       id: "azure-ai",
@@ -41,7 +41,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.azureOpenAI.detail"),
       icon: "🧠",
       type: "ai",
-      position: { x: 35, y: 10 },
+      position: { x: 35, y: 25 },
     },
     {
       id: "azure-search",
@@ -51,7 +51,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
         "Azure Search maintains an indexed registry of all available MCP tools with their descriptions, parameters, and endpoints. When the AI determines the user's intent, it searches this index to find the most appropriate tools that can fulfill the request. The index contains 8 registered tools including GetProducts, GetSalesData, GetTotalRevenue, GetLowStockProducts, GetSalesByCategory, GetInventoryStatus, GetDailySummary, and GetDetailedInventory.",
       icon: "🔍",
       type: "search",
-      position: { x: 60, y: 10 },
+      position: { x: 60, y: 25 },
     },
     {
       id: "parameter-extraction",
@@ -60,7 +60,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.parameterExtraction.detail"),
       icon: "⚙️",
       type: "processing",
-      position: { x: 85, y: 10 },
+      position: { x: 85, y: 25 },
     },
     {
       id: "mcp-server",
@@ -69,7 +69,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.mcpServer.detail"),
       icon: "🔗",
       type: "mcp",
-      position: { x: 85, y: 40 },
+      position: { x: 85, y: 70 },
     },
     {
       id: "data-processing",
@@ -78,7 +78,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.dataProcessing.detail"),
       icon: "📊",
       type: "processing",
-      position: { x: 60, y: 40 },
+      position: { x: 60, y: 70 },
     },
     {
       id: "visualization",
@@ -87,7 +87,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
       details: t("workflow.steps.visualization.detail"),
       icon: "📈",
       type: "output",
-      position: { x: 35, y: 40 },
+      position: { x: 35, y: 70 },
     },
     {
       id: "user-result",
@@ -97,7 +97,7 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
         "The final step presents processed data through interactive tables, charts, and visualizations in the user interface. Users can interact with the data, sort tables, view trace information for debugging, and export results to Excel with professional formatting for further analysis.",
       icon: "💼",
       type: "output",
-      position: { x: 10, y: 40 },
+      position: { x: 10, y: 70 },
     },
   ];
 
