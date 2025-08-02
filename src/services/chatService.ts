@@ -451,6 +451,17 @@ export const extractParametersDirectly = (query: string): Record<string, any> =>
     params.endDate = currentDate;
   }
 
+  // Handle "recent" queries - default to last 30 days
+  if (lowerQuery.includes("recent") && 
+      (lowerQuery.includes("sales") || lowerQuery.includes("selling") || lowerQuery.includes("sold"))) {
+    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
+    console.log(`Detected "recent sales" query - applying default 30-day range: ${startDate} to ${currentDate}`);
+    params.startDate = startDate;
+    params.endDate = currentDate;
+  }
+
   // Check for "last X days" pattern
   const daysMatch = lowerQuery.match(/last (\d+) days?/);
   if (daysMatch) {
@@ -462,6 +473,20 @@ export const extractParametersDirectly = (query: string): Record<string, any> =>
     params.endDate = currentDate;
   }
 
+  // Default date range for sales queries when no specific timeframe is mentioned
+  if (!params.startDate && !params.endDate && 
+      (lowerQuery.includes("sales") || lowerQuery.includes("selling") || 
+       lowerQuery.includes("best selling") || lowerQuery.includes("top selling") ||
+       lowerQuery.includes("revenue") || lowerQuery.includes("sold"))) {
+    const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
+    console.log(`Sales query without explicit date range - applying default 30-day range: ${startDate} to ${currentDate}`);
+    params.startDate = startDate;
+    params.endDate = currentDate;
+  }
+
+  console.log("Final extracted parameters:", params);
   return params;
 };
 

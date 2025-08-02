@@ -65,6 +65,50 @@ export async function askAzureOpenAI(
     {
       type: "function",
       function: {
+        name: "GetSalesByCategory",
+        description:
+          "Analyze sales performance grouped by product categories within a date range. Valuable for category management and merchandising decisions.",
+        parameters: {
+          type: "object",
+          properties: {
+            startDate: {
+              type: "string",
+              description: "Start date for the analysis in YYYY-MM-DD format",
+            },
+            endDate: {
+              type: "string",
+              description: "End date for the analysis in YYYY-MM-DD format",
+            },
+          },
+          required: ["startDate", "endDate"],
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "GetSalesData",
+        description:
+          "Get detailed sales data including best selling products within a specified date range",
+        parameters: {
+          type: "object",
+          properties: {
+            startDate: {
+              type: "string",
+              description: "Start date for the sales data in YYYY-MM-DD format",
+            },
+            endDate: {
+              type: "string",
+              description: "End date for the sales data in YYYY-MM-DD format",
+            },
+          },
+          required: ["startDate", "endDate"],
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
         name: "get_azure_search_schema",
         description:
           "Get the schema of the Azure Search index to understand available fields",

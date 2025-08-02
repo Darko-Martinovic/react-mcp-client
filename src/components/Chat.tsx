@@ -15,6 +15,12 @@ import {
   getSearchableFields,
   getFilterableFields,
 } from "../services/azureSearch";
+import { 
+  callMCPServer, 
+  parseAIResponseForMCPCall, 
+  extractParametersDirectly,
+  formatStructuredMCPResponse 
+} from "../services/chatService";
 import { getSystemPromptConfig } from "./SystemPromptEditor";
 import EmojiPicker from "./EmojiPicker";
 import QuestionPicker from "./QuestionPicker";
@@ -25,6 +31,22 @@ import {
   exportChatAsMarkdown,
   copyToClipboard,
 } from "../utils/exporters";
+import * as XLSX from "xlsx";
+import {
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  Bar,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
 interface Message {
   sender: "user" | "system";
@@ -345,15 +367,6 @@ const renderTable = (
     </div>
   );
 };
-
-function isSimpleTable(data: unknown): data is Record<string, unknown>[] {
-  return (
-    Array.isArray(data) &&
-    data.length > 0 &&
-    typeof data[0] === "object" &&
-    !Array.isArray(data[0])
-  );
-}
 
 const transformDataForChart = (
   data: Record<string, unknown>[]
@@ -790,132 +803,6 @@ ${articles.map((a, i) => `${i + 1}. ${a}`).join("\n")}
 When the user asks about available tools, functions, or capabilities, refer to this list. If the user asks about something not in this list, let them know it's not available.
 `;
 
-const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text).then(() => {
-    // Optionally show a toast/notification
-  });
-};
-
-const exportChat = (messages: Message[], title: string) => {
-  // Transform messages with better role names and formatting
-  const transformedMessages = messages.map((msg) => {
-    let role = "Unknown";
-    let displayName = "Unknown";
-
-    switch (msg.sender) {
-      case "user":
-        role = "user";
-        displayName = "You";
-        break;
-      case "system":
-        role = "assistant";
-        displayName = "AI Assistant";
-        break;
-      default:
-        role = msg.sender;
-        displayName = msg.sender;
-    }
-
-    return {
-      role,
-      displayName,
-      content:
-        msg.text ||
-        (msg.tableData ? `[Table Data: ${msg.toolName}]` : "[No content]"),
-      timestamp: new Date().toISOString(),
-      ...(msg.tableData && {
-        tableData: msg.tableData,
-        toolName: msg.toolName,
-      }),
-    };
-  });
-
-  // Create enhanced export data
-  const exportData = {
-    chatTitle: title,
-    exportedAt: new Date().toISOString(),
-    messageCount: transformedMessages.length,
-    participants: ["You", "AI Assistant"],
-    messages: transformedMessages,
-  };
-
-  const dataStr =
-    "data:application/json;charset=utf-8," +
-    encodeURIComponent(JSON.stringify(exportData, null, 2));
-  const downloadAnchorNode = document.createElement("a");
-  downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute(
-    "download",
-    `${title.replace(/\s+/g, "_") || "chat"}_export.json`
-  );
-  document.body.appendChild(downloadAnchorNode);
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
-};
-
-// Export as readable text format
-const exportChatAsText = (messages: Message[], title: string) => {
-  const header = `Chat Export: ${title}\nExported: ${new Date().toLocaleString()}\n${"=".repeat(
-    50
-  )}\n\n`;
-
-  const textContent = messages
-    .map((msg) => {
-      const sender = msg.sender === "user" ? "You" : "AI Assistant";
-      const timestamp = new Date().toLocaleTimeString();
-      const content =
-        msg.text ||
-        (msg.tableData ? `[Table Data: ${msg.toolName}]` : "[No content]");
-
-      return `[${timestamp}] ${sender}:\n${content}\n`;
-    })
-    .join("\n");
-
-  const fullText = header + textContent;
-
-  const dataStr =
-    "data:text/plain;charset=utf-8," + encodeURIComponent(fullText);
-  const downloadAnchorNode = document.createElement("a");
-  downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute(
-    "download",
-    `${title.replace(/\s+/g, "_") || "chat"}_export.txt`
-  );
-  document.body.appendChild(downloadAnchorNode);
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
-};
-
-// Export as Markdown format
-const exportChatAsMarkdown = (messages: Message[], title: string) => {
-  const header = `# ${title}\n\n**Exported:** ${new Date().toLocaleString()}\n\n---\n\n`;
-
-  const markdownContent = messages
-    .map((msg) => {
-      const sender = msg.sender === "user" ? "**You**" : "**AI Assistant**";
-      const content =
-        msg.text ||
-        (msg.tableData ? `*[Table Data: ${msg.toolName}]*` : "*[No content]*");
-
-      return `${sender}: ${content}\n`;
-    })
-    .join("\n");
-
-  const fullMarkdown = header + markdownContent;
-
-  const dataStr =
-    "data:text/markdown;charset=utf-8," + encodeURIComponent(fullMarkdown);
-  const downloadAnchorNode = document.createElement("a");
-  downloadAnchorNode.setAttribute("href", dataStr);
-  downloadAnchorNode.setAttribute(
-    "download",
-    `${title.replace(/\s+/g, "_") || "chat"}_export.md`
-  );
-  document.body.appendChild(downloadAnchorNode);
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
-};
-
 const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
@@ -1152,7 +1039,102 @@ ${schema.fields
       if (aiResponse.functionCalls && aiResponse.functionCalls.length > 0) {
         console.log("=== PROCESSING FUNCTION CALLS ===");
 
-        // Find search_azure_cognitive function call
+        // Check for direct MCP tool calls (GetSalesByCategory, GetSalesData, etc.)
+        const directMcpCall = aiResponse.functionCalls.find(
+          (call: any) => call.name === "GetSalesByCategory" || 
+                        call.name === "GetSalesData" || 
+                        call.name === "GetProducts" ||
+                        call.name === "GetInventory"
+        );
+
+        if (directMcpCall) {
+          console.log("Found direct MCP tool call:", directMcpCall);
+
+          // Extract parameters and add original user input for better parameter extraction
+          const extractedParams = extractParametersDirectly(input);
+          const finalParameters = { 
+            ...directMcpCall.arguments, 
+            ...extractedParams,
+            originalUserInput: input 
+          };
+
+          // Remove unnecessary parameters for the MCP call
+          delete finalParameters.originalUserInput;
+
+          traceData.mcpCall = {
+            function: directMcpCall.name,
+            parameters: finalParameters,
+          };
+          traceData.selectedTool = directMcpCall.name;
+          traceData.parameters = finalParameters;
+
+          console.log("Direct MCP call with extracted parameters:", {
+            tool: directMcpCall.name,
+            parameters: finalParameters,
+          });
+
+          // Execute the direct MCP call
+          try {
+            const mcpResponse = await callMcpTool(directMcpCall.name, finalParameters);
+            traceData.mcpResponse = mcpResponse;
+
+            // Format and display the response
+            let actualData: any = mcpResponse;
+            if (mcpResponse && mcpResponse.data && typeof mcpResponse.data === "object") {
+              actualData = mcpResponse.data;
+            }
+
+            const formattedResponse = formatStructuredMCPResponse(
+              actualData,
+              directMcpCall.name,
+              finalParameters,
+              input
+            );
+
+            if (formattedResponse.tableData) {
+              setMessages([
+                ...baseMessages,
+                userMsg,
+                {
+                  sender: "system",
+                  text: formattedResponse.summary,
+                  tableData: formattedResponse.tableData,
+                  toolName: directMcpCall.name,
+                  traceData: traceData,
+                },
+              ]);
+            } else {
+              setMessages([
+                ...baseMessages,
+                userMsg,
+                {
+                  sender: "system",
+                  text: formattedResponse.text || "No data returned from the tool.",
+                  traceData: traceData,
+                },
+              ]);
+            }
+            return; // Exit here since we handled the direct MCP call
+          } catch (mcpError) {
+            console.error("Direct MCP Tool Error:", mcpError);
+            traceData.error =
+              mcpError instanceof Error ? mcpError.message : String(mcpError);
+            setMessages([
+              ...baseMessages,
+              userMsg,
+              {
+                sender: "system",
+                text: `Error calling ${directMcpCall.name}: ${
+                  mcpError instanceof Error ? mcpError.message : String(mcpError)
+                }`,
+                traceData: traceData,
+              },
+            ]);
+            return;
+          }
+        }
+
+        // Find search_azure_cognitive function call (fallback method)
         const searchCall = aiResponse.functionCalls.find(
           (call: any) => call.name === "search_azure_cognitive"
         );
