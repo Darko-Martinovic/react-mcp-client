@@ -134,6 +134,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   max-width: 85%;
   word-break: break-word;
+  text-align: left; /* Ensure text is always left-aligned */
 }
 
 .messageBubbleUser {
