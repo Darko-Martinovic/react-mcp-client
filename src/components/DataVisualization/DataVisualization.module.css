@@ -1,0 +1,12 @@
+/* Main Visualization Container */
+.visualizationContainer {
+  width: 100%;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .visualizationContainer {
+    padding: 0 5px;
+  }
+}

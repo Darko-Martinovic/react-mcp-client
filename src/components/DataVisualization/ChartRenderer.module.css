@@ -1,0 +1,37 @@
+/* Chart Container Styles */
+.chartContainer {
+  margin: 20px 0;
+  padding: 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.chartTitle {
+  margin: 0 0 20px 0;
+  padding: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chartContainer {
+    margin: 10px 0;
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  .chartTitle {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+  }
+}

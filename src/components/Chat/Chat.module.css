@@ -1,0 +1,512 @@
+/* Main Chat Container */
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: #f5f7fa;
+}
+
+/* Export Section */
+.exportSection {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 8px 24px 0 24px;
+}
+
+.exportMenuContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.exportButton {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.exportButton:hover {
+  background: #1565c0;
+}
+
+.exportDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 180px;
+}
+
+.exportOption {
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: Inter, system-ui, sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+.exportOption:hover {
+  background: #f5f5f5;
+}
+
+.exportOption:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+/* Messages Section */
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 0 16px 0;
+  width: 100%;
+}
+
+.messagesWrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.emptyMessages {
+  color: #888;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.messageItem {
+  margin: 12px 0;
+  position: relative;
+}
+
+.messageItemUser {
+  text-align: right;
+}
+
+.messageItemSystem {
+  text-align: left;
+}
+
+/* Message Labels */
+.messageLabel {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 24px 4px;
+  color: #666;
+}
+
+.messageLabelUser {
+  text-align: right;
+}
+
+.messageLabelSystem {
+  text-align: left;
+}
+
+/* Message Bubbles */
+.messageBubble {
+  display: inline-block;
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 80%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 24px;
+}
+
+.messageBubbleUser {
+  background: #1976d2;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.messageBubbleSystem {
+  background: #fff;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-bottom-left-radius: 4px;
+}
+
+/* Message Actions */
+.messageActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 24px 0;
+}
+
+.messageActionsUser {
+  justify-content: flex-end;
+}
+
+.messageActionsSystem {
+  justify-content: flex-start;
+}
+
+.copyButtonContainer {
+  position: relative;
+}
+
+.copyButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.copyButton:hover {
+  background: #f0f0f0;
+}
+
+.copyTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.traceToggle {
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.traceToggle input {
+  margin: 0;
+}
+
+/* Trace Panel */
+.tracePanel {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin: 8px 24px 0;
+  overflow: hidden;
+}
+
+.traceTitle {
+  background: #1976d2;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.traceItem {
+  padding: 8px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 12px;
+}
+
+.traceItem:last-child {
+  border-bottom: none;
+}
+
+.traceItem strong {
+  color: #333;
+  margin-right: 8px;
+}
+
+.traceCode {
+  background: #f0f0f0;
+  padding: 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  margin-top: 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.traceItemError {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Loading Message */
+.loadingMessage {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin: 20px 0;
+}
+
+/* Input Area */
+.inputArea {
+  padding: 16px 24px 24px;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+  position: relative;
+  width: 100%;
+}
+
+.inputForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-width: 0; /* Allows flex item to shrink below content size */
+}
+
+.chatInput:focus {
+  border-color: #1976d2;
+}
+
+.chatInput:disabled {
+  background: #f5f5f5;
+  color: #999;
+}
+
+.questionButton,
+.emojiButton,
+.sendButton {
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Prevents buttons from shrinking */
+}
+
+.questionButton,
+.emojiButton {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.questionButton:hover,
+.emojiButton:hover {
+  background: #e0e0e0;
+}
+
+.sendButton {
+  background: #1976d2;
+  color: #fff;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: #1565c0;
+}
+
+.sendButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Picker Overlays - positioned relative to input area */
+.emojiPickerOverlay,
+.questionPickerOverlay {
+  position: absolute;
+  bottom: 100%;
+  left: 24px;
+  right: 24px;
+  margin-bottom: 8px;
+  z-index: 1000;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Table styles */
+.tableContainer {
+  margin: 16px 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tableTitle {
+  background: #1976d2;
+  color: #fff;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tableHeader {
+  background: #f5f5f5;
+}
+
+.tableHeaderCell {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tableRow {
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+  background: #f9f9f9;
+}
+
+.tableRowEven {
+  background: #fff;
+}
+
+.tableRowOdd {
+  background: #fafafa;
+}
+
+.tableCell {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.cellContent {
+  display: block;
+}
+
+.cellContentName {
+  font-weight: 500;
+  color: #1976d2;
+}
+
+.cellContentPrice {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.cellContentLowStock {
+  font-weight: 600;
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cellContentId {
+  font-family: monospace;
+  color: #666;
+  font-size: 12px;
+}
+
+.tableFooter {
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+}
+
+.excelButton {
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.excelButton:hover {
+  background: #1b5e20;
+}
+
+/* Chart styles */
+.chartContainer {
+  margin: 16px 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
+.chartTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .messageBubble {
+    max-width: 90%;
+    margin: 0 12px;
+  }
+  
+  .messageActions {
+    margin: 8px 12px 0;
+  }
+  
+  .inputForm {
+    padding: 0 12px;
+  }
+  
+  .tableContainer,
+  .chartContainer {
+    margin: 16px 12px;
+  }
+}

@@ -1,28 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import Chat from "./Chat";
+import Chat from "./Chat/Chat";
 import LanguageSelector from "./LanguageSelector";
 import WorkflowVisualization from "./WorkflowVisualization";
 import SystemPromptEditor from "./SystemPromptEditor";
 import { getLanguageStorageKey } from "../i18n/i18n";
+import { Message } from "../services/chatService";
 import styles from "./App.module.css";
-
-interface Message {
-  sender: "user" | "system";
-  text?: string;
-  tableData?: Record<string, unknown>[];
-  toolName?: string;
-  traceData?: {
-    aiResponse?: any;
-    mcpCall?: any;
-    mcpResponse?: any;
-    selectedTool?: any;
-    parameters?: any;
-    timestamp?: string;
-    userInput?: string;
-    error?: string;
-  };
-}
 
 interface ChatSession {
   id: string;

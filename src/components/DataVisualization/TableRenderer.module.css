@@ -1,0 +1,199 @@
+/* Table Container Styles */
+.tableContainer {
+  margin: 20px 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.tableTitle {
+  padding: 16px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  margin: 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Table Styles */
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: white;
+}
+
+.tableHeader {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tableHeaderCell {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: white;
+  border-right: 1px solid #94a3b8;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tableHeaderCell:last-child {
+  border-right: none;
+}
+
+/* Row Styles */
+.tableRow {
+  transition: all 0.2s ease;
+}
+
+.tableRow:hover {
+  background-color: #f1f5f9 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tableRowEven {
+  background-color: #ffffff;
+}
+
+.tableRowOdd {
+  background-color: #f8fafc;
+}
+
+.tableCell {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.tableCell:last-child {
+  border-right: none;
+}
+
+/* Cell Content Styles */
+.cellContent {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.cellContentName {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.cellContentPrice {
+  font-weight: 600;
+  color: #059669;
+  text-align: right;
+}
+
+.cellContentLowStock {
+  color: #dc2626;
+  font-weight: 600;
+  background-color: #fef2f2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.cellContentId {
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.85rem;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Footer Styles */
+.tableFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.excelButton {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.excelButton:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.excelButton:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tableContainer {
+    margin: 10px 0;
+    border-radius: 8px;
+  }
+
+  .tableTitle {
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+
+  .tableHeaderCell {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .tableCell {
+    padding: 8px 12px;
+  }
+
+  .cellContent {
+    max-width: 120px;
+  }
+
+  .tableFooter {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .excelButton {
+    align-self: center;
+  }
+}

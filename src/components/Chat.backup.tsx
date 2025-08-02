@@ -19,12 +19,7 @@ import { getSystemPromptConfig } from "./SystemPromptEditor";
 import EmojiPicker from "./EmojiPicker";
 import QuestionPicker from "./QuestionPicker";
 import { DataVisualization, isSimpleTable } from "./DataVisualization";
-import {
-  exportChat,
-  exportChatAsText,
-  exportChatAsMarkdown,
-  copyToClipboard,
-} from "../utils/exporters";
+import { exportChat, exportChatAsText, exportChatAsMarkdown, copyToClipboard } from "../utils/exporters";
 
 interface Message {
   sender: "user" | "system";
