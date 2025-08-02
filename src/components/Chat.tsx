@@ -19,7 +19,8 @@ import {
   callMCPServer, 
   parseAIResponseForMCPCall, 
   extractParametersDirectly,
-  formatStructuredMCPResponse 
+  formatStructuredMCPResponse,
+  Message 
 } from "../services/chatService";
 import { getSystemPromptConfig } from "./SystemPromptEditor";
 import EmojiPicker from "./EmojiPicker";
@@ -47,23 +48,6 @@ import {
   Pie,
   Cell,
 } from "recharts";
-
-interface Message {
-  sender: "user" | "system";
-  text?: string;
-  tableData?: Record<string, unknown>[];
-  toolName?: string;
-  traceData?: {
-    aiResponse?: any;
-    mcpCall?: any;
-    mcpResponse?: any;
-    selectedTool?: any;
-    parameters?: any;
-    timestamp?: string;
-    userInput?: string;
-    error?: string;
-  };
-}
 
 interface ChatProps {
   messages: Message[];

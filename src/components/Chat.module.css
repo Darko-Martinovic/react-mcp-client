@@ -97,11 +97,13 @@
 }
 
 .messageItemUser {
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .messageItemSystem {
-  text-align: left;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .messageLabel {

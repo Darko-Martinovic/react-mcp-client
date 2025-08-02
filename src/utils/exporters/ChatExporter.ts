@@ -1,9 +1,4 @@
-interface Message {
-  sender: "user" | "system";
-  text?: string;
-  tableData?: Record<string, unknown>[];
-  toolName?: string;
-}
+import { Message } from "../../services/chatService";
 
 export const exportChat = (messages: Message[], title: string) => {
   // Transform messages with better role names and formatting

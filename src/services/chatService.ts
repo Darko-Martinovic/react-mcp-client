@@ -451,9 +451,12 @@ export const extractParametersDirectly = (query: string): Record<string, any> =>
     params.endDate = currentDate;
   }
 
-  // Handle "recent" queries - default to last 30 days
-  if (lowerQuery.includes("recent") && 
-      (lowerQuery.includes("sales") || lowerQuery.includes("selling") || lowerQuery.includes("sold"))) {
+  // Handle "recent" queries - default to last 30 days (multilingual)
+  if ((lowerQuery.includes("recent") || lowerQuery.includes("récent") || lowerQuery.includes("dernier") ||
+       lowerQuery.includes("recente") || lowerQuery.includes("laatste")) && 
+      (lowerQuery.includes("sales") || lowerQuery.includes("selling") || lowerQuery.includes("sold") ||
+       lowerQuery.includes("ventes") || lowerQuery.includes("vente") || lowerQuery.includes("vendus") ||
+       lowerQuery.includes("verkoop") || lowerQuery.includes("verkopen") || lowerQuery.includes("verkocht"))) {
     const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0];
@@ -462,10 +465,10 @@ export const extractParametersDirectly = (query: string): Record<string, any> =>
     params.endDate = currentDate;
   }
 
-  // Check for "last X days" pattern
-  const daysMatch = lowerQuery.match(/last (\d+) days?/);
+  // Check for "last X days" pattern (multilingual)
+  const daysMatch = lowerQuery.match(/last (\d+) days?|dernier[s]? (\d+) jours?|laatste (\d+) dagen?/);
   if (daysMatch) {
-    const numDays = parseInt(daysMatch[1]);
+    const numDays = parseInt(daysMatch[1] || daysMatch[2] || daysMatch[3]);
     const startDate = new Date(Date.now() - numDays * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0];
@@ -473,11 +476,21 @@ export const extractParametersDirectly = (query: string): Record<string, any> =>
     params.endDate = currentDate;
   }
 
-  // Default date range for sales queries when no specific timeframe is mentioned
+  // Default date range for sales queries when no specific timeframe is mentioned (multilingual)
   if (!params.startDate && !params.endDate && 
       (lowerQuery.includes("sales") || lowerQuery.includes("selling") || 
        lowerQuery.includes("best selling") || lowerQuery.includes("top selling") ||
-       lowerQuery.includes("revenue") || lowerQuery.includes("sold"))) {
+       lowerQuery.includes("revenue") || lowerQuery.includes("sold") ||
+       // French keywords
+       lowerQuery.includes("ventes") || lowerQuery.includes("vente") || 
+       lowerQuery.includes("catégories") || lowerQuery.includes("categories") ||
+       lowerQuery.includes("performance") || lowerQuery.includes("vendus") ||
+       lowerQuery.includes("meilleures ventes") || lowerQuery.includes("meilleurs produits") ||
+       // Dutch keywords
+       lowerQuery.includes("verkoop") || lowerQuery.includes("verkopen") || lowerQuery.includes("verkocht") ||
+       lowerQuery.includes("categorieën") || lowerQuery.includes("categorie") ||
+       lowerQuery.includes("presteren") || lowerQuery.includes("prestatie") ||
+       lowerQuery.includes("productcategorieën") || lowerQuery.includes("productcategorie"))) {
     const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0];

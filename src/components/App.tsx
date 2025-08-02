@@ -41,17 +41,26 @@ const App: React.FC = () => {
     const loadChats = () => {
       try {
         const storageKey = getCurrentStorageKey();
+        console.log("📂 Loading chats from localStorage:", {
+          storageKey,
+          language: i18n.language
+        });
+        
         const stored = localStorage.getItem(storageKey);
+        console.log("📄 Raw stored data:", stored?.substring(0, 200) + "...");
+        
         if (stored) {
           let parsed: ChatSession[] = [];
           try {
             parsed = JSON.parse(stored);
             if (!Array.isArray(parsed)) {
-              console.warn("Invalid chat data format, starting fresh");
+              console.warn("⚠️ Invalid chat data format, starting fresh");
               parsed = [];
+            } else {
+              console.log("✅ Loaded chats:", parsed.map(c => ({ id: c.id, title: c.title, messageCount: c.messages.length })));
             }
           } catch (error) {
-            console.error("Error parsing stored chats:", error);
+            console.error("❌ Error parsing stored chats:", error);
             parsed = [];
           }
           setChats(parsed);
@@ -62,11 +71,12 @@ const App: React.FC = () => {
           }
         } else {
           // No chats for this language, start fresh
+          console.log("🆕 No stored chats found, starting fresh");
           setChats([]);
           setActiveChatId(null);
         }
       } catch (error) {
-        console.error("Error loading chats from localStorage:", error);
+        console.error("❌ Error loading chats from localStorage:", error);
       }
     };
 
@@ -79,9 +89,19 @@ const App: React.FC = () => {
       // Always save, even empty array
       try {
         const storageKey = getCurrentStorageKey();
+        console.log("💾 Saving chats to localStorage:", {
+          storageKey,
+          chatCount: chats.length,
+          language: i18n.language,
+          chats: chats.map(c => ({ id: c.id, title: c.title, messageCount: c.messages.length }))
+        });
         localStorage.setItem(storageKey, JSON.stringify(chats));
+        
+        // Verify it was saved
+        const saved = localStorage.getItem(storageKey);
+        console.log("✅ Verified save - data length:", saved?.length);
       } catch (error) {
-        console.error("Error saving chats to localStorage:", error);
+        console.error("❌ Error saving chats to localStorage:", error);
       }
     }
   }, [chats, i18n.language]);
@@ -119,6 +139,13 @@ const App: React.FC = () => {
 
   const handleUpdateMessages = (newMessages: Message[]) => {
     if (!activeChatId) return;
+    
+    console.log("💬 Updating messages for chat:", {
+      chatId: activeChatId,
+      messageCount: newMessages.length,
+      messages: newMessages.map(m => ({ sender: m.sender, textPreview: m.text?.substring(0, 50) }))
+    });
+    
     setChats((prev) =>
       prev.map((chat) =>
         chat.id === activeChatId ? { ...chat, messages: newMessages } : chat
