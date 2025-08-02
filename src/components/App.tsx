@@ -4,6 +4,8 @@ import Chat from "./Chat/Chat";
 import LanguageSelector from "./LanguageSelector";
 import WorkflowVisualization from "./WorkflowVisualization";
 import SystemPromptEditor from "./SystemPromptEditor";
+import { ToastContainer } from "./Toast";
+import { useToast } from "../hooks/useToast";
 import { getLanguageStorageKey } from "../i18n/i18n";
 import { Message } from "../services/chatService";
 import styles from "./App.module.css";
@@ -52,6 +54,7 @@ function getWelcomeMessage(language: string): { title: string; message: Message 
 
 const App: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { toasts, showSuccess, showError, showWarning, showInfo, removeToast } = useToast();
   const [chats, setChats] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -244,13 +247,13 @@ const App: React.FC = () => {
           setChats(prev => [importedChat!, ...prev]);
           setActiveChatId(importedChat.id);
           console.log("✅ Successfully imported chat:", importedChat.title);
-          alert(`Successfully imported: "${importedChat.title}"`);
+          showSuccess(`Successfully imported: "${importedChat.title}"`);
         } else {
-          alert("❌ Could not import file. Please check the format.");
+          showError("Could not import file. Please check the format and try again.");
         }
       } catch (error) {
         console.error("❌ Error importing file:", error);
-        alert("❌ Error importing file. Please try again.");
+        showError("Error importing file. Please try again.");
       }
     };
 
@@ -273,7 +276,7 @@ const App: React.FC = () => {
   // Manual save function
   const handleSaveChat = (chatId: string) => {
     if (!i18n.language || !i18n.isInitialized) {
-      console.warn("⏳ Cannot save - i18n not ready");
+      showWarning("Cannot save - system not ready. Please try again.");
       return;
     }
 
@@ -282,7 +285,7 @@ const App: React.FC = () => {
       const chatToSave = chats.find(chat => chat.id === chatId);
       
       if (!chatToSave) {
-        console.error("❌ Chat not found for saving:", chatId);
+        showError("Chat not found for saving. Please try again.");
         return;
       }
 
@@ -303,19 +306,19 @@ const App: React.FC = () => {
       if (existingIndex >= 0) {
         savedChats[existingIndex] = chatToSave;
         console.log("💾 Updated existing saved chat:", chatToSave.title);
+        showSuccess(`Updated "${chatToSave.title}" successfully!`);
       } else {
         savedChats.unshift(chatToSave);
         console.log("💾 Added new saved chat:", chatToSave.title);
+        showSuccess(`Saved "${chatToSave.title}" successfully!`);
       }
 
       localStorage.setItem(storageKey, JSON.stringify(savedChats));
       console.log("✅ Chat saved successfully to localStorage");
       
-      // Visual feedback
-      alert(`Chat "${chatToSave.title}" saved successfully!`);
     } catch (error) {
       console.error("❌ Error saving chat:", error);
-      alert("Error saving chat. Please try again.");
+      showError("Failed to save chat. Please try again.");
     }
   };
 
@@ -554,6 +557,9 @@ const App: React.FC = () => {
           onClose={() => setShowSystemPrompt(false)}
         />
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
     </div>
   );
 };
