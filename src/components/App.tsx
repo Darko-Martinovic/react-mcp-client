@@ -271,6 +271,7 @@ const App: React.FC = () => {
     };
     setChats((prev) => [newChat, ...prev]);
     setActiveChatId(newChat.id);
+    showInfo("New chat created!");
   };
 
   // Manual save function
