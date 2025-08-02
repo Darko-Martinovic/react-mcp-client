@@ -2517,16 +2517,17 @@ Return {} if no parameters needed.`;
                   : styles.messageItemSystem
               }`}
             >
-              {/* Message label */}
-              <div
-                className={`${styles.messageLabel} ${
-                  msg.sender === "user"
-                    ? styles.messageLabelUser
-                    : styles.messageLabelSystem
-                }`}
-              >
-                {msg.sender === "user" ? t("app.you") : t("app.ai")}
-              </div>
+              <div className={styles.messageContent}>
+                {/* Message label */}
+                <div
+                  className={`${styles.messageLabel} ${
+                    msg.sender === "user"
+                      ? styles.messageLabelUser
+                      : styles.messageLabelSystem
+                  }`}
+                >
+                  {msg.sender === "user" ? t("app.you") : t("app.ai")}
+                </div>
 
               {msg.tableData ? (
                 <>
@@ -2758,6 +2759,7 @@ Return {} if no parameters needed.`;
                     )}
                   </div>
                 )}
+              </div>
             </div>
           ))}
           <div ref={messagesEndRef} />
