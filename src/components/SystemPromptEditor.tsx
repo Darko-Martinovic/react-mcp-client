@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SystemPromptEditor.module.css";
+import CacheManager from "./CacheManager";
 
 interface SystemPromptConfig {
   customPromptAddition: string;
@@ -446,6 +447,9 @@ REMEMBER: Always respond with the structured format. Never format or display the
                   </small>
                 </div>
               </div>
+
+              {/* Cache Management Section */}
+              <CacheManager />
 
               <div className={styles.actions}>
                 <button

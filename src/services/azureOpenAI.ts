@@ -3,6 +3,8 @@
 // VITE_AOAI_ENDPOINT
 // VITE_AOAI_APIKEY
 
+import { cacheManager, generateAICacheKey } from "./cacheManager";
+
 export interface FunctionCall {
   name: string;
   arguments: Record<string, unknown>;
@@ -17,6 +19,22 @@ export async function askAzureOpenAI(
   userMessage: string,
   systemPrompt: string
 ): Promise<AzureOpenAIResponse> {
+  // Generate cache key for this AI request
+  const cacheKey = generateAICacheKey(userMessage, systemPrompt);
+
+  // Check cache first
+  const cachedResponse = cacheManager.get<AzureOpenAIResponse>(cacheKey);
+  if (cachedResponse) {
+    console.log(
+      `🎯 Using cached AI response for: "${userMessage.substring(0, 50)}..."`
+    );
+    return cachedResponse;
+  }
+
+  console.log(
+    `🧠 Making fresh AI request for: "${userMessage.substring(0, 50)}..."`
+  );
+
   const endpoint = import.meta.env.VITE_AOAI_ENDPOINT;
   const apiKey = import.meta.env.VITE_AOAI_APIKEY;
   if (!endpoint || !apiKey) {
@@ -193,8 +211,16 @@ export async function askAzureOpenAI(
     }
   }
 
-  return {
+  const result: AzureOpenAIResponse = {
     functionCalls,
     aiMessage,
   };
+
+  // Cache the AI response with 10 minute TTL
+  cacheManager.set(cacheKey, result, 10 * 60 * 1000);
+  console.log(
+    `📦 Cached AI response for: "${userMessage.substring(0, 50)}..."`
+  );
+
+  return result;
 }
