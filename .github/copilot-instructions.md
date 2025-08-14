@@ -147,7 +147,7 @@ Required environment variables:
 ```
 VITE_AOAI_ENDPOINT=https://your-aoai-resource.openai.azure.com/
 VITE_AOAI_APIKEY=your-api-key
-VITE_MCP_SERVER_URL=http://localhost:3001
+VITE_MCP_SERVER_URL=http://localhost:9090
 ```
 
 ## Proxy Configuration (`vite.config.js`)
@@ -155,7 +155,7 @@ VITE_MCP_SERVER_URL=http://localhost:3001
 ```javascript
 server: {
   proxy: {
-    '/api': 'http://localhost:3001'
+    '/api': 'http://localhost:5002'
   }
 }
 ```

@@ -65,8 +65,9 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
     {
       id: "mcp-server",
       title: t("workflow.steps.mcpServer.title"),
-      description: t("workflow.steps.mcpServer.description"),
-      details: t("workflow.steps.mcpServer.detail"),
+      description: "Proxy-mediated communication",
+      details:
+        "Frontend requests are routed through a proxy architecture for proper CORS handling and request management:\n\n🌐 Frontend (/api/tool)\n⬇️ Vite Dev Proxy (vite.config.js)\n⬇️ Search Proxy Server (port 5002)\n⬇️ MCP Server (port 9090)\n\nThis proxy chain is essential because:\n• Browsers block direct cross-origin requests (CORS)\n• The proxy handles request/response transformation\n• Provides consistent error handling and logging\n• Maps frontend API calls to correct MCP endpoints\n\nThe proxy server (search-proxy.cjs) acts as a bridge, forwarding tool calls to the actual MCP server while handling authentication, request formatting, and response processing.",
       icon: "🔗",
       type: "mcp",
       position: { x: 85, y: 70 },

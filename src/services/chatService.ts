@@ -152,7 +152,9 @@ ${systemConfig.customPromptAddition}`
 };
 
 // Function to parse AI response and extract MCP server call
-export const parseAIResponseForMCPCall = (aiResponse: string): MCPCall | null => {
+export const parseAIResponseForMCPCall = (
+  aiResponse: string
+): MCPCall | null => {
   try {
     console.log("=== PARSING AI RESPONSE ===");
     console.log("Raw AI Response:", aiResponse);
@@ -185,10 +187,7 @@ export const parseAIResponseForMCPCall = (aiResponse: string): MCPCall | null =>
       }
 
       // Handle multi_tool_use.parallel function calls
-      if (
-        functionName === "multi_tool_use.parallel" &&
-        parameters.tool_uses
-      ) {
+      if (functionName === "multi_tool_use.parallel" && parameters.tool_uses) {
         // Extract the query from the first tool use
         const firstTool = parameters.tool_uses[0];
         if (firstTool && firstTool.parameters && firstTool.parameters.query) {
@@ -292,9 +291,9 @@ export const extractSearchQuery = (text: string): string => {
   return words.slice(0, 3).join(" ").trim() || "*";
 };
 
-// Function to call actual MCP server on port 5000
+// Function to call MCP server via proxy (port 5002 → port 9090)
 export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
-  console.log("Calling actual MCP Server on port 5000:", mcpCall);
+  console.log("Calling MCP Server via proxy:", mcpCall);
 
   // Get schema information for enhanced debugging
   const schema = await fetchAzureSearchSchema();
@@ -347,9 +346,11 @@ export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
 
   try {
     const toolName = selectedTool.functionName || "UnknownTool";
-    const extractedParams = extractParametersDirectly(mcpCall.parameters.originalUserInput || mcpCall.parameters.query || "");
+    const extractedParams = extractParametersDirectly(
+      mcpCall.parameters.originalUserInput || mcpCall.parameters.query || ""
+    );
     const finalParameters = { ...mcpCall.parameters, ...extractedParams };
-    
+
     // Remove the 'query' and 'originalUserInput' parameters as they're not needed for the actual MCP call
     delete finalParameters.query;
     delete finalParameters.originalUserInput;
@@ -381,7 +382,9 @@ export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
 };
 
 // Direct parameter extraction function
-export const extractParametersDirectly = (query: string): Record<string, any> => {
+export const extractParametersDirectly = (
+  query: string
+): Record<string, any> => {
   const today = new Date();
   const currentDate = today.toISOString().split("T")[0];
   const lowerQuery = query.toLowerCase();
@@ -426,9 +429,19 @@ export const extractParametersDirectly = (query: string): Record<string, any> =>
   }
 
   // Extract category information
-  const categoryKeywords = ["dairy", "meat", "fruits", "vegetables", "beverages", "bakery"];
+  const categoryKeywords = [
+    "dairy",
+    "meat",
+    "fruits",
+    "vegetables",
+    "beverages",
+    "bakery",
+  ];
   for (const category of categoryKeywords) {
-    if (lowerQuery.includes(category) && !lowerQuery.includes(category + " co")) {
+    if (
+      lowerQuery.includes(category) &&
+      !lowerQuery.includes(category + " co")
+    ) {
       params.category = category.charAt(0).toUpperCase() + category.slice(1);
       break;
     }
@@ -452,21 +465,36 @@ export const extractParametersDirectly = (query: string): Record<string, any> =>
   }
 
   // Handle "recent" queries - default to last 30 days (multilingual)
-  if ((lowerQuery.includes("recent") || lowerQuery.includes("récent") || lowerQuery.includes("dernier") ||
-       lowerQuery.includes("recente") || lowerQuery.includes("laatste")) && 
-      (lowerQuery.includes("sales") || lowerQuery.includes("selling") || lowerQuery.includes("sold") ||
-       lowerQuery.includes("ventes") || lowerQuery.includes("vente") || lowerQuery.includes("vendus") ||
-       lowerQuery.includes("verkoop") || lowerQuery.includes("verkopen") || lowerQuery.includes("verkocht"))) {
+  if (
+    (lowerQuery.includes("recent") ||
+      lowerQuery.includes("récent") ||
+      lowerQuery.includes("dernier") ||
+      lowerQuery.includes("recente") ||
+      lowerQuery.includes("laatste")) &&
+    (lowerQuery.includes("sales") ||
+      lowerQuery.includes("selling") ||
+      lowerQuery.includes("sold") ||
+      lowerQuery.includes("ventes") ||
+      lowerQuery.includes("vente") ||
+      lowerQuery.includes("vendus") ||
+      lowerQuery.includes("verkoop") ||
+      lowerQuery.includes("verkopen") ||
+      lowerQuery.includes("verkocht"))
+  ) {
     const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0];
-    console.log(`Detected "recent sales" query - applying default 30-day range: ${startDate} to ${currentDate}`);
+    console.log(
+      `Detected "recent sales" query - applying default 30-day range: ${startDate} to ${currentDate}`
+    );
     params.startDate = startDate;
     params.endDate = currentDate;
   }
 
   // Check for "last X days" pattern (multilingual)
-  const daysMatch = lowerQuery.match(/last (\d+) days?|dernier[s]? (\d+) jours?|laatste (\d+) dagen?/);
+  const daysMatch = lowerQuery.match(
+    /last (\d+) days?|dernier[s]? (\d+) jours?|laatste (\d+) dagen?/
+  );
   if (daysMatch) {
     const numDays = parseInt(daysMatch[1] || daysMatch[2] || daysMatch[3]);
     const startDate = new Date(Date.now() - numDays * 24 * 60 * 60 * 1000)
@@ -477,24 +505,41 @@ export const extractParametersDirectly = (query: string): Record<string, any> =>
   }
 
   // Default date range for sales queries when no specific timeframe is mentioned (multilingual)
-  if (!params.startDate && !params.endDate && 
-      (lowerQuery.includes("sales") || lowerQuery.includes("selling") || 
-       lowerQuery.includes("best selling") || lowerQuery.includes("top selling") ||
-       lowerQuery.includes("revenue") || lowerQuery.includes("sold") ||
-       // French keywords
-       lowerQuery.includes("ventes") || lowerQuery.includes("vente") || 
-       lowerQuery.includes("catégories") || lowerQuery.includes("categories") ||
-       lowerQuery.includes("performance") || lowerQuery.includes("vendus") ||
-       lowerQuery.includes("meilleures ventes") || lowerQuery.includes("meilleurs produits") ||
-       // Dutch keywords
-       lowerQuery.includes("verkoop") || lowerQuery.includes("verkopen") || lowerQuery.includes("verkocht") ||
-       lowerQuery.includes("categorieën") || lowerQuery.includes("categorie") ||
-       lowerQuery.includes("presteren") || lowerQuery.includes("prestatie") ||
-       lowerQuery.includes("productcategorieën") || lowerQuery.includes("productcategorie"))) {
+  if (
+    !params.startDate &&
+    !params.endDate &&
+    (lowerQuery.includes("sales") ||
+      lowerQuery.includes("selling") ||
+      lowerQuery.includes("best selling") ||
+      lowerQuery.includes("top selling") ||
+      lowerQuery.includes("revenue") ||
+      lowerQuery.includes("sold") ||
+      // French keywords
+      lowerQuery.includes("ventes") ||
+      lowerQuery.includes("vente") ||
+      lowerQuery.includes("catégories") ||
+      lowerQuery.includes("categories") ||
+      lowerQuery.includes("performance") ||
+      lowerQuery.includes("vendus") ||
+      lowerQuery.includes("meilleures ventes") ||
+      lowerQuery.includes("meilleurs produits") ||
+      // Dutch keywords
+      lowerQuery.includes("verkoop") ||
+      lowerQuery.includes("verkopen") ||
+      lowerQuery.includes("verkocht") ||
+      lowerQuery.includes("categorieën") ||
+      lowerQuery.includes("categorie") ||
+      lowerQuery.includes("presteren") ||
+      lowerQuery.includes("prestatie") ||
+      lowerQuery.includes("productcategorieën") ||
+      lowerQuery.includes("productcategorie"))
+  ) {
     const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0];
-    console.log(`Sales query without explicit date range - applying default 30-day range: ${startDate} to ${currentDate}`);
+    console.log(
+      `Sales query without explicit date range - applying default 30-day range: ${startDate} to ${currentDate}`
+    );
     params.startDate = startDate;
     params.endDate = currentDate;
   }

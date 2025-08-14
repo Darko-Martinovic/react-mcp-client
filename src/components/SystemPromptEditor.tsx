@@ -18,7 +18,7 @@ interface SystemPromptEditorProps {
 
 const DEFAULT_CONFIG: SystemPromptConfig = {
   customPromptAddition: "",
-  mcpServerUrl: "http://localhost:5000",
+  mcpServerUrl: import.meta.env.VITE_MCP_SERVER_URL || "http://localhost:9090",
   defaultDateRangeDays: 30,
   defaultVisualizationType: "bar",
   maxSearchResults: 50,
@@ -72,6 +72,12 @@ const SystemPromptEditor: React.FC<SystemPromptEditorProps> = ({
 
   const resetToDefaults = () => {
     saveConfig(DEFAULT_CONFIG);
+  };
+
+  const resetMcpUrlToEnv = () => {
+    const envUrl =
+      import.meta.env.VITE_MCP_SERVER_URL || "http://localhost:9090";
+    handleConfigChange("mcpServerUrl", envUrl);
   };
 
   const exportConfig = () => {
@@ -221,16 +227,147 @@ REMEMBER: Always respond with the structured format. Never format or display the
             <div className={styles.settingsTab}>
               <div className={styles.settingsGrid}>
                 <div className={styles.settingGroup}>
-                  <label>🌐 MCP Server URL</label>
-                  <input
-                    type="text"
-                    value={config.mcpServerUrl}
-                    onChange={(e) =>
-                      handleConfigChange("mcpServerUrl", e.target.value)
-                    }
-                    placeholder="http://localhost:5000"
-                  />
-                  <small>The URL where your MCP server is running</small>
+                  <label>🌐 MCP Server URL (Display Only)</label>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "8px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <input
+                      type="text"
+                      value={config.mcpServerUrl}
+                      onChange={(e) =>
+                        handleConfigChange("mcpServerUrl", e.target.value)
+                      }
+                      placeholder="http://localhost:9090"
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      onClick={resetMcpUrlToEnv}
+                      className={styles.resetButton}
+                      style={{ padding: "4px 8px", fontSize: "12px" }}
+                      title="Reset to environment variable value"
+                    >
+                      🔄 Reset
+                    </button>
+                  </div>
+                  <small>
+                    ℹ️ This setting is for display purposes only and does not
+                    affect app functionality. Frontend communicates via Vite
+                    proxy (/api → port 5002 → MCP server).
+                  </small>
+                </div>
+
+                <div className={styles.settingGroup}>
+                  <label>🔄 Communication Flow & Proxy Configuration</label>
+                  <div
+                    style={{
+                      background: "#f8f9fa",
+                      border: "1px solid #e9ecef",
+                      borderRadius: "6px",
+                      padding: "16px",
+                      fontSize: "13px",
+                    }}
+                  >
+                    <div style={{ marginBottom: "12px" }}>
+                      <div
+                        style={{
+                          fontWeight: "bold",
+                          color: "#495057",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        📊 Request Flow:
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "monospace",
+                          background: "#fff",
+                          padding: "8px",
+                          borderRadius: "4px",
+                          border: "1px solid #dee2e6",
+                          lineHeight: "1.6",
+                        }}
+                      >
+                        🌐 <strong>React App</strong> (localhost:5173)
+                        <br />
+                        ⬇️ <em>fetch('/api/tool', ...)</em>
+                        <br />
+                        🔧 <strong>Vite Dev Proxy</strong> (vite.config.js)
+                        <br />
+                        ⬇️ <em>→ localhost:5002</em>
+                        <br />
+                        🚀 <strong>Search Proxy</strong> (search-proxy.cjs)
+                        <br />
+                        ⬇️ <em>→ {config.mcpServerUrl}</em>
+                        <br />
+                        🎯 <strong>MCP Server</strong> (Your Backend)
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: "12px" }}>
+                      <div
+                        style={{
+                          fontWeight: "bold",
+                          color: "#495057",
+                          marginBottom: "6px",
+                        }}
+                      >
+                        🤔 Why do we need the proxy?
+                      </div>
+                      <ul
+                        style={{
+                          margin: "0",
+                          paddingLeft: "16px",
+                          color: "#6c757d",
+                        }}
+                      >
+                        <li>
+                          <strong>CORS Issues:</strong> Browsers block direct
+                          cross-origin requests
+                        </li>
+                        <li>
+                          <strong>Request Routing:</strong> Maps frontend calls
+                          to correct MCP endpoints
+                        </li>
+                        <li>
+                          <strong>Error Handling:</strong> Provides consistent
+                          error responses
+                        </li>
+                        <li>
+                          <strong>Development:</strong> Vite dev server needs
+                          proxy for /api routes
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: "bold",
+                          color: "#495057",
+                          marginBottom: "6px",
+                        }}
+                      >
+                        ⚙️ Configuration Files:
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#6c757d" }}>
+                        • <code>vite.config.js</code> - Proxy /api →
+                        localhost:5002
+                        <br />• <code>search-proxy.cjs</code> - Runs on port
+                        5002
+                        <br />• <code>.env</code> - VITE_MCP_SERVER_URL ={" "}
+                        {config.mcpServerUrl}
+                      </div>
+                    </div>
+                  </div>
+                  <small>
+                    💡 <strong>Key Point:</strong> The MCP Server URL above is
+                    only used by the proxy server, not by the frontend directly.
+                    All frontend requests use relative URLs (/api/*).
+                  </small>
                 </div>
 
                 <div className={styles.settingGroup}>
