@@ -22,8 +22,11 @@ export async function askAzureOpenAI(
   // Generate cache key for this AI request
   const cacheKey = generateAICacheKey(userMessage, systemPrompt);
 
-  // Check cache first
-  const cachedResponse = cacheManager.get<AzureOpenAIResponse>(cacheKey);
+  // Check cache first with semantic matching
+  const cachedResponse = cacheManager.get<AzureOpenAIResponse>(
+    cacheKey,
+    userMessage
+  );
   if (cachedResponse) {
     console.log(
       `🎯 Using cached AI response for: "${userMessage.substring(0, 50)}..."`
@@ -216,8 +219,8 @@ export async function askAzureOpenAI(
     aiMessage,
   };
 
-  // Cache the AI response with 10 minute TTL
-  cacheManager.set(cacheKey, result, 10 * 60 * 1000);
+  // Cache the AI response with 10 minute TTL and original user message for semantic analysis
+  cacheManager.set(cacheKey, result, 10 * 60 * 1000, userMessage);
   console.log(
     `📦 Cached AI response for: "${userMessage.substring(0, 50)}..."`
   );

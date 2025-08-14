@@ -351,11 +351,19 @@ export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
     );
     const finalParameters = { ...mcpCall.parameters, ...extractedParams };
 
+    // Store original user input for semantic caching
+    const originalUserInput =
+      mcpCall.parameters.originalUserInput || mcpCall.parameters.query || "";
+
     // Remove the 'query' and 'originalUserInput' parameters as they're not needed for the actual MCP call
     delete finalParameters.query;
     delete finalParameters.originalUserInput;
 
-    const mcpData = await callMcpTool(toolName, finalParameters);
+    const mcpData = await callMcpTool(
+      toolName,
+      finalParameters,
+      originalUserInput
+    );
 
     // Extract the actual data from the MCP response wrapper
     let actualData: any = mcpData;

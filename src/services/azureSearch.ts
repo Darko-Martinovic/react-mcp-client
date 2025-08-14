@@ -6,8 +6,8 @@ export async function fetchArticlesFromAzureSearch(
   // Generate cache key for this search
   const cacheKey = generateSearchCacheKey(query);
 
-  // Check cache first
-  const cachedResults = cacheManager.get<string[]>(cacheKey);
+  // Check cache first with semantic matching
+  const cachedResults = cacheManager.get<string[]>(cacheKey, query);
   if (cachedResults) {
     console.log(`🎯 Using cached search results for: "${query}"`);
     return cachedResults;
@@ -53,8 +53,8 @@ export async function fetchArticlesFromAzureSearch(
     }
   });
 
-  // Cache the search results with 10 minute TTL
-  cacheManager.set(cacheKey, results, 10 * 60 * 1000);
+  // Cache the search results with 10 minute TTL and original query for semantic analysis
+  cacheManager.set(cacheKey, results, 10 * 60 * 1000, query);
   console.log(`📦 Cached search results for: "${query}"`);
 
   return results;

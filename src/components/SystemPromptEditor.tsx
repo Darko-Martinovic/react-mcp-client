@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SystemPromptEditor.module.css";
 import CacheManager from "./CacheManager";
+import { cacheManager } from "../services/cacheManager";
 
 interface SystemPromptConfig {
   customPromptAddition: string;
@@ -445,6 +446,99 @@ REMEMBER: Always respond with the structured format. Never format or display the
                   <small>
                     Show detailed debug information in browser console
                   </small>
+                </div>
+              </div>
+
+              {/* Semantic Cache Configuration */}
+              <div className={styles.settingGroup}>
+                <label>🧠 Semantic Cache Settings</label>
+                <div
+                  style={{
+                    background: "#f0f8ff",
+                    border: "1px solid #bee5eb",
+                    borderRadius: "6px",
+                    padding: "16px",
+                    marginTop: "8px",
+                  }}
+                >
+                  <div style={{ marginBottom: "12px" }}>
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        defaultChecked={true}
+                        onChange={(e) => {
+                          cacheManager.configureSemanticMatching({
+                            enabled: e.target.checked,
+                          });
+                        }}
+                      />
+                      <span>Enable semantic query matching</span>
+                    </label>
+                    <small style={{ color: "#6c757d", marginLeft: "24px" }}>
+                      Allows cache hits for similar queries (e.g., "show sales"
+                      vs "display revenue")
+                    </small>
+                  </div>
+
+                  <div style={{ marginBottom: "8px" }}>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: "4px",
+                        fontSize: "13px",
+                      }}
+                    >
+                      Similarity Threshold:{" "}
+                      <span id="threshold-value">75%</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="50"
+                      max="95"
+                      defaultValue="75"
+                      style={{ width: "100%" }}
+                      onChange={(e) => {
+                        const threshold = parseInt(e.target.value) / 100;
+                        cacheManager.configureSemanticMatching({ threshold });
+                        const valueSpan =
+                          document.getElementById("threshold-value");
+                        if (valueSpan)
+                          valueSpan.textContent = `${e.target.value}%`;
+                      }}
+                    />
+                    <small style={{ color: "#6c757d" }}>
+                      Higher values = more strict matching (fewer false
+                      positives)
+                    </small>
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: "#495057",
+                      marginTop: "12px",
+                    }}
+                  >
+                    <strong>How semantic matching works:</strong>
+                    <ul style={{ margin: "4px 0", paddingLeft: "16px" }}>
+                      <li>
+                        Normalizes queries (removes time variations, synonyms)
+                      </li>
+                      <li>
+                        Extracts semantic tokens (business terms, actions)
+                      </li>
+                      <li>Groups by category (sales, inventory, analytics)</li>
+                      <li>
+                        Calculates similarity score using multiple algorithms
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 

@@ -20,13 +20,17 @@ export interface McpToolResult {
 
 export async function callMcpTool(
   tool: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  originalUserInput?: string
 ): Promise<McpToolResult> {
   // Generate cache key for this tool call
   const cacheKey = generateMcpCacheKey(tool, args);
 
-  // Check cache first
-  const cachedResult = cacheManager.get<McpToolResult>(cacheKey);
+  // Check cache first with semantic matching
+  const cachedResult = cacheManager.get<McpToolResult>(
+    cacheKey,
+    originalUserInput
+  );
   if (cachedResult) {
     console.log(`🎯 Using cached result for ${tool}`);
     return cachedResult;
@@ -51,11 +55,15 @@ export async function callMcpTool(
 
   const result = await response.json();
 
-  // Cache the result with tool-specific TTL
+  // Cache the result with tool-specific TTL and original query for semantic analysis
   const ttl = getTTLForTool(tool);
-  cacheManager.set(cacheKey, result, ttl);
+  cacheManager.set(cacheKey, result, ttl, originalUserInput);
 
-  console.log(`📦 Cached result for ${tool} (TTL: ${ttl}ms)`);
+  console.log(
+    `📦 Cached result for ${tool} (TTL: ${ttl}ms)${
+      originalUserInput ? ` [Query: "${originalUserInput}"]` : ""
+    }`
+  );
 
   return result;
 }

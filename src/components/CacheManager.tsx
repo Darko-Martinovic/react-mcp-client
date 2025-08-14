@@ -69,12 +69,24 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className }) => {
           <span className={styles.statValue}>{stats.hitRate.toFixed(1)}%</span>
         </div>
         <div className={styles.statItem}>
-          <span className={styles.statLabel}>Hits:</span>
-          <span className={styles.statValue}>{stats.totalHits}</span>
+          <span className={styles.statLabel}>Exact Hits:</span>
+          <span className={styles.statValue}>
+            {stats.totalHits - stats.semanticHits}
+          </span>
+        </div>
+        <div className={styles.statItem}>
+          <span className={styles.statLabel}>🧠 Semantic:</span>
+          <span className={styles.statValue}>{stats.semanticHits}</span>
         </div>
         <div className={styles.statItem}>
           <span className={styles.statLabel}>Misses:</span>
           <span className={styles.statValue}>{stats.totalMisses}</span>
+        </div>
+        <div className={styles.statItem}>
+          <span className={styles.statLabel}>🧠 Semantic Rate:</span>
+          <span className={styles.statValue}>
+            {stats.semanticHitRate.toFixed(1)}%
+          </span>
         </div>
       </div>
 
@@ -119,6 +131,16 @@ const CacheManager: React.FC<CacheManagerProps> = ({ className }) => {
                     <small>
                       Cached: {formatTimestamp(entry.timestamp)} | Hits:{" "}
                       {entry.hits} | TTL: {getTimeRemaining(entry)}
+                      {entry.originalQuery && (
+                        <>
+                          <br />
+                          🧠 Query: "
+                          {entry.originalQuery.length > 60
+                            ? `${entry.originalQuery.substring(0, 60)}...`
+                            : entry.originalQuery}
+                          "{entry.category && ` | Category: ${entry.category}`}
+                        </>
+                      )}
                     </small>
                   </div>
                 </div>
