@@ -17,12 +17,14 @@ export interface AzureOpenAIResponse {
 
 export async function askAzureOpenAI(
   userMessage: string,
-  systemPrompt: string
+  systemPrompt: string,
+  chatId?: string
 ): Promise<AzureOpenAIResponse> {
-  // Generate cache key for this AI request
-  const cacheKey = generateAICacheKey(userMessage, systemPrompt);
+  // Generate cache key for this AI request with chat isolation and service prefix
+  const cacheKey = generateAICacheKey(userMessage, systemPrompt, chatId);
+  console.log("🔑 Generated AI cache key with service prefix:", cacheKey);
 
-  // Check cache first with semantic matching
+  // Check cache first with semantic matching (now fixed to respect service prefixes)
   const cachedResponse = cacheManager.get<AzureOpenAIResponse>(
     cacheKey,
     userMessage
@@ -31,6 +33,16 @@ export async function askAzureOpenAI(
     console.log(
       `🎯 Using cached AI response for: "${userMessage.substring(0, 50)}..."`
     );
+    console.log("=== CACHED AI RESPONSE DEBUG ===");
+    console.log("Cached Response Type:", typeof cachedResponse);
+    console.log("Cached Response Keys:", Object.keys(cachedResponse || {}));
+    console.log("Cached AI Message:", cachedResponse.aiMessage);
+    console.log("Cached Function Calls:", cachedResponse.functionCalls);
+    console.log(
+      "Cached Response Full:",
+      JSON.stringify(cachedResponse, null, 2)
+    );
+    console.log("===============================");
     return cachedResponse;
   }
 
@@ -218,6 +230,15 @@ export async function askAzureOpenAI(
     functionCalls,
     aiMessage,
   };
+
+  console.log("=== CACHING AI RESPONSE DEBUG ===");
+  console.log("Result to Cache Type:", typeof result);
+  console.log("Result to Cache Keys:", Object.keys(result || {}));
+  console.log("Result AI Message:", result.aiMessage);
+  console.log("Result Function Calls:", result.functionCalls);
+  console.log("Result Full:", JSON.stringify(result, null, 2));
+  console.log("Cache Key:", cacheKey);
+  console.log("================================");
 
   // Cache the AI response with 10 minute TTL and original user message for semantic analysis
   cacheManager.set(cacheKey, result, 10 * 60 * 1000, userMessage);

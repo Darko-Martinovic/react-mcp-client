@@ -1,4 +1,4 @@
-// MCP Server service layer (real integration)
+// MCP Server service layer (handles Model Context Protocol integration)
 // Requires .env variable:
 // VITE_MCP_SERVER_URL
 
@@ -21,18 +21,25 @@ export interface McpToolResult {
 export async function callMcpTool(
   tool: string,
   args: Record<string, unknown>,
-  originalUserInput?: string
+  originalUserInput?: string,
+  chatId?: string
 ): Promise<McpToolResult> {
-  // Generate cache key for this tool call
-  const cacheKey = generateMcpCacheKey(tool, args);
+  // Generate cache key for this tool call with chat isolation and service prefix
+  const cacheKey = generateMcpCacheKey(tool, args, chatId);
+  console.log("🔑 Generated MCP cache key with service prefix:", cacheKey);
 
-  // Check cache first with semantic matching
+  // Check cache first with semantic matching (now fixed to respect service prefixes)
   const cachedResult = cacheManager.get<McpToolResult>(
     cacheKey,
     originalUserInput
   );
   if (cachedResult) {
     console.log(`🎯 Using cached result for ${tool}`);
+    console.log("=== CACHED MCP RESULT DEBUG ===");
+    console.log("Cached Result Type:", typeof cachedResult);
+    console.log("Cached Result Keys:", Object.keys(cachedResult || {}));
+    console.log("Cached Result Full:", JSON.stringify(cachedResult, null, 2));
+    console.log("==============================");
     return cachedResult;
   }
 
@@ -54,6 +61,12 @@ export async function callMcpTool(
   }
 
   const result = await response.json();
+
+  console.log("=== MCP SERVER RAW RESPONSE DEBUG ===");
+  console.log("Raw Response Type:", typeof result);
+  console.log("Raw Response Keys:", Object.keys(result || {}));
+  console.log("Raw Response Full:", JSON.stringify(result, null, 2));
+  console.log("====================================");
 
   // Cache the result with tool-specific TTL and original query for semantic analysis
   const ttl = getTTLForTool(tool);

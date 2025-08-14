@@ -102,7 +102,7 @@ class AdvancedCacheManager {
 
     // If no exact match and semantic matching is enabled, try semantic matching
     if (this.enableSemanticMatching && originalQuery) {
-      const semanticMatch = this.findSemanticMatch(originalQuery);
+      const semanticMatch = this.findSemanticMatch(originalQuery, key);
       if (semanticMatch) {
         semanticMatch.entry.hits++;
         this.stats.semanticHits++;
@@ -266,18 +266,36 @@ class AdvancedCacheManager {
   // Phase 2: Semantic Analysis Methods
 
   /**
-   * Find semantically similar cached entries
+   * Find semantically similar cached entries, respecting service prefixes
    */
-  private findSemanticMatch(query: string): SemanticMatch | null {
+  private findSemanticMatch(
+    query: string,
+    targetKey?: string
+  ): SemanticMatch | null {
     const normalizedQuery = this.normalizeQuery(query);
     const queryTokens = this.extractSemanticTokens(query);
     const queryCategory = this.categorizeQuery("", query);
+
+    // Extract service prefix from target key to limit search scope
+    let servicePrefix = "";
+    if (targetKey) {
+      const parts = targetKey.split(":");
+      if (parts.length >= 3) {
+        // Format: chat:id:service:... or global:service:...
+        servicePrefix = parts.slice(0, 3).join(":"); // e.g., "chat:id:ai" or "global:search"
+      }
+    }
 
     let bestMatch: SemanticMatch | null = null;
     let bestSimilarity = 0;
 
     for (const [key, entry] of this.cache) {
       if (this.isExpired(entry) || !entry.normalizedQuery) {
+        continue;
+      }
+
+      // CRITICAL FIX: Only search within the same service prefix
+      if (servicePrefix && !key.startsWith(servicePrefix)) {
         continue;
       }
 
@@ -546,11 +564,12 @@ export const getTTLForTool = (tool: string): number => {
 };
 
 /**
- * Generate cache key for MCP tool calls
+ * Generate cache key for MCP tool calls with chat isolation and service prefix
  */
 export const generateMcpCacheKey = (
   tool: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  chatId?: string
 ): string => {
   // Sort args to ensure consistent cache keys
   const sortedArgs = Object.keys(args)
@@ -560,30 +579,36 @@ export const generateMcpCacheKey = (
       return sorted;
     }, {} as Record<string, unknown>);
 
-  return `mcp:${tool}:${JSON.stringify(sortedArgs)}`;
+  const chatPrefix = chatId ? `chat:${chatId}:` : "global:";
+  return `${chatPrefix}mcp:${tool}:${JSON.stringify(sortedArgs)}`;
 };
 
 /**
- * Generate cache key for Azure OpenAI calls
+ * Generate cache key for Azure OpenAI calls with chat isolation and service prefix
  */
 export const generateAICacheKey = (
   message: string,
-  context?: string
+  context?: string,
+  chatId?: string
 ): string => {
   const normalizedMessage = message.toLowerCase().trim();
   const contextHash = context ? btoa(context).slice(0, 8) : "";
-  return `ai:${normalizedMessage}:${contextHash}`;
+  const chatPrefix = chatId ? `chat:${chatId}:` : "global:";
+  return `${chatPrefix}ai:${normalizedMessage}:${contextHash}`;
 };
 
 /**
- * Generate cache key for Azure Search calls
+ * Generate cache key for Azure Search calls with service prefix (global by default)
  */
 export const generateSearchCacheKey = (
   query: string,
-  filters?: Record<string, any>
+  filters?: Record<string, any>,
+  chatId?: string
 ): string => {
   const filtersStr = filters ? JSON.stringify(filters) : "";
-  return `search:${query}:${filtersStr}`;
+  // Search results are usually global, but allow chat-specific if needed
+  const chatPrefix = chatId ? `chat:${chatId}:` : "global:";
+  return `${chatPrefix}search:${query}:${filtersStr}`;
 };
 
 // Export singleton instance

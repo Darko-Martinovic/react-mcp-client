@@ -1,12 +1,14 @@
 import { cacheManager, generateSearchCacheKey } from "./cacheManager";
 
 export async function fetchArticlesFromAzureSearch(
-  query: string
+  query: string,
+  chatId?: string
 ): Promise<string[]> {
-  // Generate cache key for this search
-  const cacheKey = generateSearchCacheKey(query);
+  // Generate cache key for this search with service prefix (global by default for shared tool discovery)
+  const cacheKey = generateSearchCacheKey(query, undefined, chatId);
+  console.log("🔑 Generated search cache key with service prefix:", cacheKey);
 
-  // Check cache first with semantic matching
+  // Check cache first with semantic matching (now fixed to respect service prefixes)
   const cachedResults = cacheManager.get<string[]>(cacheKey, query);
   if (cachedResults) {
     console.log(`🎯 Using cached search results for: "${query}"`);

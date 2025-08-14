@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./Chat.module.css";
-import { 
+import {
   fetchArticlesFromAzureSearch,
   fetchAzureSearchSchema,
   getSearchableFields,
@@ -35,6 +35,7 @@ interface ChatProps {
   messages: Message[];
   setMessages: (messages: Message[]) => void;
   title: string;
+  chatId: string;
 }
 
 const buildSystemPrompt = (articles: string[]) => `
@@ -46,7 +47,12 @@ ${articles.map((a, i) => `${i + 1}. ${a}`).join("\n")}
 When the user asks about available tools, functions, or capabilities, refer to this list. If the user asks about something not in this list, let them know it's not available.
 `;
 
-const Chat: React.FC<ChatProps> = ({ messages, setMessages, title }) => {
+const Chat: React.FC<ChatProps> = ({
+  messages,
+  setMessages,
+  title,
+  chatId,
+}) => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -199,7 +205,7 @@ ${schema.fields
       }
 
       // Step 1: Get AI intent
-      const aiResponse = await getAIIntent(input, baseMessages);
+      const aiResponse = await getAIIntent(input, baseMessages, chatId);
       traceData.aiResponse = {
         aiMessage: aiResponse.aiMessage,
         functionCalls: aiResponse.functionCalls,
@@ -240,7 +246,7 @@ ${schema.fields
 
           // Execute the MCP call
           try {
-            const mcpResponse = await callMCPServer(mcpCall);
+            const mcpResponse = await callMCPServer(mcpCall, chatId);
             traceData.mcpResponse = mcpResponse;
 
             // Handle the response
@@ -313,7 +319,7 @@ ${schema.fields
       if (mcpCall) {
         // Step 3: Call MCP server directly instead of showing AI response
         try {
-          const mcpResponse = await callMCPServer(mcpCall);
+          const mcpResponse = await callMCPServer(mcpCall, chatId);
           traceData.mcpResponse = mcpResponse;
 
           // Check if the response contains table data
@@ -483,7 +489,9 @@ ${schema.fields
       <div className={styles.messagesContainer}>
         <div className={styles.messagesWrapper}>
           {messages.length === 0 && (
-            <div className={styles.emptyMessages}>{t("app.noMessages") || "No messages yet..."}</div>
+            <div className={styles.emptyMessages}>
+              {t("app.noMessages") || "No messages yet..."}
+            </div>
           )}
           {messages.map((msg, idx) => (
             <div
@@ -502,7 +510,9 @@ ${schema.fields
                     : styles.messageLabelSystem
                 }`}
               >
-                {msg.sender === "user" ? (t("app.you") || "You") : (t("app.ai") || "AI")}
+                {msg.sender === "user"
+                  ? t("app.you") || "You"
+                  : t("app.ai") || "AI"}
               </div>
 
               {msg.tableData ? (
@@ -592,12 +602,7 @@ ${schema.fields
                   >
                     <div className={styles.copyButtonContainer}>
                       <button
-                        onClick={() =>
-                          handleCopyMessage(
-                            msg.text || "",
-                            idx
-                          )
-                        }
+                        onClick={() => handleCopyMessage(msg.text || "", idx)}
                         className={styles.copyButton}
                         title="Copy Message"
                       >
@@ -723,7 +728,9 @@ ${schema.fields
           <div ref={messagesEndRef} />
         </div>
         {loading && (
-          <div className={styles.loadingMessage}>{t("app.processing") || "Processing..."}</div>
+          <div className={styles.loadingMessage}>
+            {t("app.processing") || "Processing..."}
+          </div>
         )}
       </div>
 
@@ -762,7 +769,9 @@ ${schema.fields
             className={styles.sendButton}
             disabled={loading}
           >
-            {loading ? (t("app.processing") || "Processing...") : (t("app.send") || "Send")}
+            {loading
+              ? t("app.processing") || "Processing..."
+              : t("app.send") || "Send"}
           </button>
         </form>
 

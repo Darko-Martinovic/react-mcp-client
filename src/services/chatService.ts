@@ -8,6 +8,7 @@ import {
 } from "./azureSearch";
 import { getSystemPromptConfig } from "../components/SystemPromptEditor";
 import { isSimpleTable } from "../components/DataVisualization/DataTransformer";
+import { cacheManager } from "./cacheManager";
 
 export interface AIResponse {
   aiMessage: string;
@@ -66,7 +67,8 @@ export interface Message {
 // Function to get AI intent without displaying the response
 export const getAIIntent = async (
   userMessage: string,
-  previousMessages: Message[]
+  previousMessages: Message[],
+  chatId?: string
 ): Promise<AIResponse> => {
   // Get system configuration first
   const systemConfig = getSystemPromptConfig();
@@ -148,7 +150,7 @@ ${systemConfig.customPromptAddition}`
     console.log("=====================");
   }
 
-  return await askAzureOpenAI(userMessage, finalSystemPrompt);
+  return await askAzureOpenAI(userMessage, finalSystemPrompt, chatId);
 };
 
 // Function to parse AI response and extract MCP server call
@@ -292,10 +294,20 @@ export const extractSearchQuery = (text: string): string => {
 };
 
 // Function to call MCP server via proxy (port 5002 → port 9090)
-export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
-  console.log("Calling MCP Server via proxy:", mcpCall);
+export const callMCPServer = async (
+  mcpCall: MCPCall,
+  chatId?: string
+): Promise<MCPResponse> => {
+  console.log("🔴 CALLMCPSERVER FUNCTION ENTRY POINT 🔴");
+  console.log("MCP Call received:", JSON.stringify(mcpCall, null, 2));
+  console.log("🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴");
 
-  // Get schema information for enhanced debugging
+  console.log("Calling MCP Server via proxy:", mcpCall);
+  console.log("Chat ID for cache isolation:", chatId);
+
+  // TEMPORARY: Disable cache clearing to see caching behavior
+  // console.log("🧹 Clearing all cache to eliminate corruption");
+  // cacheManager.clear();  // Get schema information for enhanced debugging
   const schema = await fetchAzureSearchSchema();
   if (schema) {
     console.log("=== SCHEMA VALIDATION ===");
@@ -307,6 +319,9 @@ export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
     console.log("========================");
   }
 
+  console.log("🔍 About to make search request to /api/search");
+  console.log("Search query:", mcpCall.parameters.query || "*");
+
   // First, get the available tools from Azure Search to find the right tool name and endpoint
   const searchResponse = await fetch("/api/search", {
     method: "POST",
@@ -314,8 +329,15 @@ export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
     body: JSON.stringify({ query: mcpCall.parameters.query || "*" }),
   });
 
+  console.log("🔍 Search response status:", searchResponse.status);
+  console.log("🔍 Search response ok:", searchResponse.ok);
+
   if (!searchResponse.ok) {
-    throw new Error(`Search failed with ${searchResponse.status}`);
+    const errorText = await searchResponse.text();
+    console.error("❌ Search failed with detailed error:", errorText);
+    throw new Error(
+      `Search failed with ${searchResponse.status}: ${errorText}`
+    );
   }
 
   const searchData: SearchResult = await searchResponse.json();
@@ -355,6 +377,12 @@ export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
     const originalUserInput =
       mcpCall.parameters.originalUserInput || mcpCall.parameters.query || "";
 
+    console.log("=== CALLING MCP TOOL DEBUG ===");
+    console.log("Tool Name:", toolName);
+    console.log("Final Parameters:", finalParameters);
+    console.log("Original User Input:", originalUserInput);
+    console.log("===============================");
+
     // Remove the 'query' and 'originalUserInput' parameters as they're not needed for the actual MCP call
     delete finalParameters.query;
     delete finalParameters.originalUserInput;
@@ -362,8 +390,16 @@ export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
     const mcpData = await callMcpTool(
       toolName,
       finalParameters,
-      originalUserInput
+      originalUserInput,
+      chatId
     );
+
+    console.log("=== MCP DATA DEBUG ===");
+    console.log("Raw MCP Data:", JSON.stringify(mcpData, null, 2));
+    console.log("Tool Name:", toolName);
+    console.log("MCP Data Type:", typeof mcpData);
+    console.log("MCP Data Keys:", Object.keys(mcpData || {}));
+    console.log("======================");
 
     // Extract the actual data from the MCP response wrapper
     let actualData: any = mcpData;
@@ -371,12 +407,25 @@ export const callMCPServer = async (mcpCall: MCPCall): Promise<MCPResponse> => {
       actualData = mcpData.data;
     }
 
-    return formatStructuredMCPResponse(
+    console.log("=== ACTUAL DATA DEBUG ===");
+    console.log("Actual Data:", JSON.stringify(actualData, null, 2));
+    console.log("========================");
+
+    const formattedResponse = formatStructuredMCPResponse(
       actualData,
       selectedTool.functionName || "Unknown Tool",
       finalParameters,
       mcpCall.parameters.originalUserInput || mcpCall.parameters.query
     );
+
+    console.log("=== FORMATTED RESPONSE DEBUG ===");
+    console.log(
+      "Formatted Response:",
+      JSON.stringify(formattedResponse, null, 2)
+    );
+    console.log("================================");
+
+    return formattedResponse;
   } catch (mcpError) {
     console.error("Error calling MCP server via proxy:", mcpError);
     return {
@@ -563,7 +612,12 @@ export const formatStructuredMCPResponse = (
   parameters?: Record<string, any>,
   originalQuery?: string
 ): MCPResponse => {
-  console.log("Formatting structured MCP response:", data);
+  console.log("=== FORMAT STRUCTURED MCP RESPONSE DEBUG ===");
+  console.log("Data type:", typeof data);
+  console.log("Data:", JSON.stringify(data, null, 2));
+  console.log("Tool Name:", toolName);
+  console.log("Parameters:", parameters);
+  console.log("===========================================");
 
   if (data.error) {
     return { text: `Error from MCP server: ${data.error}` };

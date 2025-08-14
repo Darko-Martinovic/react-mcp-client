@@ -61,34 +61,75 @@ app.post("/api/tool", async (req, res) => {
     console.log(`Making request to MCP server for tool: ${tool}`);
 
     // Handle multi_tool_use wrapper
-    if (tool === "multi_tool_use" && args && args.tool_uses) {
+    if (tool === "multi_tool_use") {
       console.log("Handling multi_tool_use request");
-      const results = [];
 
-      for (const toolUse of args.tool_uses) {
-        const actualTool = toolUse.recipient_name;
-        const actualArgs = toolUse.parameters;
+      // Handle the new format with query parameter
+      if (args && args.query) {
+        console.log("Processing multi_tool_use with query:", args.query);
 
-        // Extract the actual tool name (remove "functions." prefix if present)
-        const cleanToolName = actualTool
-          .replace(/^functions\./, "")
-          .replace(/^search_azure_cognitive$/, "GetDetailedInventory");
+        // Use Azure Search to find the best tool for this query
+        const searchResult = await searchForTool(args.query);
 
-        console.log(`Processing tool: ${cleanToolName} with args:`, actualArgs);
+        if (searchResult && searchResult.functionName) {
+          console.log(
+            `Found tool: ${searchResult.functionName} for query: ${args.query}`
+          );
 
-        const result = await callSingleTool(
-          cleanToolName,
-          actualArgs,
-          mcpServerUrl
-        );
-        results.push(result);
+          // Extract parameters from the original user input
+          const extractedParams = extractParametersFromQuery(
+            args.originalUserInput || args.query
+          );
+
+          const result = await callSingleTool(
+            searchResult.functionName,
+            extractedParams,
+            mcpServerUrl
+          );
+
+          res.json(result);
+          return;
+        } else {
+          throw new Error(`No suitable tool found for query: ${args.query}`);
+        }
       }
 
-      res.json({
-        tool: "multi_tool_use",
-        data: results,
-      });
-      return;
+      // Handle the original format with tool_uses
+      if (args && args.tool_uses) {
+        const results = [];
+
+        for (const toolUse of args.tool_uses) {
+          const actualTool = toolUse.recipient_name;
+          const actualArgs = toolUse.parameters;
+
+          // Extract the actual tool name (remove "functions." prefix if present)
+          const cleanToolName = actualTool
+            .replace(/^functions\./, "")
+            .replace(/^search_azure_cognitive$/, "GetDetailedInventory");
+
+          console.log(
+            `Processing tool: ${cleanToolName} with args:`,
+            actualArgs
+          );
+
+          const result = await callSingleTool(
+            cleanToolName,
+            actualArgs,
+            mcpServerUrl
+          );
+          results.push(result);
+        }
+
+        res.json({
+          tool: "multi_tool_use",
+          data: results,
+        });
+        return;
+      }
+
+      throw new Error(
+        "multi_tool_use requires either 'query' or 'tool_uses' parameter"
+      );
     }
 
     // Handle single tool calls
@@ -240,6 +281,58 @@ app.post("/api/search", async (req, res) => {
       .json({ error: "Azure Search proxy error", details: err.message });
   }
 });
+
+// Helper function to search for the best tool using Azure Search
+async function searchForTool(query) {
+  console.log(`Searching for tool with query: ${query}`);
+
+  const endpoint = process.env.AZURE_SEARCH_ENDPOINT;
+  const apiKey = process.env.AZURE_SEARCH_APIKEY;
+  const indexName = process.env.AZURE_SEARCH_INDEX || "articles";
+
+  try {
+    const azureRes = await axios.post(
+      `${endpoint}/indexes/${indexName}/docs/search?api-version=2021-04-30-Preview`,
+      { search: query, top: 5 },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": apiKey,
+        },
+      }
+    );
+
+    console.log("Azure Search response status:", azureRes.status);
+    const searchData = azureRes.data;
+
+    if (searchData.value && searchData.value.length > 0) {
+      // Find the best matching tool
+      const bestTool =
+        searchData.value.find((tool) => tool.functionName && tool.endpoint) ||
+        searchData.value[0];
+
+      console.log(`Selected tool: ${bestTool.functionName || bestTool.name}`);
+      return bestTool;
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error searching for tool:", error.message);
+    return null;
+  }
+}
+
+// Helper function to extract parameters from query
+function extractParametersFromQuery(query) {
+  const params = {};
+  const lowerQuery = query.toLowerCase();
+
+  // For inventory queries, we typically don't need special parameters
+  // but we can add logic here for other query types
+
+  console.log(`Extracted parameters for query "${query}":`, params);
+  return params;
+}
 
 const PORT = process.env.PORT || 5002;
 app.listen(PORT, () =>

@@ -24,29 +24,31 @@ function generateId() {
 }
 
 // Get welcome message for new language
-function getWelcomeMessage(language: string): { title: string; message: Message } | null {
+function getWelcomeMessage(
+  language: string
+): { title: string; message: Message } | null {
   const welcomeMessages = {
     en: {
       title: "Welcome to MCP Client",
       message: {
         sender: "system" as const,
-        text: "👋 Welcome to the MCP (Model Context Protocol) Client!\n\nThis is your English chat session. You can:\n• Ask questions about your business data\n• Query inventory, sales, and products\n• Get insights through AI-powered analysis\n\nTry asking: \"Show me recent sales data\" or \"What products are low in stock?\""
-      }
+        text: '👋 Welcome to the MCP (Model Context Protocol) Client!\n\nThis is your English chat session. You can:\n• Ask questions about your business data\n• Query inventory, sales, and products\n• Get insights through AI-powered analysis\n\nTry asking: "Show me recent sales data" or "What products are low in stock?"',
+      },
     },
     fr: {
       title: "Bienvenue dans MCP Client",
       message: {
         sender: "system" as const,
-        text: "👋 Bienvenue dans le Client MCP (Model Context Protocol) !\n\nCeci est votre session de chat en français. Vous pouvez :\n• Poser des questions sur vos données commerciales\n• Consulter l'inventaire, les ventes et les produits\n• Obtenir des insights grâce à l'analyse IA\n\nEssayez de demander : \"Montrez-moi les données de ventes récentes\" ou \"Quels produits sont en rupture de stock ?\""
-      }
+        text: '👋 Bienvenue dans le Client MCP (Model Context Protocol) !\n\nCeci est votre session de chat en français. Vous pouvez :\n• Poser des questions sur vos données commerciales\n• Consulter l\'inventaire, les ventes et les produits\n• Obtenir des insights grâce à l\'analyse IA\n\nEssayez de demander : "Montrez-moi les données de ventes récentes" ou "Quels produits sont en rupture de stock ?"',
+      },
     },
     nl: {
       title: "Welkom bij MCP Client",
       message: {
         sender: "system" as const,
-        text: "👋 Welkom bij de MCP (Model Context Protocol) Client!\n\nDit is uw Nederlandse chat sessie. U kunt:\n• Vragen stellen over uw bedrijfsgegevens\n• Inventaris, verkoop en producten opvragen\n• Inzichten krijgen door AI-analyse\n\nProbeer te vragen: \"Toon me recente verkoopgegevens\" of \"Welke producten hebben weinig voorraad?\""
-      }
-    }
+        text: '👋 Welkom bij de MCP (Model Context Protocol) Client!\n\nDit is uw Nederlandse chat sessie. U kunt:\n• Vragen stellen over uw bedrijfsgegevens\n• Inventaris, verkoop en producten opvragen\n• Inzichten krijgen door AI-analyse\n\nProbeer te vragen: "Toon me recente verkoopgegevens" of "Welke producten hebben weinig voorraad?"',
+      },
+    },
   };
 
   return welcomeMessages[language as keyof typeof welcomeMessages] || null;
@@ -54,7 +56,8 @@ function getWelcomeMessage(language: string): { title: string; message: Message 
 
 const App: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { toasts, showSuccess, showError, showWarning, showInfo, removeToast } = useToast();
+  const { toasts, showSuccess, showError, showWarning, showInfo, removeToast } =
+    useToast();
   const [chats, setChats] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -73,23 +76,27 @@ const App: React.FC = () => {
     console.log("🔍 LOCALSTORAGE DEBUG:");
     console.log("Current language:", i18n.language);
     console.log("Current storage key:", getCurrentStorageKey());
-    
+
     // Check all possible language keys
-    const languages = ['en', 'fr', 'nl'];
-    languages.forEach(lang => {
+    const languages = ["en", "fr", "nl"];
+    languages.forEach((lang) => {
       const key = getLanguageStorageKey(LOCAL_STORAGE_KEY, lang);
       const data = localStorage.getItem(key);
-      console.log(`${lang}: ${key} -> ${data ? `${data.length} chars` : 'null'}`);
+      console.log(
+        `${lang}: ${key} -> ${data ? `${data.length} chars` : "null"}`
+      );
       if (data) {
         try {
           const parsed = JSON.parse(data);
-          console.log(`  └─ ${Array.isArray(parsed) ? parsed.length : 'invalid'} chats`);
+          console.log(
+            `  └─ ${Array.isArray(parsed) ? parsed.length : "invalid"} chats`
+          );
         } catch (e) {
           console.log(`  └─ Parse error: ${e}`);
         }
       }
     });
-    
+
     console.log("Current chats state:", chats.length);
     console.log("Active chat ID:", activeChatId);
   };
@@ -108,7 +115,7 @@ const App: React.FC = () => {
       console.log("🔄 Loading chats - i18n status:", {
         isInitialized: i18n.isInitialized,
         language: i18n.language,
-        ready: !!i18n.language
+        ready: !!i18n.language,
       });
 
       // Wait for i18n to be ready
@@ -122,66 +129,83 @@ const App: React.FC = () => {
         const storageKey = getCurrentStorageKey();
         console.log("📂 Loading chats from localStorage:", {
           storageKey,
-          language: i18n.language
+          language: i18n.language,
         });
-        
+
         const stored = localStorage.getItem(storageKey);
-        console.log("📄 Raw stored data:", stored ? `${stored.length} chars` : "null");
-        
+        console.log(
+          "📄 Raw stored data:",
+          stored ? `${stored.length} chars` : "null"
+        );
+
         if (stored && stored.trim()) {
           try {
             const parsed: ChatSession[] = JSON.parse(stored);
-            
+
             // Validate the parsed data
             if (Array.isArray(parsed)) {
               console.log("✅ Successfully parsed chats:", {
                 count: parsed.length,
-                chats: parsed.map(c => ({ 
-                  id: c.id, 
-                  title: c.title, 
+                chats: parsed.map((c) => ({
+                  id: c.id,
+                  title: c.title,
                   messageCount: c.messages?.length || 0,
-                  valid: !!(c.id && c.title && c.messages && c.createdAt)
-                }))
+                  valid: !!(c.id && c.title && c.messages && c.createdAt),
+                })),
               });
-              
+
               // Filter out any invalid chats
-              const validChats = parsed.filter(chat => 
-                chat.id && chat.title && Array.isArray(chat.messages) && chat.createdAt
+              const validChats = parsed.filter(
+                (chat) =>
+                  chat.id &&
+                  chat.title &&
+                  Array.isArray(chat.messages) &&
+                  chat.createdAt
               );
-              
+
               setChats(validChats);
-              
+
               if (validChats.length > 0) {
                 // Check if current active chat exists in this language's chats
-                const activeExists = validChats.find(chat => chat.id === activeChatId);
+                const activeExists = validChats.find(
+                  (chat) => chat.id === activeChatId
+                );
                 if (!activeExists) {
-                  console.log("🎯 Setting active chat to first chat:", validChats[0].id);
+                  console.log(
+                    "🎯 Setting active chat to first chat:",
+                    validChats[0].id
+                  );
                   setActiveChatId(validChats[0].id);
                 } else {
-                  console.log("🎯 Active chat exists in current language:", activeChatId);
+                  console.log(
+                    "🎯 Active chat exists in current language:",
+                    activeChatId
+                  );
                 }
               } else {
                 console.log("📭 No valid chats found");
                 setActiveChatId(null);
               }
-              
+
               return;
             } else {
               console.warn("⚠️ Parsed data is not an array:", typeof parsed);
             }
           } catch (parseError) {
             console.error("❌ Error parsing stored chats:", parseError);
-            console.log("🧹 Clearing corrupted localStorage for key:", storageKey);
+            console.log(
+              "🧹 Clearing corrupted localStorage for key:",
+              storageKey
+            );
             localStorage.removeItem(storageKey);
           }
         } else {
           console.log("🆕 No stored chats found for language:", i18n.language);
         }
-        
+
         // Fallback: empty state
         setChats([]);
         setActiveChatId(null);
-        
       } catch (error) {
         console.error("❌ Critical error loading chats:", error);
         setChats([]);
@@ -195,11 +219,11 @@ const App: React.FC = () => {
 
   // Import conversation function
   const handleImportConversation = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json,.txt,.md';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json,.txt,.md";
     input.multiple = false;
-    
+
     input.onchange = async (event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (!file) return;
@@ -208,17 +232,26 @@ const App: React.FC = () => {
         const text = await file.text();
         let importedChat: ChatSession | null = null;
 
-        if (file.name.endsWith('.json')) {
+        if (file.name.endsWith(".json")) {
           // Try to parse as JSON export
           try {
             const parsed = JSON.parse(text);
-            if (parsed.id && parsed.title && parsed.messages && parsed.createdAt) {
+            if (
+              parsed.id &&
+              parsed.title &&
+              parsed.messages &&
+              parsed.createdAt
+            ) {
               // Single chat export
               importedChat = {
                 ...parsed,
                 id: generateId(), // Generate new ID to avoid conflicts
               };
-            } else if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].id) {
+            } else if (
+              Array.isArray(parsed) &&
+              parsed.length > 0 &&
+              parsed[0].id
+            ) {
               // Multiple chats export - import first one
               importedChat = {
                 ...parsed[0],
@@ -228,7 +261,7 @@ const App: React.FC = () => {
           } catch (e) {
             console.error("❌ Error parsing JSON:", e);
           }
-        } else if (file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+        } else if (file.name.endsWith(".txt") || file.name.endsWith(".md")) {
           // Convert text/markdown to chat format
           importedChat = {
             id: generateId(),
@@ -237,19 +270,21 @@ const App: React.FC = () => {
             messages: [
               {
                 sender: "system",
-                text: `� Imported from ${file.name}:\n\n${text}`
-              }
-            ]
+                text: `� Imported from ${file.name}:\n\n${text}`,
+              },
+            ],
           };
         }
 
         if (importedChat) {
-          setChats(prev => [importedChat!, ...prev]);
+          setChats((prev) => [importedChat!, ...prev]);
           setActiveChatId(importedChat.id);
           console.log("✅ Successfully imported chat:", importedChat.title);
           showSuccess(`Successfully imported: "${importedChat.title}"`);
         } else {
-          showError("Could not import file. Please check the format and try again.");
+          showError(
+            "Could not import file. Please check the format and try again."
+          );
         }
       } catch (error) {
         console.error("❌ Error importing file:", error);
@@ -283,8 +318,8 @@ const App: React.FC = () => {
 
     try {
       const storageKey = getCurrentStorageKey();
-      const chatToSave = chats.find(chat => chat.id === chatId);
-      
+      const chatToSave = chats.find((chat) => chat.id === chatId);
+
       if (!chatToSave) {
         showError("Chat not found for saving. Please try again.");
         return;
@@ -303,7 +338,7 @@ const App: React.FC = () => {
       }
 
       // Update or add the chat
-      const existingIndex = savedChats.findIndex(chat => chat.id === chatId);
+      const existingIndex = savedChats.findIndex((chat) => chat.id === chatId);
       if (existingIndex >= 0) {
         savedChats[existingIndex] = chatToSave;
         console.log("💾 Updated existing saved chat:", chatToSave.title);
@@ -316,7 +351,6 @@ const App: React.FC = () => {
 
       localStorage.setItem(storageKey, JSON.stringify(savedChats));
       console.log("✅ Chat saved successfully to localStorage");
-      
     } catch (error) {
       console.error("❌ Error saving chat:", error);
       showError("Failed to save chat. Please try again.");
@@ -343,13 +377,16 @@ const App: React.FC = () => {
 
   const handleUpdateMessages = (newMessages: Message[]) => {
     if (!activeChatId) return;
-    
+
     console.log("💬 Updating messages for chat:", {
       chatId: activeChatId,
       messageCount: newMessages.length,
-      messages: newMessages.map(m => ({ sender: m.sender, textPreview: m.text?.substring(0, 50) }))
+      messages: newMessages.map((m) => ({
+        sender: m.sender,
+        textPreview: m.text?.substring(0, 50),
+      })),
     });
-    
+
     setChats((prev) =>
       prev.map((chat) =>
         chat.id === activeChatId ? { ...chat, messages: newMessages } : chat
@@ -529,6 +566,7 @@ const App: React.FC = () => {
             messages={activeChat.messages}
             setMessages={handleUpdateMessages}
             title={activeChat.title}
+            chatId={activeChat.id}
           />
         ) : (
           <div className={styles.placeholder}>
