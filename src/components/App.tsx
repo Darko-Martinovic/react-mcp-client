@@ -1,26 +1,58 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Chat from "./Chat/Chat";
+import ChatPreview from "./ChatPreview/ChatPreview";
 import LanguageSelector from "./LanguageSelector";
 import WorkflowVisualization from "./WorkflowVisualization";
 import SystemPromptEditor from "./SystemPromptEditor";
 import { ToastContainer } from "./Toast";
 import { useToast } from "../hooks/useToast";
+import { useChatCategories } from "../hooks/useChatCategories";
 import { getLanguageStorageKey } from "../i18n/i18n";
 import { Message } from "../services/chatService";
+import { ChatSession } from "../types/chat";
 import styles from "./App.module.css";
-
-interface ChatSession {
-  id: string;
-  title: string;
-  messages: Message[];
-  createdAt: string;
-}
 
 const LOCAL_STORAGE_KEY = "mcpChats";
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+
+// Helper function to create a new ChatSession with all required properties
+function createNewChatSession(overrides: Partial<ChatSession> = {}): ChatSession {
+  return {
+    id: generateId(),
+    title: "New Chat",
+    messages: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    tags: [],
+    isStarred: false,
+    messageCount: 0,
+    hasDataExports: false,
+    hasCharts: false,
+    ...overrides,
+  };
+}
+
+// Helper function to ensure imported chat has all required properties
+function normalizeImportedChat(partialChat: any): ChatSession {
+  return {
+    id: partialChat.id || generateId(),
+    title: partialChat.title || "Imported Chat",
+    messages: partialChat.messages || [],
+    createdAt: partialChat.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    tags: partialChat.tags || [],
+    isStarred: partialChat.isStarred || false,
+    messageCount: partialChat.messageCount || (partialChat.messages?.length || 0),
+    hasDataExports: partialChat.hasDataExports || false,
+    hasCharts: partialChat.hasCharts || false,
+    category: partialChat.category,
+    chatType: partialChat.chatType,
+    lastActivity: partialChat.lastActivity,
+  };
 }
 
 // Get welcome message for new language
@@ -173,14 +205,16 @@ const App: React.FC = () => {
                 })),
               });
 
-              // Filter out any invalid chats
-              const validChats = parsed.filter(
-                (chat) =>
-                  chat.id &&
-                  chat.title &&
-                  Array.isArray(chat.messages) &&
-                  chat.createdAt
-              );
+              // Filter out any invalid chats and normalize them
+              const validChats = parsed
+                .filter(
+                  (chat) =>
+                    chat.id &&
+                    chat.title &&
+                    Array.isArray(chat.messages) &&
+                    chat.createdAt
+                )
+                .map(chat => normalizeImportedChat(chat));
 
               setChats(validChats);
 
@@ -262,37 +296,35 @@ const App: React.FC = () => {
               parsed.createdAt
             ) {
               // Single chat export
-              importedChat = {
+              importedChat = normalizeImportedChat({
                 ...parsed,
                 id: generateId(), // Generate new ID to avoid conflicts
-              };
+              });
             } else if (
               Array.isArray(parsed) &&
               parsed.length > 0 &&
               parsed[0].id
             ) {
               // Multiple chats export - import first one
-              importedChat = {
+              importedChat = normalizeImportedChat({
                 ...parsed[0],
                 id: generateId(),
-              };
+              });
             }
           } catch (e) {
             console.error("❌ Error parsing JSON:", e);
           }
         } else if (file.name.endsWith(".txt") || file.name.endsWith(".md")) {
           // Convert text/markdown to chat format
-          importedChat = {
-            id: generateId(),
+          importedChat = createNewChatSession({
             title: `Imported: ${file.name}`,
-            createdAt: new Date().toISOString(),
             messages: [
               {
                 sender: "system",
-                text: `� Imported from ${file.name}:\n\n${text}`,
+                text: `📎 Imported from ${file.name}:\n\n${text}`,
               },
             ],
-          };
+          });
         }
 
         if (importedChat) {
@@ -322,24 +354,17 @@ const App: React.FC = () => {
   const activeChat = chats.find((chat) => chat.id === activeChatId) || null;
 
   const handleNewChat = () => {
-    const newChat: ChatSession = {
-      id: generateId(),
-      title: "New Chat",
-      messages: [],
-      createdAt: new Date().toISOString(),
-    };
-
+    const newChat = createNewChatSession();
+    
     const updatedChats = [newChat, ...chats];
     setChats(updatedChats);
     setActiveChatId(newChat.id);
-
+    
     // Auto-save the new chat
     saveChatsToStorage(updatedChats);
-
+    
     showInfo("New chat created!");
-  };
-
-  // Manual save function (now mainly for user feedback, since auto-save is enabled)
+  };  // Manual save function (now mainly for user feedback, since auto-save is enabled)
   const handleSaveChat = (chatId: string) => {
     if (!i18n.language || !i18n.isInitialized) {
       showWarning("Cannot save - system not ready. Please try again.");
@@ -396,7 +421,17 @@ const App: React.FC = () => {
     });
 
     const updatedChats = chats.map((chat) =>
-      chat.id === activeChatId ? { ...chat, messages: newMessages } : chat
+      chat.id === activeChatId 
+        ? { 
+            ...chat, 
+            messages: newMessages,
+            updatedAt: new Date().toISOString(),
+            messageCount: newMessages.length,
+            hasDataExports: newMessages.some(m => m.tableData && m.tableData.length > 0),
+            hasCharts: newMessages.some(m => m.tableData && m.tableData.length > 0 && m.traceData?.mcpResponse?.data),
+            lastActivity: new Date().toISOString()
+          } 
+        : chat
     );
 
     setChats(updatedChats);
@@ -491,6 +526,31 @@ const App: React.FC = () => {
     // The useEffect with i18n.language dependency will handle loading the appropriate chats
   };
 
+  // Handle starring/favoriting chats
+  const handleStarChat = (chatId: string) => {
+    const updatedChats = chats.map((chat) =>
+      chat.id === chatId ? { ...chat, isStarred: !chat.isStarred } : chat
+    );
+    setChats(updatedChats);
+    saveChatsToStorage(updatedChats);
+    
+    const chat = chats.find(c => c.id === chatId);
+    if (chat) {
+      showInfo(chat.isStarred ? "Removed from favorites" : "Added to favorites");
+    }
+  };
+
+  // Handle categorizing chats
+  const handleCategorizeChat = (chatId: string, category: string) => {
+    const updatedChats = chats.map((chat) =>
+      chat.id === chatId ? { ...chat, category: category || undefined } : chat
+    );
+    setChats(updatedChats);
+    saveChatsToStorage(updatedChats);
+    
+    showInfo(category ? `Categorized as "${category}"` : "Category removed");
+  };
+
   return (
     <div className={styles.appContainer}>
       {/* Sidebar for chat archive */}
@@ -528,69 +588,27 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className={styles.sidebarTitle}>{t("app.chats", "Chats")}</div>
-        <ul className={styles.chatList}>
+        <div className={styles.chatList}>
           {chats.map((chat) => (
-            <li
+            <ChatPreview
               key={chat.id}
-              className={`${styles.chatItem} ${
-                chat.id === activeChatId ? styles.active : ""
-              }`}
-              onClick={() => handleChatClick(chat.id)}
-              onDoubleClick={() => handleChatDoubleClick(chat.id, chat.title)}
-            >
-              <div className={styles.chatInfo}>
-                {editingId === chat.id ? (
-                  <input
-                    type="text"
-                    value={editTitle}
-                    onChange={handleTitleChange}
-                    onBlur={() => handleTitleBlur(chat.id)}
-                    onKeyDown={(e) => handleTitleKeyDown(e, chat.id)}
-                    className={styles.chatTitleInput}
-                    autoFocus
-                  />
-                ) : (
-                  <div className={styles.chatTitle}>{chat.title}</div>
-                )}
-                <div className={styles.chatDate}>
-                  {new Date(chat.createdAt).toLocaleDateString()}
-                </div>
-              </div>
-              <div className={styles.chatActions}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditTitle(chat.id, chat.title);
-                  }}
-                  className={styles.chatActionButton}
-                  title="Edit Title"
-                >
-                  ✏️
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSaveChat(chat.id);
-                  }}
-                  className={styles.chatActionButton}
-                  title="Confirm Save (Auto-save enabled)"
-                >
-                  💾
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteChat(chat.id);
-                  }}
-                  className={styles.chatActionButton}
-                  title="Delete Chat"
-                >
-                  🗑️
-                </button>
-              </div>
-            </li>
+              chat={chat}
+              isActive={chat.id === activeChatId}
+              isEditing={editingId === chat.id}
+              onSelect={handleChatClick}
+              onDoubleClick={handleChatDoubleClick}
+              onStar={handleStarChat}
+              onCategorize={handleCategorizeChat}
+              onDelete={handleDeleteChat}
+              onSave={handleSaveChat}
+              onEditTitle={handleEditTitle}
+              editTitle={editTitle}
+              onTitleChange={handleTitleChange}
+              onTitleBlur={handleTitleBlur}
+              onTitleKeyDown={handleTitleKeyDown}
+            />
           ))}
-        </ul>
+        </div>
       </div>
 
       {/* Main content area */}
