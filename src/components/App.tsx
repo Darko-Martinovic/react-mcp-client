@@ -71,6 +71,25 @@ const App: React.FC = () => {
   const getCurrentStorageKey = () =>
     getLanguageStorageKey(LOCAL_STORAGE_KEY, i18n.language);
 
+  // Auto-save chats to localStorage
+  const saveChatsToStorage = (chatsToSave: ChatSession[]) => {
+    if (!i18n.language || !i18n.isInitialized) {
+      console.log("⏳ Cannot auto-save - i18n not ready");
+      return;
+    }
+
+    try {
+      const storageKey = getCurrentStorageKey();
+      localStorage.setItem(storageKey, JSON.stringify(chatsToSave));
+      console.log("💾 Auto-saved chats to localStorage:", {
+        key: storageKey,
+        count: chatsToSave.length,
+      });
+    } catch (error) {
+      console.error("❌ Error auto-saving chats:", error);
+    }
+  };
+
   // Debug function to check localStorage contents
   const debugLocalStorage = () => {
     console.log("🔍 LOCALSTORAGE DEBUG:");
@@ -277,8 +296,13 @@ const App: React.FC = () => {
         }
 
         if (importedChat) {
-          setChats((prev) => [importedChat!, ...prev]);
+          const updatedChats = [importedChat, ...chats];
+          setChats(updatedChats);
           setActiveChatId(importedChat.id);
+
+          // Auto-save the imported chat
+          saveChatsToStorage(updatedChats);
+
           console.log("✅ Successfully imported chat:", importedChat.title);
           showSuccess(`Successfully imported: "${importedChat.title}"`);
         } else {
@@ -304,12 +328,18 @@ const App: React.FC = () => {
       messages: [],
       createdAt: new Date().toISOString(),
     };
-    setChats((prev) => [newChat, ...prev]);
+
+    const updatedChats = [newChat, ...chats];
+    setChats(updatedChats);
     setActiveChatId(newChat.id);
+
+    // Auto-save the new chat
+    saveChatsToStorage(updatedChats);
+
     showInfo("New chat created!");
   };
 
-  // Manual save function
+  // Manual save function (now mainly for user feedback, since auto-save is enabled)
   const handleSaveChat = (chatId: string) => {
     if (!i18n.language || !i18n.isInitialized) {
       showWarning("Cannot save - system not ready. Please try again.");
@@ -317,7 +347,6 @@ const App: React.FC = () => {
     }
 
     try {
-      const storageKey = getCurrentStorageKey();
       const chatToSave = chats.find((chat) => chat.id === chatId);
 
       if (!chatToSave) {
@@ -325,32 +354,11 @@ const App: React.FC = () => {
         return;
       }
 
-      // Get existing saved chats
-      let savedChats: ChatSession[] = [];
-      const existingSaved = localStorage.getItem(storageKey);
-      if (existingSaved) {
-        try {
-          savedChats = JSON.parse(existingSaved);
-          if (!Array.isArray(savedChats)) savedChats = [];
-        } catch (e) {
-          savedChats = [];
-        }
-      }
+      // Use the auto-save function
+      saveChatsToStorage(chats);
 
-      // Update or add the chat
-      const existingIndex = savedChats.findIndex((chat) => chat.id === chatId);
-      if (existingIndex >= 0) {
-        savedChats[existingIndex] = chatToSave;
-        console.log("💾 Updated existing saved chat:", chatToSave.title);
-        showSuccess(`Updated "${chatToSave.title}" successfully!`);
-      } else {
-        savedChats.unshift(chatToSave);
-        console.log("💾 Added new saved chat:", chatToSave.title);
-        showSuccess(`Saved "${chatToSave.title}" successfully!`);
-      }
-
-      localStorage.setItem(storageKey, JSON.stringify(savedChats));
-      console.log("✅ Chat saved successfully to localStorage");
+      console.log("💾 Manual save triggered for chat:", chatToSave.title);
+      showSuccess(`"${chatToSave.title}" is saved (auto-save is enabled)!`);
     } catch (error) {
       console.error("❌ Error saving chat:", error);
       showError("Failed to save chat. Please try again.");
@@ -387,18 +395,31 @@ const App: React.FC = () => {
       })),
     });
 
-    setChats((prev) =>
-      prev.map((chat) =>
-        chat.id === activeChatId ? { ...chat, messages: newMessages } : chat
-      )
+    const updatedChats = chats.map((chat) =>
+      chat.id === activeChatId ? { ...chat, messages: newMessages } : chat
     );
+
+    setChats(updatedChats);
+
+    // Auto-save after message updates
+    saveChatsToStorage(updatedChats);
   };
 
   const handleDeleteChat = (chatId: string) => {
-    setChats((prev) => prev.filter((chat) => chat.id !== chatId));
+    const chatToDelete = chats.find((chat) => chat.id === chatId);
+    const updatedChats = chats.filter((chat) => chat.id !== chatId);
+
+    setChats(updatedChats);
+
+    // Auto-save after deletion
+    saveChatsToStorage(updatedChats);
+
     if (activeChatId === chatId) {
-      const remainingChats = chats.filter((chat) => chat.id !== chatId);
-      setActiveChatId(remainingChats.length > 0 ? remainingChats[0].id : null);
+      setActiveChatId(updatedChats.length > 0 ? updatedChats[0].id : null);
+    }
+
+    if (chatToDelete) {
+      showInfo(`Deleted "${chatToDelete.title}" successfully!`);
     }
   };
 
@@ -413,11 +434,15 @@ const App: React.FC = () => {
 
   const handleTitleBlur = (id: string) => {
     if (editTitle.trim()) {
-      setChats((prev) =>
-        prev.map((chat) =>
-          chat.id === id ? { ...chat, title: editTitle.trim() } : chat
-        )
+      const updatedChats = chats.map((chat) =>
+        chat.id === id ? { ...chat, title: editTitle.trim() } : chat
       );
+      setChats(updatedChats);
+
+      // Auto-save after title change
+      saveChatsToStorage(updatedChats);
+
+      showInfo("Chat title updated!");
     }
     setEditingId(null);
     setEditTitle("");
@@ -437,18 +462,27 @@ const App: React.FC = () => {
 
   // Update chat title to first user message if still "New Chat"
   useEffect(() => {
-    setChats((prev) =>
-      prev.map((chat) => {
-        if (
-          chat.title === "New Chat" &&
-          chat.messages.length > 0 &&
-          chat.messages[0].text
-        ) {
-          return { ...chat, title: chat.messages[0].text.slice(0, 20) };
-        }
-        return chat;
-      })
+    const updatedChats = chats.map((chat) => {
+      if (
+        chat.title === "New Chat" &&
+        chat.messages.length > 0 &&
+        chat.messages[0].text
+      ) {
+        return { ...chat, title: chat.messages[0].text.slice(0, 50) };
+      }
+      return chat;
+    });
+
+    // Only update if there were actual changes
+    const hasChanges = updatedChats.some(
+      (chat, index) => chat.title !== chats[index]?.title
     );
+
+    if (hasChanges) {
+      setChats(updatedChats);
+      // Auto-save after auto-title updates
+      saveChatsToStorage(updatedChats);
+    }
   }, [activeChat?.messages]);
 
   // Handle language change - will trigger useEffect to load language-specific chats
@@ -539,7 +573,7 @@ const App: React.FC = () => {
                     handleSaveChat(chat.id);
                   }}
                   className={styles.chatActionButton}
-                  title="Save Chat to localStorage"
+                  title="Confirm Save (Auto-save enabled)"
                 >
                   💾
                 </button>
