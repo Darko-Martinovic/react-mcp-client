@@ -8,6 +8,7 @@ import LanguageSelector from "./LanguageSelector";
 import ThemeToggle from "./ThemeToggle";
 import WorkflowVisualization from "./WorkflowVisualization";
 import SystemPromptEditor from "./SystemPromptEditor";
+import AnalyticsDashboard from "./AnalyticsDashboard";
 import { ToastContainer } from "./Toast";
 import { useToast } from "../hooks/useToast";
 import { useChatCategories } from "../hooks/useChatCategories";
@@ -107,6 +108,7 @@ const App: React.FC = () => {
   const [editTitle, setEditTitle] = useState("");
   const [showWorkflow, setShowWorkflow] = useState(false);
   const [showSystemPrompt, setShowSystemPrompt] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showTeamWorkspace, setShowTeamWorkspace] = useState(false);
   const [chatToShare, setChatToShare] = useState<ChatSession | null>(null);
@@ -648,6 +650,13 @@ const App: React.FC = () => {
               ⚙️
             </button>
             <button
+              onClick={() => setShowAnalytics(true)}
+              className={styles.analyticsButton}
+              title={t("analytics.title") || "Analytics Dashboard"}
+            >
+              📊
+            </button>
+            <button
               onClick={() => setShowSystemPrompt(true)}
               className={styles.systemPromptButton}
               title="System Configuration"
@@ -747,6 +756,14 @@ const App: React.FC = () => {
           onClose={() => setShowTeamWorkspace(false)}
           allChats={chats}
           onShareChatToWorkspace={handleShareChatToWorkspace}
+        />
+      )}
+
+      {/* Analytics Dashboard Modal */}
+      {showAnalytics && (
+        <AnalyticsDashboard
+          chats={chats}
+          onClose={() => setShowAnalytics(false)}
         />
       )}
 

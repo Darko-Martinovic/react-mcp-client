@@ -66,6 +66,7 @@ html[data-theme="dark"] .sidebarHeader {
 }
 
 .workflowButton,
+.analyticsButton,
 .systemPromptButton,
 .importButton {
   padding: 4px 8px;
@@ -84,6 +85,7 @@ html[data-theme="dark"] .sidebarHeader {
 }
 
 .workflowButton:hover,
+.analyticsButton:hover,
 .systemPromptButton:hover,
 .importButton:hover {
   background: #dee2e6;
@@ -93,9 +95,11 @@ html[data-theme="dark"] .sidebarHeader {
 
 /* Dark theme for buttons */
 [data-theme="dark"] .workflowButton,
+[data-theme="dark"] .analyticsButton,
 [data-theme="dark"] .systemPromptButton,
 [data-theme="dark"] .importButton,
 html.dark .workflowButton,
+html.dark .analyticsButton,
 html.dark .systemPromptButton,
 html.dark .importButton {
   border-color: #4a5568 !important;
@@ -104,9 +108,11 @@ html.dark .importButton {
 }
 
 [data-theme="dark"] .workflowButton:hover,
+[data-theme="dark"] .analyticsButton:hover,
 [data-theme="dark"] .systemPromptButton:hover,
 [data-theme="dark"] .importButton:hover,
 html.dark .workflowButton:hover,
+html.dark .analyticsButton:hover,
 html.dark .systemPromptButton:hover,
 html.dark .importButton:hover {
   background: #718096 !important;

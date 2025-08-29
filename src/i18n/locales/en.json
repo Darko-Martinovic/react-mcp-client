@@ -116,6 +116,21 @@
       "unknown": "An unknown error occurred during speech recognition."
     }
   },
+  "analytics": {
+    "title": "Analytics Dashboard",
+    "last7Days": "Last 7 Days",
+    "last30Days": "Last 30 Days",
+    "allTime": "All Time",
+    "totalChats": "Total Chats",
+    "totalMessages": "Total Messages",
+    "toolCalls": "Tool Calls",
+    "avgMessages": "Avg Messages/Chat",
+    "usageOverTime": "Usage Over Time",
+    "toolUsage": "Tool Usage Distribution",
+    "activityByHour": "Activity by Hour",
+    "insights": "Key Insights",
+    "button": "Analytics"
+  },
   "systemPrompts": {
     "aiAssistant": "You are an intelligent assistant that helps users interact with MCP (Model Context Protocol) tools.",
     "structuredFormat": "CRITICAL: You MUST respond in this EXACT structured format:",

@@ -116,6 +116,21 @@
       "unknown": "Une erreur inconnue s'est produite lors de la reconnaissance vocale."
     }
   },
+  "analytics": {
+    "title": "Tableau de Bord Analytique",
+    "last7Days": "7 Derniers Jours",
+    "last30Days": "30 Derniers Jours",
+    "allTime": "Tout le Temps",
+    "totalChats": "Total Conversations",
+    "totalMessages": "Total Messages",
+    "toolCalls": "Appels d'Outils",
+    "avgMessages": "Moy Messages/Chat",
+    "usageOverTime": "Utilisation dans le Temps",
+    "toolUsage": "Distribution des Outils",
+    "activityByHour": "Activité par Heure",
+    "insights": "Insights Clés",
+    "button": "Analytique"
+  },
   "systemPrompts": {
     "aiAssistant": "Vous êtes un assistant intelligent qui aide les utilisateurs à interagir avec les outils MCP (Model Context Protocol).",
     "structuredFormat": "CRITIQUE : Vous DEVEZ répondre dans ce format structuré EXACT :",

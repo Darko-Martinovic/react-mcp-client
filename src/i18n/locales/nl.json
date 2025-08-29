@@ -116,6 +116,21 @@
       "unknown": "Een onbekende fout is opgetreden tijdens spraakherkenning."
     }
   },
+  "analytics": {
+    "title": "Analytics Dashboard",
+    "last7Days": "Laatste 7 Dagen",
+    "last30Days": "Laatste 30 Dagen",
+    "allTime": "Alle Tijd",
+    "totalChats": "Totaal Chats",
+    "totalMessages": "Totaal Berichten",
+    "toolCalls": "Tool Aanroepen",
+    "avgMessages": "Gem Berichten/Chat",
+    "usageOverTime": "Gebruik over Tijd",
+    "toolUsage": "Tool Gebruik Verdeling",
+    "activityByHour": "Activiteit per Uur",
+    "insights": "Belangrijke Inzichten",
+    "button": "Analytics"
+  },
   "systemPrompts": {
     "aiAssistant": "Je bent een intelligente assistent die gebruikers helpt bij het interacteren met MCP (Model Context Protocol) tools.",
     "structuredFormat": "KRITIEK: Je MOET reageren in dit EXACTE gestructureerde format:",
