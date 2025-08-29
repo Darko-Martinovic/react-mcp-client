@@ -653,12 +653,16 @@ export const formatStructuredMCPResponse = (
         };
       }
 
-      let summary = `✅ **${toolName}** executed successfully${paramInfo}\n\n📊 **Results (${
-        data.count || tableData.length
-      }):**`;
+      // Option 1: Remove the summary panel completely - just return table data
+      // let summary = `✅ **${toolName}** executed successfully${paramInfo}\n\n📊 **Results (${
+      //   data.count || tableData.length
+      // }):**`;
+
+      // Option 2: Compact summary (uncomment this line instead)
+      // let summary = `✅ ${toolName} (${data.count || tableData.length} records)`;
 
       return {
-        summary,
+        // summary,  // Comment this out to remove the first panel completely
         tableData,
         toolName,
       };
@@ -691,10 +695,11 @@ export const formatStructuredMCPResponse = (
       };
     }
 
-    let summary = `📊 **${toolName} Results:**${paramInfo}`;
+    // Remove summary panel for this case too
+    // let summary = `📊 **${toolName} Results:**${paramInfo}`;
 
     return {
-      summary,
+      // summary,  // Comment this out to remove the first panel completely
       tableData,
       toolName,
     };
