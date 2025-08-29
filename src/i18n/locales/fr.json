@@ -92,6 +92,27 @@
     "totalFields": "Total des Champs",
     "lastUpdated": "Dernière Mise à Jour"
   },
+  "speech": {
+    "startListening": "Commencer la saisie vocale",
+    "stopListening": "Arrêter l'écoute",
+    "listening": "Écoute...",
+    "confidence": "Confiance",
+    "unsupported": "Reconnaissance vocale non prise en charge dans ce navigateur",
+    "dismissError": "Ignorer l'erreur",
+    "errors": {
+      "notAllowed": "Accès au microphone refusé. Veuillez autoriser l'accès au microphone et réessayer.",
+      "notFound": "Aucun microphone trouvé. Veuillez vérifier la connexion de votre microphone.",
+      "network": "Erreur réseau lors de la reconnaissance vocale.",
+      "aborted": "La reconnaissance vocale a été interrompue.",
+      "audioCapture": "Échec de la capture audio. Veuillez vérifier votre microphone.",
+      "notAllowedTimeout": "Délai d'attente pour l'autorisation du microphone. Veuillez réessayer.",
+      "serviceNotAllowed": "Service de reconnaissance vocale non autorisé.",
+      "badGrammar": "Erreur de grammaire de reconnaissance vocale.",
+      "languageNotSupported": "Langue non prise en charge pour la reconnaissance vocale.",
+      "noSpeech": "Aucune parole détectée. Veuillez réessayer.",
+      "unknown": "Une erreur inconnue s'est produite lors de la reconnaissance vocale."
+    }
+  },
   "systemPrompts": {
     "aiAssistant": "Vous êtes un assistant intelligent qui aide les utilisateurs à interagir avec les outils MCP (Model Context Protocol).",
     "structuredFormat": "CRITIQUE : Vous DEVEZ répondre dans ce format structuré EXACT :",

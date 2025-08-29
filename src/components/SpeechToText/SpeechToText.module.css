@@ -1,0 +1,253 @@
+/* Speech-to-Text Container */
+.speechContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Microphone Button */
+.micButton {
+  background: var(--color-primary, #007acc);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.micButton:hover:not(:disabled) {
+  background: var(--color-primary-hover, #005a9e);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.micButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.micButton.listening {
+  background: #dc3545;
+  animation: pulse 1.5s infinite;
+}
+
+.micButton.disabled {
+  background: var(--color-muted, #6c757d);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.micButton.unsupported {
+  background: var(--color-muted, #6c757d);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.unsupportedContainer {
+  position: relative;
+  display: inline-block;
+}
+
+/* Status Indicator */
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--color-success-light, #d4edda);
+  border: 1px solid var(--color-success, #28a745);
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--color-success-dark, #155724);
+  white-space: nowrap;
+}
+
+.pulseAnimation {
+  width: 8px;
+  height: 8px;
+  background: var(--color-success, #28a745);
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+.statusText {
+  font-weight: 500;
+}
+
+/* Transcript Preview */
+.transcriptPreview {
+  position: absolute;
+  top: -120px;
+  left: -150px;
+  right: -150px;
+  background: var(--color-background-elevated, white);
+  border: 1px solid var(--color-border, #dee2e6);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 300px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.transcriptText {
+  font-size: 14px;
+  color: var(--color-text, #212529);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.confidenceIndicator {
+  font-size: 11px;
+  color: var(--color-text-muted, #6c757d);
+  font-weight: 500;
+}
+
+/* Error Container */
+.errorContainer {
+  position: absolute;
+  top: -70px;
+  left: -150px;
+  right: -150px;
+  background: var(--color-danger-light, #f8d7da);
+  border: 1px solid var(--color-danger, #dc3545);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  z-index: 1000;
+  min-width: 300px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.errorText {
+  font-size: 12px;
+  color: var(--color-danger-dark, #721c24);
+  flex: 1;
+}
+
+.errorDismiss {
+  background: none;
+  border: none;
+  color: var(--color-danger-dark, #721c24);
+  cursor: pointer;
+  padding: 2px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.errorDismiss:hover {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Dark Theme Support */
+
+[data-theme="dark"] .micButton {
+  background: #0d6efd;
+  color: white;
+}
+
+[data-theme="dark"] .micButton:hover:not(:disabled) {
+  background: #0b5ed7;
+}
+
+[data-theme="dark"] .micButton.listening {
+  background: #dc3545;
+}
+
+[data-theme="dark"] .micButton.disabled,
+[data-theme="dark"] .micButton.unsupported {
+  background: #495057;
+}
+
+[data-theme="dark"] .statusIndicator {
+  background: #1e3a2e;
+  border-color: #198754;
+  color: #75b798;
+}
+
+[data-theme="dark"] .pulseAnimation {
+  background: #198754;
+}
+
+[data-theme="dark"] .transcriptPreview {
+  background: #2b2b2b;
+  border-color: #495057;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .transcriptText {
+  color: #f8f9fa;
+}
+
+[data-theme="dark"] .confidenceIndicator {
+  color: #adb5bd;
+}
+
+[data-theme="dark"] .errorContainer {
+  background: #2c0b0e;
+  border-color: #dc3545;
+}
+
+[data-theme="dark"] .errorText {
+  color: #f1aeb5;
+}
+
+[data-theme="dark"] .errorDismiss {
+  color: #f1aeb5;
+}
+
+[data-theme="dark"] .errorDismiss:hover {
+  background: rgba(220, 53, 69, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .transcriptPreview,
+  .errorContainer {
+    left: -200px;
+    right: -200px;
+    max-width: none;
+    min-width: 250px;
+  }
+
+  .micButton {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .statusIndicator {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+}

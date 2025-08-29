@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from "react";
 import { useTranslation } from "react-i18next";
+import i18n from "../../i18n/i18n";
 import styles from "./Chat.module.css";
 import {
   fetchArticlesFromAzureSearch,
@@ -16,6 +17,7 @@ import {
 import { getSystemPromptConfig } from "../SystemPromptEditor";
 import EmojiPicker from "../EmojiPicker";
 import QuestionPicker from "../QuestionPicker";
+import SpeechToText from "../SpeechToText";
 import { DataVisualization } from "../DataVisualization";
 import { isSimpleTable } from "../DataVisualization/DataTransformer";
 import {
@@ -435,6 +437,11 @@ ${schema.fields
     inputRef.current?.focus();
   };
 
+  const handleTranscriptUpdate = (transcript: string) => {
+    setInput(transcript);
+    inputRef.current?.focus();
+  };
+
   return (
     <div className={styles.chatContainer}>
       {/* Export Chat Button - Top Right */}
@@ -764,6 +771,17 @@ ${schema.fields
           >
             😀
           </button>
+          <SpeechToText
+            onTranscriptUpdate={handleTranscriptUpdate}
+            language={
+              i18n.language === "en"
+                ? "en-US"
+                : i18n.language === "fr"
+                ? "fr-FR"
+                : "nl-NL"
+            }
+            isDisabled={loading}
+          />
           <button
             type="submit"
             className={styles.sendButton}

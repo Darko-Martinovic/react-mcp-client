@@ -92,6 +92,27 @@
     "totalFields": "Total Fields",
     "lastUpdated": "Last Updated"
   },
+  "speech": {
+    "startListening": "Start voice input",
+    "stopListening": "Stop listening",
+    "listening": "Listening...",
+    "confidence": "Confidence",
+    "unsupported": "Speech recognition not supported in this browser",
+    "dismissError": "Dismiss error",
+    "errors": {
+      "notAllowed": "Microphone access denied. Please allow microphone access and try again.",
+      "notFound": "No microphone found. Please check your microphone connection.",
+      "network": "Network error occurred during speech recognition.",
+      "aborted": "Speech recognition was aborted.",
+      "audioCapture": "Audio capture failed. Please check your microphone.",
+      "notAllowedTimeout": "Microphone permission timeout. Please try again.",
+      "serviceNotAllowed": "Speech recognition service not allowed.",
+      "badGrammar": "Speech recognition grammar error.",
+      "languageNotSupported": "Language not supported for speech recognition.",
+      "noSpeech": "No speech detected. Please try again.",
+      "unknown": "An unknown error occurred during speech recognition."
+    }
+  },
   "systemPrompts": {
     "aiAssistant": "You are an intelligent assistant that helps users interact with MCP (Model Context Protocol) tools.",
     "structuredFormat": "CRITICAL: You MUST respond in this EXACT structured format:",
