@@ -20,7 +20,9 @@ function generateId() {
 }
 
 // Helper function to create a new ChatSession with all required properties
-function createNewChatSession(overrides: Partial<ChatSession> = {}): ChatSession {
+function createNewChatSession(
+  overrides: Partial<ChatSession> = {}
+): ChatSession {
   return {
     id: generateId(),
     title: "New Chat",
@@ -46,7 +48,7 @@ function normalizeImportedChat(partialChat: any): ChatSession {
     updatedAt: new Date().toISOString(),
     tags: partialChat.tags || [],
     isStarred: partialChat.isStarred || false,
-    messageCount: partialChat.messageCount || (partialChat.messages?.length || 0),
+    messageCount: partialChat.messageCount || partialChat.messages?.length || 0,
     hasDataExports: partialChat.hasDataExports || false,
     hasCharts: partialChat.hasCharts || false,
     category: partialChat.category,
@@ -214,7 +216,7 @@ const App: React.FC = () => {
                     Array.isArray(chat.messages) &&
                     chat.createdAt
                 )
-                .map(chat => normalizeImportedChat(chat));
+                .map((chat) => normalizeImportedChat(chat));
 
               setChats(validChats);
 
@@ -355,16 +357,16 @@ const App: React.FC = () => {
 
   const handleNewChat = () => {
     const newChat = createNewChatSession();
-    
+
     const updatedChats = [newChat, ...chats];
     setChats(updatedChats);
     setActiveChatId(newChat.id);
-    
+
     // Auto-save the new chat
     saveChatsToStorage(updatedChats);
-    
+
     showInfo("New chat created!");
-  };  // Manual save function (now mainly for user feedback, since auto-save is enabled)
+  }; // Manual save function (now mainly for user feedback, since auto-save is enabled)
   const handleSaveChat = (chatId: string) => {
     if (!i18n.language || !i18n.isInitialized) {
       showWarning("Cannot save - system not ready. Please try again.");
@@ -421,16 +423,23 @@ const App: React.FC = () => {
     });
 
     const updatedChats = chats.map((chat) =>
-      chat.id === activeChatId 
-        ? { 
-            ...chat, 
+      chat.id === activeChatId
+        ? {
+            ...chat,
             messages: newMessages,
             updatedAt: new Date().toISOString(),
             messageCount: newMessages.length,
-            hasDataExports: newMessages.some(m => m.tableData && m.tableData.length > 0),
-            hasCharts: newMessages.some(m => m.tableData && m.tableData.length > 0 && m.traceData?.mcpResponse?.data),
-            lastActivity: new Date().toISOString()
-          } 
+            hasDataExports: newMessages.some(
+              (m) => m.tableData && m.tableData.length > 0
+            ),
+            hasCharts: newMessages.some(
+              (m) =>
+                m.tableData &&
+                m.tableData.length > 0 &&
+                m.traceData?.mcpResponse?.data
+            ),
+            lastActivity: new Date().toISOString(),
+          }
         : chat
     );
 
@@ -533,10 +542,12 @@ const App: React.FC = () => {
     );
     setChats(updatedChats);
     saveChatsToStorage(updatedChats);
-    
-    const chat = chats.find(c => c.id === chatId);
+
+    const chat = chats.find((c) => c.id === chatId);
     if (chat) {
-      showInfo(chat.isStarred ? "Removed from favorites" : "Added to favorites");
+      showInfo(
+        chat.isStarred ? "Removed from favorites" : "Added to favorites"
+      );
     }
   };
 
@@ -547,7 +558,7 @@ const App: React.FC = () => {
     );
     setChats(updatedChats);
     saveChatsToStorage(updatedChats);
-    
+
     showInfo(category ? `Categorized as "${category}"` : "Category removed");
   };
 

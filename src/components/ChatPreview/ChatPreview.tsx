@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { ChatSession } from '../../types/chat';
-import { useChatMetadata, getChatTypeIcon, getChatTypeLabel } from '../../hooks/useChatMetadata';
-import { useChatCategories } from '../../hooks/useChatCategories';
-import styles from './ChatPreview.module.css';
+import React, { useState } from "react";
+import { ChatSession } from "../../types/chat";
+import {
+  useChatMetadata,
+  getChatTypeIcon,
+  getChatTypeLabel,
+} from "../../hooks/useChatMetadata";
+import { useChatCategories } from "../../hooks/useChatCategories";
+import styles from "./ChatPreview.module.css";
 
 interface ChatPreviewProps {
   chat: ChatSession;
@@ -18,7 +22,10 @@ interface ChatPreviewProps {
   editTitle: string;
   onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTitleBlur: (id: string) => void;
-  onTitleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>, id: string) => void;
+  onTitleKeyDown: (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    id: string
+  ) => void;
 }
 
 const ChatPreview: React.FC<ChatPreviewProps> = ({
@@ -53,27 +60,27 @@ const ChatPreview: React.FC<ChatPreviewProps> = ({
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
     if (diffDays < 7) return `${diffDays} days ago`;
     return date.toLocaleDateString();
   };
 
   return (
     <div
-      className={`${styles.chatPreview} ${isActive ? styles.active : ''}`}
+      className={`${styles.chatPreview} ${isActive ? styles.active : ""}`}
       onClick={() => onSelect(chat.id)}
       onDoubleClick={() => onDoubleClick(chat.id, chat.title)}
     >
       {/* Chat Header */}
       <div className={styles.chatHeader}>
-        <div 
+        <div
           className={styles.chatTypeIcon}
           title={getChatTypeLabel(metadata.chatType)}
         >
           {getChatTypeIcon(metadata.chatType)}
         </div>
-        
+
         {isEditing ? (
           <input
             type="text"
@@ -90,27 +97,25 @@ const ChatPreview: React.FC<ChatPreviewProps> = ({
             {chat.title}
           </div>
         )}
-        
+
         <button
-          className={`${styles.starButton} ${chat.isStarred ? styles.starred : styles.unstarred}`}
+          className={`${styles.starButton} ${
+            chat.isStarred ? styles.starred : styles.unstarred
+          }`}
           onClick={(e) => {
             e.stopPropagation();
             onStar(chat.id);
           }}
-          title={chat.isStarred ? 'Remove from favorites' : 'Add to favorites'}
+          title={chat.isStarred ? "Remove from favorites" : "Add to favorites"}
         >
-          {chat.isStarred ? '⭐' : '☆'}
+          {chat.isStarred ? "⭐" : "☆"}
         </button>
-        
-        <div className={styles.chatDate}>
-          {formatDate(chat.createdAt)}
-        </div>
+
+        <div className={styles.chatDate}>{formatDate(chat.createdAt)}</div>
       </div>
 
       {/* Message Preview */}
-      <div className={styles.messagePreview}>
-        {metadata.messagePreview}
-      </div>
+      <div className={styles.messagePreview}>{metadata.messagePreview}</div>
 
       {/* Chat Statistics */}
       <div className={styles.chatStatistics}>
@@ -118,21 +123,21 @@ const ChatPreview: React.FC<ChatPreviewProps> = ({
           <span className={styles.statIcon}>💬</span>
           <span>{chat.messageCount || chat.messages.length}</span>
         </div>
-        
+
         {metadata.toolsUsed.length > 0 && (
           <div className={styles.statItem}>
             <span className={styles.statIcon}>🔧</span>
             <span>{metadata.toolsUsed.length}</span>
           </div>
         )}
-        
+
         {metadata.hasDataExports && (
           <div className={styles.statItem}>
             <span className={styles.statIcon}>📊</span>
             <span>Data</span>
           </div>
         )}
-        
+
         {metadata.hasCharts && (
           <div className={styles.statItem}>
             <span className={styles.statIcon}>📈</span>
@@ -148,15 +153,17 @@ const ChatPreview: React.FC<ChatPreviewProps> = ({
           {showCategorySelect ? (
             <select
               className={styles.categorySelect}
-              value={chat.category || ''}
+              value={chat.category || ""}
               onChange={handleCategoryChange}
               onBlur={() => setShowCategorySelect(false)}
               onClick={(e) => e.stopPropagation()}
               autoFocus
             >
               <option value="">No category</option>
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           ) : (
@@ -168,11 +175,11 @@ const ChatPreview: React.FC<ChatPreviewProps> = ({
               }}
               title="Click to change category"
             >
-              {chat.category || 'No category'}
+              {chat.category || "No category"}
             </button>
           )}
         </div>
-        
+
         {/* Topics/Tags */}
         {metadata.keyTopics.length > 0 && (
           <div className={styles.tagsContainer}>

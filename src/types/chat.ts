@@ -1,6 +1,6 @@
 import { Message } from "../services/chatService";
 
-export type ChatType = 'conversation' | 'data-analysis' | 'tool-usage';
+export type ChatType = "conversation" | "data-analysis" | "tool-usage";
 
 export interface ChatSession {
   id: string;
