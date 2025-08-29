@@ -1,0 +1,342 @@
+.shareDialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.shareDialogContent {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.shareDialogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.shareDialogTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #666;
+}
+
+.closeButton:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.shareSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionIcon {
+  font-size: 18px;
+}
+
+.shareForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.emailInput {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.permissionSelect {
+  padding: 10px 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.addButton {
+  padding: 10px 16px;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.addButton:hover {
+  background: #005999;
+}
+
+.addButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.collaboratorsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collaboratorItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
+}
+
+.collaboratorInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.collaboratorName {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.collaboratorEmail {
+  color: #666;
+  font-size: 12px;
+}
+
+.collaboratorActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.permissionBadge {
+  padding: 4px 8px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.permissionBadge.read {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.permissionBadge.comment {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.permissionBadge.edit {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.removeButton:hover {
+  background: #ffebee;
+}
+
+.linkGeneration {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.linkOptions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.linkOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.linkOption label {
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.linkOption input[type="checkbox"],
+.linkOption input[type="number"] {
+  margin: 0;
+}
+
+.linkOption input[type="number"] {
+  padding: 4px 8px;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px;
+  width: 60px;
+  font-size: 14px;
+}
+
+.generateLinkButton {
+  padding: 10px 16px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.generateLinkButton:hover {
+  background: #388e3c;
+}
+
+.activeLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.activeLinkItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f0f7ff;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+}
+
+.linkInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.linkUrl {
+  font-family: monospace;
+  font-size: 12px;
+  color: #1976d2;
+  word-break: break-all;
+}
+
+.linkMeta {
+  font-size: 11px;
+  color: #666;
+}
+
+.linkActions {
+  display: flex;
+  gap: 8px;
+}
+
+.copyButton {
+  background: none;
+  border: 1px solid #1976d2;
+  color: #1976d2;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.copyButton:hover {
+  background: #1976d2;
+  color: white;
+}
+
+.revokeButton {
+  background: none;
+  border: 1px solid #d32f2f;
+  color: #d32f2f;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.revokeButton:hover {
+  background: #d32f2f;
+  color: white;
+}
+
+.noCollaborators {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}
+
+.noActiveLinks {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 16px;
+}

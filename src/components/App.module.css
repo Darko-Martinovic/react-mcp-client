@@ -16,36 +16,43 @@
 }
 
 .sidebarHeader {
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   border-bottom: 1px solid #e1e5e9;
 }
 
-.headerActions {
+.topRow {
   display: flex;
   align-items: center;
   gap: 8px;
   justify-content: space-between;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-start;
+}
+
 .workflowButton,
 .systemPromptButton,
 .importButton {
-  padding: 8px 12px;
+  padding: 4px 8px;
   border-radius: 6px;
   border: 1px solid #e1e5e9;
   background: #f8f9fa;
   color: #495057;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  min-width: 32px;
+  height: 32px;
 }
 
 .workflowButton:hover,
@@ -68,19 +75,21 @@
 }
 
 .newChatButton {
-  padding: 12px 20px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
   border: 1px solid #e1e5e9;
   background: #1976d2;
   color: #fff;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: background-color 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
-  width: 100%;
+  gap: 6px;
+  flex: 1;
+  height: 36px;
+  min-width: 140px;
 }
 
 .newChatButton:hover {

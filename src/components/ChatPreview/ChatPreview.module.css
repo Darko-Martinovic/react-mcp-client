@@ -193,6 +193,11 @@
   opacity: 1;
 }
 
+.actionButton.shared {
+  color: #4caf50;
+  opacity: 1;
+}
+
 .chatDate {
   font-size: 10px;
   color: #999;

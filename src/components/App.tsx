@@ -2,12 +2,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Chat from "./Chat/Chat";
 import ChatPreview from "./ChatPreview/ChatPreview";
+import ShareDialog from "./ShareDialog/ShareDialog";
+import TeamWorkspaceManager from "./TeamWorkspace/TeamWorkspace";
 import LanguageSelector from "./LanguageSelector";
 import WorkflowVisualization from "./WorkflowVisualization";
 import SystemPromptEditor from "./SystemPromptEditor";
 import { ToastContainer } from "./Toast";
 import { useToast } from "../hooks/useToast";
 import { useChatCategories } from "../hooks/useChatCategories";
+import { useCollaboration } from "../hooks/useCollaboration";
+import { useTeamWorkspace } from "../hooks/useTeamWorkspace";
 import { getLanguageStorageKey } from "../i18n/i18n";
 import { Message } from "../services/chatService";
 import { ChatSession } from "../types/chat";
@@ -34,6 +38,10 @@ function createNewChatSession(
     messageCount: 0,
     hasDataExports: false,
     hasCharts: false,
+    isShared: false,
+    collaborators: [],
+    comments: [],
+    shareLinks: [],
     ...overrides,
   };
 }
@@ -98,8 +106,15 @@ const App: React.FC = () => {
   const [editTitle, setEditTitle] = useState("");
   const [showWorkflow, setShowWorkflow] = useState(false);
   const [showSystemPrompt, setShowSystemPrompt] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showTeamWorkspace, setShowTeamWorkspace] = useState(false);
+  const [chatToShare, setChatToShare] = useState<ChatSession | null>(null);
   const didLoadChats = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Collaboration hooks
+  const collaboration = useCollaboration();
+  const teamWorkspace = useTeamWorkspace();
 
   // Get current language storage key
   const getCurrentStorageKey = () =>
@@ -562,17 +577,57 @@ const App: React.FC = () => {
     showInfo(category ? `Categorized as "${category}"` : "Category removed");
   };
 
+  // Handle sharing chats
+  const handleShareChat = (chatId: string) => {
+    const chat = chats.find((c) => c.id === chatId);
+    if (chat) {
+      setChatToShare(chat);
+      setShowShareDialog(true);
+    }
+  };
+
+  // Handle chat updates from share dialog
+  const handleChatUpdate = (updatedChat: ChatSession) => {
+    const updatedChats = chats.map((chat) =>
+      chat.id === updatedChat.id ? updatedChat : chat
+    );
+    setChats(updatedChats);
+    saveChatsToStorage(updatedChats);
+  };
+
+  // Handle sharing chat to workspace
+  const handleShareChatToWorkspace = (chatId: string, workspaceId: string) => {
+    teamWorkspace.shareChatToWorkspace(workspaceId, chatId);
+
+    // Update the chat to mark it as shared to workspace
+    const updatedChats = chats.map((chat) =>
+      chat.id === chatId
+        ? {
+            ...chat,
+            workspaceId,
+            isShared: true,
+            updatedAt: new Date().toISOString(),
+          }
+        : chat
+    );
+    setChats(updatedChats);
+    saveChatsToStorage(updatedChats);
+  };
+
   return (
     <div className={styles.appContainer}>
       {/* Sidebar for chat archive */}
       <div className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <button onClick={handleNewChat} className={styles.newChatButton}>
-            <span role="img" aria-label="new">
-              🆕
-            </span>{" "}
-            {t("app.newChat", "New Chat")}
-          </button>
+          <div className={styles.topRow}>
+            <button onClick={handleNewChat} className={styles.newChatButton}>
+              <span role="img" aria-label="new">
+                🆕
+              </span>{" "}
+              {t("app.newChat", "New Chat")}
+            </button>
+            <LanguageSelector onLanguageChange={handleLanguageChange} />
+          </div>
           <div className={styles.headerActions}>
             <button
               onClick={handleImportConversation}
@@ -595,7 +650,13 @@ const App: React.FC = () => {
             >
               🔧
             </button>
-            <LanguageSelector onLanguageChange={handleLanguageChange} />
+            <button
+              onClick={() => setShowTeamWorkspace(true)}
+              className={styles.systemPromptButton}
+              title="Team Workspaces"
+            >
+              👥
+            </button>
           </div>
         </div>
         <div className={styles.sidebarTitle}>{t("app.chats", "Chats")}</div>
@@ -613,6 +674,7 @@ const App: React.FC = () => {
               onDelete={handleDeleteChat}
               onSave={handleSaveChat}
               onEditTitle={handleEditTitle}
+              onShare={handleShareChat}
               editTitle={editTitle}
               onTitleChange={handleTitleChange}
               onTitleBlur={handleTitleBlur}
@@ -657,6 +719,29 @@ const App: React.FC = () => {
         <SystemPromptEditor
           isOpen={showSystemPrompt}
           onClose={() => setShowSystemPrompt(false)}
+        />
+      )}
+
+      {/* Share Dialog Modal */}
+      {showShareDialog && chatToShare && (
+        <ShareDialog
+          isOpen={showShareDialog}
+          onClose={() => {
+            setShowShareDialog(false);
+            setChatToShare(null);
+          }}
+          chat={chatToShare}
+          onChatUpdate={handleChatUpdate}
+        />
+      )}
+
+      {/* Team Workspace Manager Modal */}
+      {showTeamWorkspace && (
+        <TeamWorkspaceManager
+          isOpen={showTeamWorkspace}
+          onClose={() => setShowTeamWorkspace(false)}
+          allChats={chats}
+          onShareChatToWorkspace={handleShareChatToWorkspace}
         />
       )}
 

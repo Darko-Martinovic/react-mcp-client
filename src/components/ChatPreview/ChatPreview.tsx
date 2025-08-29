@@ -19,6 +19,7 @@ interface ChatPreviewProps {
   onDelete: (id: string) => void;
   onSave: (id: string) => void;
   onEditTitle: (id: string, title: string) => void;
+  onShare?: (id: string) => void; // NEW
   editTitle: string;
   onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTitleBlur: (id: string) => void;
@@ -39,6 +40,7 @@ const ChatPreview: React.FC<ChatPreviewProps> = ({
   onDelete,
   onSave,
   onEditTitle,
+  onShare,
   editTitle,
   onTitleChange,
   onTitleBlur,
@@ -204,6 +206,20 @@ const ChatPreview: React.FC<ChatPreviewProps> = ({
         >
           ✏️
         </button>
+        {onShare && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onShare(chat.id);
+            }}
+            className={`${styles.actionButton} ${
+              chat.isShared ? styles.shared : ""
+            }`}
+            title={chat.isShared ? "Manage sharing" : "Share chat"}
+          >
+            {chat.isShared ? "👥" : "🔗"}
+          </button>
+        )}
         <button
           onClick={(e) => {
             e.stopPropagation();

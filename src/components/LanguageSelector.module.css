@@ -7,17 +7,18 @@
 .languageButton {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 4px;
+  padding: 4px 8px;
   border: 1px solid #e1e5e9;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #ffffff;
   color: #374151;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 120px;
+  min-width: 90px;
+  height: 36px;
 }
 
 .languageButton:hover {
@@ -56,16 +57,17 @@
 .languageDropdown {
   position: absolute;
   top: 100%;
-  left: 0;
   right: 0;
   z-index: 1000;
   margin-top: 4px;
   background: #ffffff;
   border: 1px solid #e1e5e9;
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   animation: slideDown 0.2s ease-out;
+  min-width: 140px;
+  width: max-content;
 }
 
 @keyframes slideDown {
@@ -83,12 +85,12 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 6px;
+  padding: 8px 10px;
   border: none;
   background: #ffffff;
   color: #374151;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   text-align: left;
