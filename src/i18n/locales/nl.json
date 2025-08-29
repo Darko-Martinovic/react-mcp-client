@@ -1,6 +1,9 @@
 {
   "app": {
-    "title": "MCP Client",
+    "title": "SmartQuery",
+    "subtitle": "AI-Gestuurde Data Intelligentie",
+    "alternativeTitle": "DataChat Pro",
+    "alternativeSubtitle": "Professionele Data Gesprekken",
     "loading": "Verwerken...",
     "send": "Verzenden",
     "processing": "Verwerken...",

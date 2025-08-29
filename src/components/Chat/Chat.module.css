@@ -21,9 +21,42 @@ html.dark .chatContainer,
 /* Export Section */
 .exportSection {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  padding: 8px 24px 0 24px;
+  padding: 12px 24px 8px 24px;
+  background: var(--bg-primary, #fff);
+  border-bottom: 1px solid var(--border-primary, #e0e0e0);
+}
+
+/* App Title Styling */
+.appTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.appTitleText {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.appSubtitle {
+  font-size: 12px;
+  color: var(--text-muted, #666);
+  font-weight: 500;
+  margin-top: -2px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .exportMenuContainer {
@@ -64,6 +97,32 @@ html[data-theme="dark"] .exportButton:hover,
 html.dark .exportButton:hover,
 .dark .exportButton:hover {
   background: #90cdf4 !important;
+}
+
+/* Dark theme overrides for export section and app title */
+[data-theme="dark"] .exportSection,
+html[data-theme="dark"] .exportSection,
+html.dark .exportSection,
+.dark .exportSection {
+  background: #1a202c !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .appTitleText,
+html[data-theme="dark"] .appTitleText,
+html.dark .appTitleText,
+.dark .appTitleText {
+  background: linear-gradient(135deg, #81c784 0%, #64b5f6 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+[data-theme="dark"] .appSubtitle,
+html[data-theme="dark"] .appSubtitle,
+html.dark .appSubtitle,
+.dark .appSubtitle {
+  color: #a0aec0 !important;
 }
 
 .exportDropdown {
@@ -818,6 +877,26 @@ html.dark .cellContentName,
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .exportSection {
+    padding: 8px 16px 6px 16px;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .appTitle {
+    align-items: center;
+    text-align: center;
+  }
+
+  .appTitleText {
+    font-size: 24px;
+  }
+
+  .appSubtitle {
+    font-size: 11px;
+  }
+
   .messageBubble {
     max-width: 90%;
     margin: 0 12px;

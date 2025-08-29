@@ -444,8 +444,16 @@ ${schema.fields
 
   return (
     <div className={styles.chatContainer}>
-      {/* Export Chat Button - Top Right */}
+      {/* Header with App Title and Export Button */}
       <div className={styles.exportSection}>
+        <div className={styles.appTitle}>
+          <h1 className={styles.appTitleText}>
+            {t("app.title") || "SmartQuery"}
+          </h1>
+          <span className={styles.appSubtitle}>
+            {t("app.subtitle") || "AI-Powered Data Intelligence"}
+          </span>
+        </div>
         <div ref={exportMenuRef} className={styles.exportMenuContainer}>
           <button
             onClick={() => setShowExportMenu(!showExportMenu)}
