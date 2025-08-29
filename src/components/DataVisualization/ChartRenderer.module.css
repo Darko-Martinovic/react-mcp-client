@@ -3,9 +3,13 @@
   margin: 20px 0;
   padding: 20px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(
+    135deg,
+    var(--bg-primary, #ffffff) 0%,
+    var(--bg-secondary, #f8fafc) 100%
+  );
+  box-shadow: 0 4px 20px var(--shadow-light, rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--border-primary, #e2e8f0);
 }
 
 .chartTitle {
@@ -13,13 +17,38 @@
   padding: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary, #1e293b);
   text-align: center;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary, #3b82f6) 0%,
+    var(--accent-secondary, #1d4ed8) 100%
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: none;
+}
+
+/* Dark theme overrides for chart container */
+[data-theme="dark"] .chartContainer,
+html[data-theme="dark"] .chartContainer,
+html.dark .chartContainer,
+.dark .chartContainer {
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .chartTitle,
+html[data-theme="dark"] .chartTitle,
+html.dark .chartTitle,
+.dark .chartTitle {
+  color: #f7fafc !important;
+  background: linear-gradient(135deg, #63b3ed 0%, #90cdf4 100%) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
 /* Responsive Design */

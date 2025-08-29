@@ -4,6 +4,15 @@
   height: 100vh;
   background: #f5f7fa;
   font-family: Inter, system-ui, sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+/* Dark theme for app container */
+[data-theme="dark"] .appContainer,
+html.dark .appContainer,
+.dark .appContainer,
+html[data-theme="dark"] .appContainer {
+  background: #2d3748 !important;
 }
 
 .sidebar {
@@ -13,6 +22,16 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Dark theme for sidebar */
+[data-theme="dark"] .sidebar,
+html.dark .sidebar,
+.dark .sidebar,
+html[data-theme="dark"] .sidebar {
+  background: #1a202c !important;
+  border-right-color: #4a5568 !important;
 }
 
 .sidebarHeader {
@@ -21,6 +40,15 @@
   flex-direction: column;
   gap: 8px;
   border-bottom: 1px solid #e1e5e9;
+  transition: border-color 0.2s ease;
+}
+
+/* Dark theme for sidebar header */
+[data-theme="dark"] .sidebarHeader,
+html.dark .sidebarHeader,
+.dark .sidebarHeader,
+html[data-theme="dark"] .sidebarHeader {
+  border-bottom-color: #4a5568 !important;
 }
 
 .topRow {
@@ -44,7 +72,7 @@
   border-radius: 6px;
   border: 1px solid #e1e5e9;
   background: #f8f9fa;
-  color: #495057;
+  color: #374151;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -58,49 +86,99 @@
 .workflowButton:hover,
 .systemPromptButton:hover,
 .importButton:hover {
-  background: #e9ecef;
+  background: #dee2e6;
   border-color: #dee2e6;
   transform: translateY(-1px);
 }
 
+/* Dark theme for buttons */
+[data-theme="dark"] .workflowButton,
+[data-theme="dark"] .systemPromptButton,
+[data-theme="dark"] .importButton,
+html.dark .workflowButton,
+html.dark .systemPromptButton,
+html.dark .importButton {
+  border-color: #4a5568 !important;
+  background: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .workflowButton:hover,
+[data-theme="dark"] .systemPromptButton:hover,
+[data-theme="dark"] .importButton:hover,
+html.dark .workflowButton:hover,
+html.dark .systemPromptButton:hover,
+html.dark .importButton:hover {
+  background: #718096 !important;
+  border-color: #718096 !important;
+}
+
 .importButton {
   background: #e3f2fd;
-  border-color: #2196f3;
-  color: #1976d2;
+  border-color: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .importButton:hover {
   background: #bbdefb;
-  border-color: #1976d2;
+  border-color: var(--accent-primary);
 }
 
 .newChatButton {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #e1e5e9;
-  background: #1976d2;
-  color: #fff;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 1;
-  height: 36px;
-  min-width: 140px;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  border: 1px solid #1976d2 !important;
+  background: #1976d2 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 1 !important;
+  height: 36px !important;
+  min-width: 140px !important;
+  font-family: inherit !important;
 }
 
 .newChatButton:hover {
-  background: #1565c0;
+  background: #1565c0 !important;
+  opacity: 0.9 !important;
+}
+
+/* Dark theme specific styling for new chat button */
+[data-theme="dark"] .newChatButton,
+html.dark .newChatButton,
+.dark .newChatButton,
+html[data-theme="dark"] .newChatButton {
+  background: #63b3ed !important;
+  border-color: #63b3ed !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .newChatButton:hover,
+html.dark .newChatButton:hover,
+.dark .newChatButton:hover,
+html[data-theme="dark"] .newChatButton:hover {
+  background: #4299e1 !important;
 }
 
 .sidebarTitle {
   padding: 16px 16px 8px 16px;
   font-weight: 600;
   font-size: 16px;
-  color: #333;
+  color: #1a1a1a;
+  transition: color 0.2s ease;
+}
+
+/* Dark theme for sidebar title */
+[data-theme="dark"] .sidebarTitle,
+html.dark .sidebarTitle,
+.dark .sidebarTitle,
+html[data-theme="dark"] .sidebarTitle {
+  color: #f7fafc !important;
 }
 
 .chatList {
@@ -212,10 +290,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: #6b7280;
   font-size: 18px;
   text-align: center;
-  background: #f9f9f9;
+  background: #f5f7fa;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Dark theme for placeholder */
+[data-theme="dark"] .placeholder,
+html.dark .placeholder,
+.dark .placeholder,
+html[data-theme="dark"] .placeholder {
+  color: #a0aec0 !important;
+  background: #2d3748 !important;
 }
 
 .placeholderIcon {

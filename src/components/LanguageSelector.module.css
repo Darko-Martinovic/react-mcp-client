@@ -9,10 +9,10 @@
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
-  border: 1px solid #e1e5e9;
+  border: 1px solid var(--border-primary);
   border-radius: 6px;
-  background: #ffffff;
-  color: #374151;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -21,16 +21,36 @@
   height: 36px;
 }
 
+/* Dark theme overrides for language button */
+[data-theme="dark"] .languageButton,
+html[data-theme="dark"] .languageButton,
+html.dark .languageButton,
+.dark .languageButton {
+  border-color: #4a5568 !important;
+  background: #1a202c !important;
+  color: #e2e8f0 !important;
+}
+
 .languageButton:hover {
-  border-color: #3b82f6;
-  background: #f8fafc;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+/* Dark theme overrides for language button hover */
+[data-theme="dark"] .languageButton:hover,
+html[data-theme="dark"] .languageButton:hover,
+html.dark .languageButton:hover,
+.dark .languageButton:hover {
+  border-color: #63b3ed !important;
+  background: #2d3748 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
 .languageButton:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--shadow-light);
 }
 
 .flag {
@@ -45,7 +65,7 @@
 
 .arrow {
   font-size: 10px;
-  color: #6b7280;
+  color: var(--text-muted);
   transition: transform 0.2s ease;
 }
 
@@ -60,14 +80,24 @@
   right: 0;
   z-index: 1000;
   margin-top: 4px;
-  background: #ffffff;
-  border: 1px solid #e1e5e9;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   border-radius: 6px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px var(--shadow-medium), 0 4px 6px var(--shadow-light);
   overflow: hidden;
   animation: slideDown 0.2s ease-out;
   min-width: 140px;
   width: max-content;
+}
+
+/* Dark theme overrides for language dropdown */
+[data-theme="dark"] .languageDropdown,
+html[data-theme="dark"] .languageDropdown,
+html.dark .languageDropdown,
+.dark .languageDropdown {
+  background: #1a202c !important;
+  border-color: #4a5568 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 4px 6px rgba(0, 0, 0, 0.3) !important;
 }
 
 @keyframes slideDown {
@@ -88,8 +118,8 @@
   gap: 6px;
   padding: 8px 10px;
   border: none;
-  background: #ffffff;
-  color: #374151;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -98,12 +128,36 @@
 }
 
 .languageOption:hover {
-  background: #f8fafc;
+  background: var(--bg-tertiary);
 }
 
 .languageOption.active {
   background: #eff6ff;
-  color: #1d4ed8;
+  color: var(--accent-primary);
+}
+
+/* Dark theme overrides for language options */
+[data-theme="dark"] .languageOption,
+html[data-theme="dark"] .languageOption,
+html.dark .languageOption,
+.dark .languageOption {
+  background: #1a202c !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .languageOption:hover,
+html[data-theme="dark"] .languageOption:hover,
+html.dark .languageOption:hover,
+.dark .languageOption:hover {
+  background: #2d3748 !important;
+}
+
+[data-theme="dark"] .languageOption.active,
+html[data-theme="dark"] .languageOption.active,
+html.dark .languageOption.active,
+.dark .languageOption.active {
+  background: #2d3748 !important;
+  color: #63b3ed !important;
 }
 
 .languageOption .flag {

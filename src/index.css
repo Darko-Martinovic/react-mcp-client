@@ -1,4 +1,37 @@
+/* Base theme variables - Force application to html and body */
+html,
+html *,
 :root {
+  /* Light theme variables */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f7fa;
+  --bg-tertiary: #f8f9fa;
+  --text-primary: #1a1a1a;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --border-primary: #e1e5e9;
+  --border-secondary: #dee2e6;
+  --accent-primary: #1976d2;
+  --accent-secondary: #2196f3;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+}
+
+/* Explicit root definition */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f7fa;
+  --bg-tertiary: #f8f9fa;
+  --text-primary: #1a1a1a;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --border-primary: #e1e5e9;
+  --border-secondary: #dee2e6;
+  --accent-primary: #1976d2;
+  --accent-secondary: #2196f3;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.15);
+
   /* Modern font stack with Inter as primary choice */
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     "Oxygen", "Ubuntu", "Cantarell", system-ui, sans-serif;
@@ -10,8 +43,8 @@
   font-variant-numeric: tabular-nums; /* Better number alignment */
 
   color-scheme: light;
-  color: #1a1a1a; /* Better contrast for light theme */
-  background-color: #ffffff;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,6 +54,30 @@
   text-size-adjust: 100%; /* Prevent font scaling on mobile - Standard */
 }
 
+/* Dark theme variables - Force override everywhere */
+html[data-theme="dark"],
+html[data-theme="dark"] *,
+html[data-theme="dark"] :root,
+html.dark,
+html.dark *,
+html.dark :root,
+.dark,
+.dark *,
+[data-theme="dark"],
+[data-theme="dark"] * {
+  --bg-primary: #1a202c !important;
+  --bg-secondary: #2d3748 !important;
+  --bg-tertiary: #4a5568 !important;
+  --text-primary: #f7fafc !important;
+  --text-secondary: #e2e8f0 !important;
+  --text-muted: #a0aec0 !important;
+  --border-primary: #4a5568 !important;
+  --border-secondary: #718096 !important;
+  --accent-primary: #63b3ed !important;
+  --accent-secondary: #90cdf4 !important;
+  --shadow-light: rgba(0, 0, 0, 0.3) !important;
+  --shadow-medium: rgba(0, 0, 0, 0.5) !important;
+}
 a {
   font-weight: 500;
   color: #646cff;
@@ -37,6 +94,17 @@ body {
   /* Optimized for full-screen chat app */
   height: 100vh;
   overflow: hidden;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Ensure body inherits theme properly */
+html[data-theme="dark"] body,
+html.dark body,
+.dark body {
+  background-color: #1a202c !important;
+  color: #f7fafc !important;
 }
 
 /* Chat-specific typography styles */

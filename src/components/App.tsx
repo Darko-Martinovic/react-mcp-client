@@ -5,6 +5,7 @@ import ChatPreview from "./ChatPreview/ChatPreview";
 import ShareDialog from "./ShareDialog/ShareDialog";
 import TeamWorkspaceManager from "./TeamWorkspace/TeamWorkspace";
 import LanguageSelector from "./LanguageSelector";
+import ThemeToggle from "./ThemeToggle";
 import WorkflowVisualization from "./WorkflowVisualization";
 import SystemPromptEditor from "./SystemPromptEditor";
 import { ToastContainer } from "./Toast";
@@ -620,7 +621,10 @@ const App: React.FC = () => {
       <div className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <div className={styles.topRow}>
-            <button onClick={handleNewChat} className={styles.newChatButton}>
+            <button
+              onClick={handleNewChat}
+              className={`${styles.newChatButton} newChatButton`}
+            >
               <span role="img" aria-label="new">
                 🆕
               </span>{" "}
@@ -657,6 +661,7 @@ const App: React.FC = () => {
             >
               👥
             </button>
+            <ThemeToggle />
           </div>
         </div>
         <div className={styles.sidebarTitle}>{t("app.chats", "Chats")}</div>

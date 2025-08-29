@@ -2,21 +2,28 @@
 .tableContainer {
   margin: 20px 0;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(
+    135deg,
+    var(--bg-secondary, #f8fafc) 0%,
+    var(--border-primary, #e2e8f0) 100%
+  );
+  box-shadow: 0 4px 20px var(--shadow-light, rgba(0, 0, 0, 0.1));
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-primary, #e2e8f0);
 }
 
 .tableTitle {
   padding: 16px 20px;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1e293b;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary, #3b82f6) 0%,
+    var(--accent-secondary, #1d4ed8) 100%
+  );
   margin: 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-primary, #e2e8f0);
 }
 
 .tableWrapper {
@@ -30,11 +37,15 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
-  background: white;
+  background: var(--bg-primary, white);
 }
 
 .tableHeader {
-  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  background: linear-gradient(
+    135deg,
+    var(--text-secondary, #64748b) 0%,
+    var(--text-primary, #475569) 100%
+  );
   position: sticky;
   top: 0;
   z-index: 10;
@@ -45,7 +56,7 @@
   text-align: left;
   font-weight: 600;
   color: white;
-  border-right: 1px solid #94a3b8;
+  border-right: 1px solid var(--border-secondary, #94a3b8);
   white-space: nowrap;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -56,30 +67,102 @@
   border-right: none;
 }
 
+/* Dark theme overrides for table */
+[data-theme="dark"] .tableContainer,
+html[data-theme="dark"] .tableContainer,
+html.dark .tableContainer,
+.dark .tableContainer {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .tableTitle,
+html[data-theme="dark"] .tableTitle,
+html.dark .tableTitle,
+.dark .tableTitle {
+  background: linear-gradient(135deg, #63b3ed 0%, #90cdf4 100%) !important;
+  color: #1a202c !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .dataTable,
+html[data-theme="dark"] .dataTable,
+html.dark .dataTable,
+.dark .dataTable {
+  background: #1a202c !important;
+}
+
+[data-theme="dark"] .tableHeader,
+html[data-theme="dark"] .tableHeader,
+html.dark .tableHeader,
+.dark .tableHeader {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+}
+
+[data-theme="dark"] .tableHeaderCell,
+html[data-theme="dark"] .tableHeaderCell,
+html.dark .tableHeaderCell,
+.dark .tableHeaderCell {
+  color: #f7fafc !important;
+  border-color: #718096 !important;
+}
+
 /* Row Styles */
 .tableRow {
   transition: all 0.2s ease;
 }
 
 .tableRow:hover {
-  background-color: #f1f5f9 !important;
+  background-color: var(--bg-secondary, #f1f5f9) !important;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--shadow-light, rgba(0, 0, 0, 0.1));
 }
 
 .tableRowEven {
-  background-color: #ffffff;
+  background-color: var(--bg-primary, #ffffff);
 }
 
 .tableRowOdd {
-  background-color: #f8fafc;
+  background-color: var(--bg-secondary, #f8fafc);
 }
 
 .tableCell {
   padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  border-right: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-primary, #e2e8f0);
+  color: var(--text-primary, #374151);
   vertical-align: middle;
+}
+
+/* Dark theme overrides for table rows */
+[data-theme="dark"] .tableRow:hover,
+html[data-theme="dark"] .tableRow:hover,
+html.dark .tableRow:hover,
+.dark .tableRow:hover {
+  background-color: #2d3748 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .tableRowEven,
+html[data-theme="dark"] .tableRowEven,
+html.dark .tableRowEven,
+.dark .tableRowEven {
+  background-color: #1a202c !important;
+}
+
+[data-theme="dark"] .tableRowOdd,
+html[data-theme="dark"] .tableRowOdd,
+html.dark .tableRowOdd,
+.dark .tableRowOdd {
+  background-color: #2d3748 !important;
+}
+
+[data-theme="dark"] .tableCell,
+html[data-theme="dark"] .tableCell,
+html.dark .tableCell,
+.dark .tableCell {
+  border-color: #4a5568 !important;
+  color: #f7fafc !important;
 }
 
 .tableCell:last-child {
@@ -97,12 +180,12 @@
 
 .cellContentName {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-primary, #1e293b);
 }
 
 .cellContentPrice {
   font-weight: 600;
-  color: #059669;
+  color: var(--accent-primary, #059669);
   text-align: right;
 }
 
@@ -118,10 +201,41 @@
 .cellContentId {
   font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 0.85rem;
-  color: #6b7280;
-  background-color: #f3f4f6;
+  color: var(--text-muted, #6b7280);
+  background-color: var(--bg-secondary, #f3f4f6);
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+/* Dark theme overrides for cell content */
+[data-theme="dark"] .cellContentName,
+html[data-theme="dark"] .cellContentName,
+html.dark .cellContentName,
+.dark .cellContentName {
+  color: #f7fafc !important;
+}
+
+[data-theme="dark"] .cellContentPrice,
+html[data-theme="dark"] .cellContentPrice,
+html.dark .cellContentPrice,
+.dark .cellContentPrice {
+  color: #63b3ed !important;
+}
+
+[data-theme="dark"] .cellContentLowStock,
+html[data-theme="dark"] .cellContentLowStock,
+html.dark .cellContentLowStock,
+.dark .cellContentLowStock {
+  color: #fca5a5 !important;
+  background-color: #7f1d1d !important;
+}
+
+[data-theme="dark"] .cellContentId,
+html[data-theme="dark"] .cellContentId,
+html.dark .cellContentId,
+.dark .cellContentId {
+  color: #a0aec0 !important;
+  background-color: #4a5568 !important;
 }
 
 /* Footer Styles */
@@ -130,10 +244,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-top: 1px solid #e2e8f0;
+  background: linear-gradient(
+    135deg,
+    var(--bg-secondary, #f8fafc) 0%,
+    var(--border-primary, #e2e8f0) 100%
+  );
+  border-top: 1px solid var(--border-primary, #e2e8f0);
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
 }
 
 .excelButton {
@@ -159,6 +277,16 @@
 
 .excelButton:active {
   transform: translateY(0);
+}
+
+/* Dark theme overrides for table footer */
+[data-theme="dark"] .tableFooter,
+html[data-theme="dark"] .tableFooter,
+html.dark .tableFooter,
+.dark .tableFooter {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%) !important;
+  border-color: #4a5568 !important;
+  color: #e2e8f0 !important;
 }
 
 /* Responsive Design */
