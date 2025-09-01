@@ -190,6 +190,24 @@ export const useSpeechToText = (
   useEffect(() => {
     if (!isSupported) return;
 
+    // We'll create recognition instances on-demand in startListening
+    // This ensures fresh instances and avoids state issues
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [language, isSupported]); // Removed isListening dependency
+
+  // Create a fresh recognition instance
+  const createRecognitionInstance = useCallback(() => {
+    if (!isSupported) return null;
+
     const SpeechRecognitionClass =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognitionClass();
@@ -218,8 +236,9 @@ export const useSpeechToText = (
       // Clear any "aborted" errors since ending is normal
       setError(null);
 
-      // Reset the recognition state to allow for restart
-      console.log("🎤 Recognition ended, ready for restart");
+      // Clear the reference to allow for fresh instance next time
+      recognitionRef.current = null;
+      console.log("🎤 Recognition ended, reference cleared for fresh restart");
     };
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
@@ -290,23 +309,15 @@ export const useSpeechToText = (
           console.log(
             "Speech recognition was aborted (normal when manually stopped)"
           );
+          setError(null); // Clear error for aborted state
           break;
         default:
           setError(`Speech recognition error: ${event.error}`);
       }
     };
 
-    recognitionRef.current = recognition;
-
-    return () => {
-      if (recognition) {
-        recognition.stop();
-      }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [language, isSupported]); // Removed isListening dependency
+    return recognition;
+  }, [language, isSupported, isListening]);
 
   const startListening = useCallback(() => {
     console.log(
@@ -316,7 +327,7 @@ export const useSpeechToText = (
       isListening
     );
 
-    if (!isSupported || !recognitionRef.current) {
+    if (!isSupported) {
       setError("Speech recognition is not supported in this browser.");
       return;
     }
@@ -326,49 +337,40 @@ export const useSpeechToText = (
       return;
     }
 
+    // Always create a fresh recognition instance
+    console.log("🎤 Creating fresh recognition instance...");
+    const newRecognition = createRecognitionInstance();
+
+    if (!newRecognition) {
+      setError("Failed to create speech recognition instance.");
+      return;
+    }
+
     try {
       setError(null);
       setTranscript(""); // Clear previous transcript
       setConfidence(0);
 
       // Force English US for business terminology
-      recognitionRef.current.lang = "en-US";
+      newRecognition.lang = "en-US";
       console.log(
-        "🎤 Starting speech recognition with language:",
-        recognitionRef.current.lang
+        "🎤 Starting fresh speech recognition with language:",
+        newRecognition.lang
       );
 
-      // Ensure recognition is in a clean state before starting
-      console.log("🎤 Recognition state before start:", recognitionRef.current);
-      recognitionRef.current.start();
-      console.log("🎤 Speech recognition start() called successfully");
+      // Set the reference before starting
+      recognitionRef.current = newRecognition;
+
+      newRecognition.start();
+      console.log("🎤 Fresh speech recognition started successfully");
     } catch (err) {
       console.error("Error starting speech recognition:", err);
       console.log("🎤 Error details:", err);
-
-      // If we get an "already started" error, try to stop and restart
-      if (err instanceof Error && err.message.includes("already")) {
-        console.log("🎤 Recognition already started, attempting restart...");
-        recognitionRef.current?.stop();
-
-        // Wait a bit and try again
-        setTimeout(() => {
-          try {
-            recognitionRef.current?.start();
-            console.log("🎤 Successfully restarted after stopping");
-          } catch (retryErr) {
-            console.error("🎤 Failed to restart recognition:", retryErr);
-            setError("Failed to start speech recognition.");
-            setIsListening(false);
-          }
-        }, 200);
-      } else {
-        setError("Failed to start speech recognition.");
-        setIsListening(false); // Ensure state is correct on error
-      }
+      setError("Failed to start speech recognition.");
+      setIsListening(false);
+      recognitionRef.current = null; // Clear failed reference
     }
-  }, [isSupported, isListening]);
-
+  }, [isSupported, isListening, createRecognitionInstance]);
   const stopListening = useCallback(() => {
     console.log("🛑 Stop listening called, isListening:", isListening);
 
@@ -386,10 +388,15 @@ export const useSpeechToText = (
         // Force state update immediately
         setIsListening(false);
         console.log("🛑 isListening state set to false");
+
+        // Clear reference to ensure fresh instance next time
+        recognitionRef.current = null;
+        console.log("🛑 Recognition reference cleared");
       } catch (err) {
         console.error("Error stopping speech recognition:", err);
-        // Even if stop fails, update state
+        // Even if stop fails, update state and clear reference
         setIsListening(false);
+        recognitionRef.current = null;
       }
     }
   }, [isListening]);

@@ -8,9 +8,9 @@
   padding: 12px 16px;
   margin-bottom: 8px;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  background: white;
-  border: 1px solid #e1e5e9;
+  box-shadow: 0 4px 12px var(--shadow-medium);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(100%);
@@ -20,7 +20,7 @@
 }
 
 .toast::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
@@ -55,14 +55,14 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 .toastClose {
   background: none;
   border: none;
   font-size: 20px;
-  color: #6b7280;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0;
   margin-left: 8px;
@@ -76,8 +76,8 @@
 }
 
 .toastClose:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: #374151;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 /* Toast type styles */
@@ -133,7 +133,7 @@
 
 /* Animation for progress bar */
 .toast::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;

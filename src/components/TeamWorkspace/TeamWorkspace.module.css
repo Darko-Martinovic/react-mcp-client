@@ -12,14 +12,14 @@
 }
 
 .workspaceContent {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 12px;
   padding: 24px;
   width: 90%;
   max-width: 700px;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px var(--shadow-medium);
 }
 
 .workspaceHeader {
@@ -28,13 +28,13 @@
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e1e5e9;
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .workspaceTitle {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -45,7 +45,7 @@
   cursor: pointer;
   padding: 4px;
   border-radius: 4px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .closeButton:hover {
@@ -70,16 +70,17 @@
 
 .workspaceSelect {
   padding: 8px 12px;
-  border: 1px solid #e1e5e9;
+  border: 1px solid var(--border-primary);
   border-radius: 6px;
-  background: white;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   cursor: pointer;
   font-size: 14px;
 }
 
 .createWorkspaceButton {
   padding: 8px 16px;
-  background: #007acc;
+  background: var(--accent-primary);
   color: white;
   border: none;
   border-radius: 6px;

@@ -15,16 +15,16 @@
 }
 
 .modal {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: var(--bg-primary);
   border-radius: 20px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 25px 50px var(--shadow-medium);
   width: 95%;
   max-width: 1200px;
   height: 90%;
   max-height: 800px;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border-primary);
 }
 
 .header {
@@ -32,23 +32,24 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 30px;
-  border-bottom: 2px solid #e9ecef;
-  background: linear-gradient(90deg, #e8f4fd 0%, #f3e5f5 100%);
+  border-bottom: 2px solid var(--border-primary);
+  background: var(--bg-secondary);
   border-radius: 20px 20px 0 0;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .title {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px var(--shadow-light);
+  color: var(--text-primary);
 }
 
 .closeButton {
-  background: rgba(31, 41, 55, 0.1);
-  border: 2px solid rgba(31, 41, 55, 0.2);
-  color: white;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-secondary);
+  color: var(--text-primary);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -61,8 +62,8 @@
 }
 
 .closeButton:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--accent-primary);
+  border-color: var(--accent-secondary);
   transform: rotate(90deg);
 }
 
@@ -72,28 +73,29 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background: var(--bg-primary);
 }
 
 .instructions {
-  background: linear-gradient(90deg, #ffecd2 0%, #fcb69f 100%);
-  color: #8b4513;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
   padding: 15px 20px;
   border-radius: 12px;
   margin-bottom: 25px;
   font-weight: 500;
   text-align: center;
-  border: 1px solid rgba(255, 183, 77, 0.3);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 4px 8px var(--shadow-light);
 }
 
 .workflowContainer {
   position: relative;
   flex: 1;
-  background: linear-gradient(45deg, #f0f2f5 0%, #ffffff 100%);
+  background: var(--bg-secondary);
   border-radius: 15px;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--border-primary);
   overflow: hidden;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 2px 8px var(--shadow-light);
 }
 
 .connections {
@@ -107,14 +109,14 @@
 }
 
 .connectionLine {
-  stroke: #757575;
+  stroke: var(--text-muted);
   stroke-width: 3;
   stroke-dasharray: 6, 4;
   opacity: 0.8;
 }
 
 .arrowHead {
-  fill: #757575;
+  fill: var(--text-muted);
   opacity: 0.8;
 }
 
@@ -144,38 +146,38 @@
 
 .workflowStep.selected {
   transform: translate(-50%, -50%) scale(1.1);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 15px 30px var(--shadow-medium);
   z-index: 4;
-  border-color: #007bff;
+  border-color: var(--accent-primary);
 }
 
-/* Step type styling with pastel colors */
+/* Step type styling with theme-aware colors */
 .workflowStep.input {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  color: #1565c0;
-  border: 2px solid #90caf9;
+  background: var(--bg-tertiary);
+  color: var(--accent-primary);
+  border: 2px solid var(--accent-secondary);
 }
 
 .workflowStep.ai {
-  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
-  color: #ad1457;
-  border: 2px solid #f48fb1;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-secondary);
 }
 
 .workflowStep.processing {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%);
-  color: #ef6c00;
-  border: 2px solid #ffb74d;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-secondary);
 }
 
 .workflowStep.mcp {
-  background: linear-gradient(135deg, #f3e5f5 0%, #ce93d8 100%);
-  color: #7b1fa2;
-  border: 2px solid #ba68c8;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-secondary);
 }
 
 .workflowStep.output {
-  background: linear-gradient(135deg, #e8f5e8 0%, #a5d6a7 100%);
+  background: var(--bg-tertiary);
   color: #2e7d32;
   border: 2px solid #81c784;
 }

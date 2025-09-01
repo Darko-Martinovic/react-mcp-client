@@ -34,19 +34,23 @@
 }
 
 .micButton.listening {
-  background: #dc3545;
-  animation: pulse 1.5s infinite;
+  background: #dc3545 !important;
+  animation: pulseRed 1.5s infinite !important;
   cursor: pointer; /* Ensure it's still clickable when listening */
+  border: 3px solid #ff6b6b !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 0 15px rgba(220, 53, 69, 0.6),
+    inset 0 0 15px rgba(255, 255, 255, 0.2) !important;
 }
 
 .micButton.listening:hover {
-  background: #c82333;
-  transform: scale(1.05);
+  background: #c82333 !important;
+  transform: scale(1.15) !important;
 }
 
 .micButton.listening:active {
-  transform: scale(0.95);
-  background: #bd2130;
+  transform: scale(1.05) !important;
+  background: #bd2130 !important;
 }
 
 .micButton.disabled {
@@ -176,6 +180,24 @@
   }
   100% {
     transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseRed {
+  0% {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.6);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 25px rgba(220, 53, 69, 0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.6);
     opacity: 1;
   }
 }

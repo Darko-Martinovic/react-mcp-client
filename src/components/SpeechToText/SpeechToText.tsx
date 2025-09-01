@@ -72,6 +72,21 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
     }
   };
 
+  // Add debug logging for isListening state changes
+  useEffect(() => {
+    console.log(
+      "🎤 SpeechToText component - isListening changed to:",
+      isListening
+    );
+
+    // Force a re-render by updating a dummy state if needed
+    if (isListening) {
+      console.log("🎤 LISTENING MODE ACTIVATED - Button should be RED 🔴");
+    } else {
+      console.log("🎤 STANDBY MODE ACTIVATED - Button should be BLUE 🎤");
+    }
+  }, [isListening]);
+
   // Update parent component when transcript changes
   useEffect(() => {
     if (transcript.trim()) {
@@ -111,8 +126,31 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
             ? t?.("speech.stopListening") || "Click to stop listening"
             : t?.("speech.startListening") || "Click to start voice input"
         }
+        style={{
+          // Force visual feedback with !important-like specificity
+          backgroundColor: isListening ? "#dc3545 !important" : "#007acc",
+          color: "white",
+          border: isListening ? "3px solid #ff6b6b" : "2px solid #0056b3",
+          boxShadow: isListening
+            ? "0 0 15px rgba(220, 53, 69, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.2)"
+            : "0 2px 4px rgba(0, 0, 0, 0.1)",
+          transform: isListening ? "scale(1.1)" : "scale(1)",
+          transition: "all 0.2s ease",
+        }}
+        data-listening={isListening} // Add data attribute for debugging
       >
-        {isListening ? "🔴" : "🎤"}
+        {(() => {
+          const buttonIcon = isListening ? "🔴" : "🎤";
+          console.log(
+            "🎤 Button render - isListening:",
+            isListening,
+            "icon:",
+            buttonIcon,
+            "data-listening:",
+            isListening
+          );
+          return buttonIcon;
+        })()}
       </button>
 
       {/* Status indicator */}
