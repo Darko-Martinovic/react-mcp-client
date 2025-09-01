@@ -63,12 +63,15 @@ const Chat: React.FC<ChatProps> = ({
   const [visibleTraces, setVisibleTraces] = useState<Set<number>>(new Set());
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showQuestionPicker, setShowQuestionPicker] = useState(false);
+  const [clearSpeechTrigger, setClearSpeechTrigger] = useState(0);
+  const [stopSpeechTrigger, setStopSpeechTrigger] = useState(0);
   const [systemConfig, setSystemConfig] = useState(() =>
     getSystemPromptConfig()
   );
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const exportMenuRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const lastSpeechTranscript = useRef<string>("");
 
   // Listen for system prompt config changes
   useEffect(() => {
@@ -126,7 +129,13 @@ const Chat: React.FC<ChatProps> = ({
     const userMsg: Message = { sender: "user", text: input };
     const baseMessages = Array.isArray(messages) ? messages : [];
     setMessages([...baseMessages, userMsg]);
-    setInput("");
+
+    // Stop speech recognition and clear everything
+    setStopSpeechTrigger((prev) => prev + 1); // Force stop listening
+    setInput(""); // Clear input field immediately
+    setClearSpeechTrigger((prev) => prev + 1); // Trigger speech transcript clear
+    lastSpeechTranscript.current = ""; // Reset speech tracking
+
     setLoading(true);
 
     try {
@@ -438,7 +447,15 @@ ${schema.fields
   };
 
   const handleTranscriptUpdate = (transcript: string) => {
-    setInput(transcript);
+    // Only update input if it's empty or we're replacing speech content
+    // Don't update if we're currently loading (message was just sent)
+    if (!loading && (!input.trim() || input === lastSpeechTranscript.current)) {
+      // Ensure first letter is capitalized
+      const capitalizedTranscript =
+        transcript.charAt(0).toUpperCase() + transcript.slice(1);
+      setInput(capitalizedTranscript);
+      lastSpeechTranscript.current = capitalizedTranscript;
+    }
     inputRef.current?.focus();
   };
 
@@ -781,14 +798,10 @@ ${schema.fields
           </button>
           <SpeechToText
             onTranscriptUpdate={handleTranscriptUpdate}
-            language={
-              i18n.language === "en"
-                ? "en-US"
-                : i18n.language === "fr"
-                ? "fr-FR"
-                : "nl-NL"
-            }
+            language="en-US" // Always use English for better business term recognition
             isDisabled={loading}
+            clearTrigger={clearSpeechTrigger}
+            stopTrigger={stopSpeechTrigger}
           />
           <button
             type="submit"

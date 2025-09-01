@@ -36,6 +36,17 @@
 .micButton.listening {
   background: #dc3545;
   animation: pulse 1.5s infinite;
+  cursor: pointer; /* Ensure it's still clickable when listening */
+}
+
+.micButton.listening:hover {
+  background: #c82333;
+  transform: scale(1.05);
+}
+
+.micButton.listening:active {
+  transform: scale(0.95);
+  background: #bd2130;
 }
 
 .micButton.disabled {

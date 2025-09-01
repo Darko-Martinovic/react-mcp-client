@@ -7,12 +7,16 @@ interface SpeechToTextProps {
   onTranscriptUpdate: (transcript: string) => void;
   language?: string;
   isDisabled?: boolean;
+  clearTrigger?: number; // Add a trigger prop to clear transcript
+  stopTrigger?: number; // Add a trigger prop to stop listening
 }
 
 const SpeechToText: React.FC<SpeechToTextProps> = ({
   onTranscriptUpdate,
   language = "en-US",
   isDisabled = false,
+  clearTrigger = 0,
+  stopTrigger = 0,
 }) => {
   const { t } = useTranslation();
 
@@ -20,11 +24,45 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
     transcript,
     isListening,
     isSupported,
+    startListening,
+    stopListening,
     toggleListening,
     clearTranscript,
     error,
     confidence,
   } = useSpeechToText(language);
+
+  // Clear transcript when clearTrigger changes
+  useEffect(() => {
+    if (clearTrigger > 0) {
+      console.log(
+        "🧹 Clearing speech transcript due to trigger:",
+        clearTrigger
+      );
+      clearTranscript();
+    }
+  }, [clearTrigger, clearTranscript]);
+
+  // Stop listening when stopTrigger changes
+  useEffect(() => {
+    if (stopTrigger > 0 && isListening) {
+      console.log(
+        "🛑 Stopping speech recognition due to trigger:",
+        stopTrigger
+      );
+      stopListening();
+    }
+  }, [stopTrigger, isListening, stopListening]);
+
+  // Handle manual stop/start
+  const handleToggle = () => {
+    console.log("🎤 Toggle clicked, currently listening:", isListening);
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
 
   // Update parent component when transcript changes
   useEffect(() => {
@@ -38,6 +76,7 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
     if (!isListening && transcript.trim()) {
       // Small delay to ensure the transcript is processed
       const timer = setTimeout(() => {
+        console.log("🧹 Auto-clearing transcript after listening stopped");
         clearTranscript();
       }, 1000); // Increased delay to 1 second
       return () => clearTimeout(timer);
@@ -67,12 +106,12 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
         className={`${styles.micButton} ${
           isListening ? styles.listening : ""
         } ${isDisabled ? styles.disabled : ""}`}
-        onClick={toggleListening}
+        onClick={handleToggle}
         disabled={isDisabled}
         title={
           isListening
-            ? t?.("speech.stopListening") || "Stop listening"
-            : t?.("speech.startListening") || "Start voice input"
+            ? t?.("speech.stopListening") || "Click to stop listening"
+            : t?.("speech.startListening") || "Click to start voice input"
         }
       >
         {isListening ? "🔴" : "🎤"}

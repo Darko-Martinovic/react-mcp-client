@@ -68,6 +68,124 @@ export const useSpeechToText = (
     typeof window !== "undefined" &&
     ("SpeechRecognition" in window || "webkitSpeechRecognition" in window);
 
+  // Business-specific correction function
+  const applyBusinessCorrections = (text: string): string => {
+    let corrected = text;
+
+    // First, convert spoken punctuation to actual punctuation
+    const punctuationMap: Record<string, string> = {
+      "question mark": "?",
+      period: ".",
+      comma: ",",
+      "exclamation mark": "!",
+      "exclamation point": "!",
+      semicolon: ";",
+      colon: ":",
+      dash: "-",
+      hyphen: "-",
+    };
+
+    // Apply punctuation conversions
+    for (const [spoken, symbol] of Object.entries(punctuationMap)) {
+      const regex = new RegExp(`\\b${spoken}\\b`, "gi");
+      corrected = corrected.replace(regex, symbol);
+    }
+
+    // Common business term corrections (case-insensitive)
+    const corrections: Record<string, string> = {
+      // Category variations
+      kategory: "category",
+      categorey: "category",
+      catagory: "category",
+      catergory: "category",
+
+      // Performance variations
+      performace: "performance",
+      preformance: "performance",
+      performence: "performance",
+
+      // Chart variations - this is key for your issue
+      chat: "chart",
+      shart: "chart",
+      chart: "chart", // Keep correct ones
+
+      // Month variations - fix "Man" -> "month"
+      man: "month",
+      mont: "month",
+      munth: "month",
+      monts: "months",
+
+      // Common business words
+      inventery: "inventory",
+      inventry: "inventory",
+      analitics: "analytics",
+      analitik: "analytics",
+      analytic: "analytics",
+
+      // Remove strange words like "sincloud"
+      sincloud: "",
+      "sin cloud": "",
+
+      // Last variations
+      las: "last",
+      lst: "last",
+
+      // And variations
+      an: "and",
+      "an ": "and ",
+    };
+
+    // Apply corrections word by word to preserve context
+    const words = corrected.split(" ");
+    const correctedWords = words.map((word) => {
+      const lowerWord = word.toLowerCase().replace(/[.,!?]/g, "");
+      const punctuation = word.match(/[.,!?]$/)?.[0] || "";
+
+      // Check if word needs correction
+      for (const [wrong, right] of Object.entries(corrections)) {
+        if (lowerWord === wrong.toLowerCase()) {
+          return right + punctuation;
+        }
+      }
+
+      return word;
+    });
+
+    corrected = correctedWords.join(" ");
+
+    // Fix excessive capitalization - only capitalize first letter and proper nouns
+    corrected = corrected.toLowerCase();
+    corrected = corrected.charAt(0).toUpperCase() + corrected.slice(1);
+
+    // Capitalize after sentence-ending punctuation
+    corrected = corrected.replace(
+      /([.!?])\s+([a-z])/g,
+      (match, punct, letter) => {
+        return punct + " " + letter.toUpperCase();
+      }
+    );
+
+    // Clean up extra spaces and strange artifacts
+    corrected = corrected.replace(/\s+/g, " ").trim();
+    corrected = corrected.replace(/\s+([.,!?])/g, "$1"); // Remove spaces before punctuation
+
+    return corrected;
+  };
+
+  // Enhanced language code mapping
+  const getLanguageCode = (lang: string): string => {
+    // Always use US English for better business term recognition
+    if (lang.startsWith("en")) {
+      return "en-US";
+    }
+
+    const langMap: Record<string, string> = {
+      fr: "fr-FR",
+      nl: "nl-NL",
+    };
+    return langMap[lang] || "en-US";
+  };
+
   // Initialize speech recognition
   useEffect(() => {
     if (!isSupported) return;
@@ -78,11 +196,14 @@ export const useSpeechToText = (
 
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = language;
-    recognition.maxAlternatives = 1;
+    recognition.lang = getLanguageCode(language); // Use enhanced language mapping
+    recognition.maxAlternatives = 3; // Get multiple alternatives for better accuracy
 
     recognition.onstart = () => {
-      console.log("🎤 Speech recognition started");
+      console.log(
+        "🎤 Speech recognition started with language:",
+        recognition.lang
+      );
       setIsListening(true);
       setError(null);
     };
@@ -115,7 +236,15 @@ export const useSpeechToText = (
 
       // Set the complete transcript (final + interim), don't append to previous
       const currentTranscript = finalTranscript + interimTranscript;
-      setTranscript(currentTranscript.trim());
+
+      // Apply business-specific corrections to improve accuracy
+      const correctedTranscript = applyBusinessCorrections(
+        currentTranscript.trim()
+      );
+      setTranscript(correctedTranscript);
+
+      console.log("🎤 Raw transcript:", currentTranscript.trim());
+      console.log("🎤 Corrected transcript:", correctedTranscript);
 
       // Auto-stop after 3 seconds of silence, but only reset timeout on new words
       if (finalTranscript || interimTranscript.length > 0) {
@@ -183,6 +312,14 @@ export const useSpeechToText = (
       setError(null);
       setTranscript(""); // Clear previous transcript
       setConfidence(0);
+
+      // Force English US for business terminology
+      recognitionRef.current.lang = "en-US";
+      console.log(
+        "🎤 Starting speech recognition with language:",
+        recognitionRef.current.lang
+      );
+
       recognitionRef.current.start();
     } catch (err) {
       console.error("Error starting speech recognition:", err);
@@ -191,8 +328,24 @@ export const useSpeechToText = (
   }, [isSupported, isListening]);
 
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
+    console.log("🛑 Stop button clicked, isListening:", isListening);
+
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+        console.log("🛑 Speech recognition stopped manually");
+
+        // Clear timeout if exists
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+
+        // Force state update
+        setIsListening(false);
+      } catch (err) {
+        console.error("Error stopping speech recognition:", err);
+      }
     }
   }, [isListening]);
 
