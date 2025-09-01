@@ -57,10 +57,18 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
   // Handle manual stop/start
   const handleToggle = () => {
     console.log("🎤 Toggle clicked, currently listening:", isListening);
+    console.log("🎤 Button disabled state:", isDisabled);
+
     if (isListening) {
+      console.log("🛑 Calling stopListening");
       stopListening();
     } else {
-      startListening();
+      console.log("🎤 Preparing to start listening...");
+      // Longer delay to ensure previous session is fully ended and cleaned up
+      setTimeout(() => {
+        console.log("🎤 Starting listening after delay");
+        startListening();
+      }, 300); // Increased delay to 300ms
     }
   };
 
@@ -71,17 +79,7 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
     }
   }, [transcript, onTranscriptUpdate]);
 
-  // Clear transcript when listening stops and transcript is sent
-  useEffect(() => {
-    if (!isListening && transcript.trim()) {
-      // Small delay to ensure the transcript is processed
-      const timer = setTimeout(() => {
-        console.log("🧹 Auto-clearing transcript after listening stopped");
-        clearTranscript();
-      }, 1000); // Increased delay to 1 second
-      return () => clearTimeout(timer);
-    }
-  }, [isListening, transcript, clearTranscript]);
+  // Note: Removed automatic transcript clearing to prevent interference with restart
 
   if (!isSupported) {
     return (
