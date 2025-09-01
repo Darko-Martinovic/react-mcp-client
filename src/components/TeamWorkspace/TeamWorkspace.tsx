@@ -80,11 +80,20 @@ const TeamWorkspaceManager: React.FC<TeamWorkspaceManagerProps> = ({
     }
   };
 
-  const getCurrentUser = () => ({
-    id: "user-" + Date.now(),
-    name: "Current User",
-    email: "user@example.com",
-  });
+  const getCurrentUser = () => {
+    // Use a consistent user ID stored in localStorage
+    let userId = localStorage.getItem("mcpCurrentUserId");
+    if (!userId) {
+      userId = "user-" + Date.now();
+      localStorage.setItem("mcpCurrentUserId", userId);
+    }
+
+    return {
+      id: userId,
+      name: "Current User",
+      email: "user@example.com",
+    };
+  };
 
   const currentUser = getCurrentUser();
   const isWorkspaceOwner = activeWorkspace?.ownerId === currentUser.id;
@@ -122,10 +131,13 @@ const TeamWorkspaceManager: React.FC<TeamWorkspaceManagerProps> = ({
             ))}
           </select>
           <button
-            onClick={() => setShowCreateForm(true)}
+            onClick={() => {
+              console.log("Create workspace button clicked!");
+              setShowCreateForm(true);
+            }}
             className={styles.createWorkspaceButton}
           >
-            New Workspace
+            ➕ New Workspace
           </button>
         </div>
 
@@ -303,9 +315,15 @@ const TeamWorkspaceManager: React.FC<TeamWorkspaceManagerProps> = ({
                 </ul>
               ) : (
                 <div className={styles.noSharedChats}>
-                  No chats shared to this workspace yet.
-                  <br />
-                  Use the share button on individual chats to add them here.
+                  <div className={styles.helpText}>
+                    <strong>How to add chats to this workspace:</strong>
+                    <ol className={styles.helpList}>
+                      <li>Go to the chat list in the sidebar</li>
+                      <li>Click the 👥 icon next to any chat</li>
+                      <li>Select this workspace from the dropdown</li>
+                      <li>The chat will appear here!</li>
+                    </ol>
+                  </div>
                 </div>
               )}
             </div>

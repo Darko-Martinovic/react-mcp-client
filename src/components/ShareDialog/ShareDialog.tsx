@@ -6,6 +6,7 @@ import {
   ShareLink,
 } from "../../types/chat";
 import { useCollaboration } from "../../hooks/useCollaboration";
+import { useTeamWorkspace } from "../../hooks/useTeamWorkspace";
 import styles from "./ShareDialog.module.css";
 
 interface ShareDialogProps {
@@ -27,6 +28,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
   const [linkPermission, setLinkPermission] = useState<SharePermission>("read");
   const [linkExpiryDays, setLinkExpiryDays] = useState<number | undefined>(7);
   const [hasExpiry, setHasExpiry] = useState(true);
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>("");
 
   const {
     createShareLink,
@@ -36,6 +38,8 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
     revokeShareLink,
     activeShareLinks,
   } = useCollaboration();
+
+  const { workspaces, shareChatToWorkspace } = useTeamWorkspace();
 
   if (!isOpen) return null;
 
@@ -90,6 +94,24 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
     createShareLink(chat.id, linkPermission, expiryDays);
   };
 
+  const handleShareToWorkspace = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedWorkspaceId) return;
+
+    shareChatToWorkspace(selectedWorkspaceId, chat.id);
+
+    // Update the chat to mark it as shared to workspace
+    const updatedChat = {
+      ...chat,
+      isShared: true,
+      workspaceId: selectedWorkspaceId,
+      updatedAt: new Date().toISOString(),
+    };
+
+    onChatUpdate(updatedChat);
+    setSelectedWorkspaceId("");
+  };
+
   const handleCopyLink = (url: string) => {
     navigator.clipboard.writeText(url);
   };
@@ -126,6 +148,48 @@ const ShareDialog: React.FC<ShareDialogProps> = ({
           <button onClick={onClose} className={styles.closeButton}>
             ✕
           </button>
+        </div>
+
+        {/* Workspace Section */}
+        <div className={styles.shareSection}>
+          <h3 className={styles.sectionTitle}>
+            <span className={styles.sectionIcon}>🏢</span>
+            Workspace
+          </h3>
+
+          <div className={styles.workspaceForm}>
+            <select
+              value={selectedWorkspaceId}
+              onChange={(e) => setSelectedWorkspaceId(e.target.value)}
+              className={styles.workspaceSelect}
+            >
+              <option value="">Select a workspace...</option>
+              {workspaces.map((workspace) => (
+                <option key={workspace.id} value={workspace.id}>
+                  {workspace.name}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleShareToWorkspace}
+              className={styles.addButton}
+              disabled={!selectedWorkspaceId}
+            >
+              Share to Workspace
+            </button>
+          </div>
+
+          {chat.workspaceId && (
+            <div className={styles.currentWorkspace}>
+              <span className={styles.workspaceLabel}>
+                Currently in workspace:
+              </span>
+              <span className={styles.workspaceName}>
+                {workspaces.find((w) => w.id === chat.workspaceId)?.name ||
+                  "Unknown workspace"}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Collaborators Section */}

@@ -340,3 +340,42 @@
   font-style: italic;
   padding: 16px;
 }
+
+/* Workspace Section Styles */
+.workspaceForm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.workspaceSelect {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.currentWorkspace {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #e8f4fd;
+  border-radius: 6px;
+  border: 1px solid #b3d9f2;
+  font-size: 14px;
+}
+
+.workspaceLabel {
+  color: #666;
+  font-weight: 500;
+}
+
+.workspaceName {
+  color: #007acc;
+  font-weight: 600;
+}

@@ -63,12 +63,8 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
       console.log("🛑 Calling stopListening");
       stopListening();
     } else {
-      console.log("🎤 Preparing to start listening...");
-      // Longer delay to ensure previous session is fully ended and cleaned up
-      setTimeout(() => {
-        console.log("🎤 Starting listening after delay");
-        startListening();
-      }, 300); // Increased delay to 300ms
+      console.log("🎤 Calling startListening");
+      startListening();
     }
   };
 
@@ -87,12 +83,27 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
     }
   }, [isListening]);
 
+  // Add a counter to force re-renders when isListening changes
+  const [renderCounter, setRenderCounter] = React.useState(0);
+  useEffect(() => {
+    setRenderCounter((prev) => prev + 1);
+  }, [isListening]);
+
   // Update parent component when transcript changes
   useEffect(() => {
-    if (transcript.trim()) {
+    console.log(
+      "📝 Transcript changed:",
+      transcript,
+      "isDisabled:",
+      isDisabled
+    );
+    if (transcript.trim() && !isDisabled) {
+      console.log("📝 Calling onTranscriptUpdate with:", transcript.trim());
       onTranscriptUpdate(transcript.trim());
+    } else if (isDisabled) {
+      console.log("📝 Skipping transcript update - component is disabled");
     }
-  }, [transcript, onTranscriptUpdate]);
+  }, [transcript, onTranscriptUpdate, isDisabled]);
 
   // Note: Removed automatic transcript clearing to prevent interference with restart
 
@@ -100,6 +111,7 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
     return (
       <div className={styles.unsupportedContainer}>
         <button
+          type="button" // Prevent form submission when inside a form
           className={`${styles.micButton} ${styles.unsupported}`}
           title={
             t?.("speech.unsupported") ||
@@ -116,6 +128,8 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
   return (
     <div className={styles.speechContainer}>
       <button
+        type="button" // Prevent form submission when inside a form
+        key={`mic-button-${renderCounter}`} // Force re-render when state changes
         className={`${styles.micButton} ${
           isListening ? styles.listening : ""
         } ${isDisabled ? styles.disabled : ""}`}
@@ -138,6 +152,7 @@ const SpeechToText: React.FC<SpeechToTextProps> = ({
           transition: "all 0.2s ease",
         }}
         data-listening={isListening} // Add data attribute for debugging
+        data-render-counter={renderCounter} // Add render counter for debugging
       >
         {(() => {
           const buttonIcon = isListening ? "🔴" : "🎤";

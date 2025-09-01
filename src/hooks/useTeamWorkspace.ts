@@ -8,11 +8,20 @@ import {
 import { useToast } from "./useToast";
 
 // Mock current user - in real app this would come from auth
-const getCurrentUser = () => ({
-  id: "user-" + Date.now(),
-  name: "Current User",
-  email: "user@example.com",
-});
+const getCurrentUser = () => {
+  // Use a consistent user ID stored in localStorage
+  let userId = localStorage.getItem("mcpCurrentUserId");
+  if (!userId) {
+    userId = "user-" + Date.now();
+    localStorage.setItem("mcpCurrentUserId", userId);
+  }
+
+  return {
+    id: userId,
+    name: "Current User",
+    email: "user@example.com",
+  };
+};
 
 export const useTeamWorkspace = () => {
   const [workspaces, setWorkspaces] = useState<TeamWorkspace[]>([]);

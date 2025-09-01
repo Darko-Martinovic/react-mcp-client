@@ -17,7 +17,7 @@ import {
 import { getSystemPromptConfig } from "../SystemPromptEditor";
 import EmojiPicker from "../EmojiPicker";
 import QuestionPicker from "../QuestionPicker";
-import SpeechToText from "../SpeechToText";
+import SpeechToTextSimple from "../SpeechToText/SpeechToTextSimple";
 import { DataVisualization } from "../DataVisualization";
 import { isSimpleTable } from "../DataVisualization/DataTransformer";
 import {
@@ -447,14 +447,10 @@ ${schema.fields
   };
 
   const handleTranscriptUpdate = (transcript: string) => {
-    // Only update input if it's empty or we're replacing speech content
-    // Don't update if we're currently loading (message was just sent)
-    if (!loading && (!input.trim() || input === lastSpeechTranscript.current)) {
-      // Ensure first letter is capitalized
-      const capitalizedTranscript =
-        transcript.charAt(0).toUpperCase() + transcript.slice(1);
-      setInput(capitalizedTranscript);
-      lastSpeechTranscript.current = capitalizedTranscript;
+    // Simple: just update the input if not loading and transcript is not empty
+    if (!loading && transcript.trim()) {
+      setInput(transcript.trim());
+      lastSpeechTranscript.current = transcript.trim();
     }
     inputRef.current?.focus();
   };
@@ -796,7 +792,7 @@ ${schema.fields
           >
             😀
           </button>
-          <SpeechToText
+          <SpeechToTextSimple
             onTranscriptUpdate={handleTranscriptUpdate}
             language="en-US" // Always use English for better business term recognition
             isDisabled={loading}

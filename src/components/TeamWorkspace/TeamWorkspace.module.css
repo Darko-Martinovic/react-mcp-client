@@ -61,37 +61,81 @@
   gap: 12px;
   margin-bottom: 24px;
   padding: 16px;
-  background: #f8f9fa;
+  background: var(--bg-secondary, #f8f9fa);
   border-radius: 8px;
+  border: 1px solid var(--border-primary, #e0e0e0);
+  flex-wrap: wrap;
 }
 
 .currentWorkspace {
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary, #333);
+  white-space: nowrap;
 }
 
 .workspaceSelect {
   padding: 8px 12px;
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--border-primary, #d0d0d0);
   border-radius: 6px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+  background: var(--bg-primary, white);
+  color: var(--text-primary, #333);
   cursor: pointer;
   font-size: 14px;
+  min-width: 150px;
+  flex: 1;
+}
+
+.workspaceSelect:focus {
+  outline: none;
+  border-color: var(--accent-primary, #007acc);
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
 }
 
 .createWorkspaceButton {
   padding: 8px 16px;
-  background: var(--accent-primary);
+  background: var(--accent-primary, #007acc);
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-width: 120px;
 }
 
 .createWorkspaceButton:hover {
-  background: #005999;
+  background: var(--accent-secondary, #005999);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 122, 204, 0.3);
+}
+
+.createWorkspaceButton:active {
+  transform: translateY(0);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .workspaceSelector {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .currentWorkspace {
+    text-align: center;
+  }
+
+  .workspaceSelect {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .createWorkspaceButton {
+    width: 100%;
+    min-width: unset;
+  }
 }
 
 .workspaceSection {
@@ -419,4 +463,29 @@
 
 .deleteWorkspaceButton:hover {
   background: #b71c1c;
+}
+
+/* Help text styling */
+.helpText {
+  text-align: left;
+  color: var(--text-secondary, #666);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.helpText strong {
+  color: var(--text-primary, #333);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.helpList {
+  margin: 8px 0 0 20px;
+  padding: 0;
+  color: var(--text-secondary, #666);
+}
+
+.helpList li {
+  margin-bottom: 4px;
+  line-height: 1.4;
 }

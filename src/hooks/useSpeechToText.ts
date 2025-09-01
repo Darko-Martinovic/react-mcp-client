@@ -204,6 +204,25 @@ export const useSpeechToText = (
     };
   }, [language, isSupported]); // Removed isListening dependency
 
+  // State synchronization effect - ensure isListening matches reality
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const hasActiveRecognition = !!recognitionRef.current;
+      if (hasActiveRecognition !== isListening) {
+        console.log(
+          "🔄 State sync: recognition exists:",
+          hasActiveRecognition,
+          "but isListening:",
+          isListening,
+          "FORCING UPDATE"
+        );
+        setIsListening(hasActiveRecognition);
+      }
+    }, 200); // Check every 200ms for faster correction
+
+    return () => clearInterval(interval);
+  }, [isListening]);
+
   // Create a fresh recognition instance
   const createRecognitionInstance = useCallback(() => {
     if (!isSupported) return null;
@@ -228,7 +247,13 @@ export const useSpeechToText = (
 
     recognition.onend = () => {
       console.log("🎤 Speech recognition ended, setting isListening to false");
-      setIsListening(false);
+
+      // Force state update with a slight delay to ensure it takes effect
+      setTimeout(() => {
+        setIsListening(false);
+        console.log("🎤 isListening state forcefully set to false");
+      }, 10);
+
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
@@ -276,7 +301,7 @@ export const useSpeechToText = (
           clearTimeout(timeoutRef.current);
         }
         timeoutRef.current = setTimeout(() => {
-          if (recognitionRef.current && isListening) {
+          if (recognitionRef.current) {
             recognition.stop();
           }
         }, 3000);
@@ -317,7 +342,7 @@ export const useSpeechToText = (
     };
 
     return recognition;
-  }, [language, isSupported, isListening]);
+  }, [language, isSupported]); // Removed isListening dependency
 
   const startListening = useCallback(() => {
     console.log(
@@ -332,9 +357,16 @@ export const useSpeechToText = (
       return;
     }
 
-    if (isListening) {
+    if (isListening && recognitionRef.current) {
       console.log("🎤 Already listening, ignoring start request");
       return;
+    }
+
+    // Stop any existing recognition first
+    if (recognitionRef.current) {
+      console.log("🎤 Stopping existing recognition before starting new one");
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
     }
 
     // Always create a fresh recognition instance
@@ -370,9 +402,12 @@ export const useSpeechToText = (
       setIsListening(false);
       recognitionRef.current = null; // Clear failed reference
     }
-  }, [isSupported, isListening, createRecognitionInstance]);
+  }, [isSupported, createRecognitionInstance]); // Removed isListening dependency
   const stopListening = useCallback(() => {
-    console.log("🛑 Stop listening called, isListening:", isListening);
+    console.log(
+      "🛑 Stop listening called, current recognitionRef:",
+      !!recognitionRef.current
+    );
 
     if (recognitionRef.current) {
       try {
@@ -385,8 +420,13 @@ export const useSpeechToText = (
           timeoutRef.current = null;
         }
 
-        // Force state update immediately
+        // Force state update immediately with timeout fallback
         setIsListening(false);
+        setTimeout(() => {
+          setIsListening(false); // Double-check in case first one didn't take
+          console.log("🛑 Double-checked isListening state set to false");
+        }, 50);
+
         console.log("🛑 isListening state set to false");
 
         // Clear reference to ensure fresh instance next time
@@ -398,16 +438,31 @@ export const useSpeechToText = (
         setIsListening(false);
         recognitionRef.current = null;
       }
+    } else {
+      // Even if no recognition reference, ensure state is consistent
+      setIsListening(false);
+      console.log(
+        "🛑 No recognition reference, but ensuring isListening is false"
+      );
     }
-  }, [isListening]);
+  }, []); // No dependencies needed
 
   const toggleListening = useCallback(() => {
-    if (isListening) {
+    // Use the recognition ref as the source of truth, not the state
+    const currentlyActive = !!recognitionRef.current;
+    console.log(
+      "🔄 Toggle listening - recognitionRef exists:",
+      currentlyActive,
+      "isListening state:",
+      isListening
+    );
+
+    if (currentlyActive) {
       stopListening();
     } else {
       startListening();
     }
-  }, [isListening, startListening, stopListening]);
+  }, [startListening, stopListening]);
 
   const clearTranscript = useCallback(() => {
     setTranscript("");
