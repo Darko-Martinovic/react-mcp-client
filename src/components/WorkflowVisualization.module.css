@@ -15,16 +15,16 @@
 }
 
 .modal {
-  background: var(--bg-primary);
+  background: var(--bg-primary, #fff);
   border-radius: 20px;
-  box-shadow: 0 25px 50px var(--shadow-medium);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
   width: 95%;
   max-width: 1200px;
   height: 90%;
   max-height: 800px;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--border-primary, #e0e0e0);
 }
 
 .header {
@@ -32,22 +32,22 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 30px;
-  border-bottom: 2px solid var(--border-primary);
-  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border-primary, #e0e0e0);
+  background: var(--bg-secondary, #f8f9fa);
   border-radius: 20px 20px 0 0;
-  color: var(--text-primary);
+  color: var(--text-primary, #333);
 }
 
 .title {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 600;
-  text-shadow: 0 1px 2px var(--shadow-light);
-  color: var(--text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: var(--text-primary, #333);
 }
 
 .closeButton {
-  background: var(--bg-tertiary);
+  background: var(--bg-tertiary, #f0f0f0);
   border: 2px solid var(--border-secondary);
   color: var(--text-primary);
   border-radius: 50%;
@@ -59,11 +59,15 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  color: var(--text-secondary, #666);
+  border: 2px solid var(--border-primary, #e0e0e0);
+  border-radius: 50%;
 }
 
 .closeButton:hover {
-  background: var(--accent-primary);
-  border-color: var(--accent-secondary);
+  background: var(--accent-primary, #1976d2);
+  border-color: var(--accent-secondary, #2196f3);
+  color: var(--bg-primary, #fff);
   transform: rotate(90deg);
 }
 
@@ -73,11 +77,11 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
+  background: var(--bg-primary, #fff);
 }
 
 .instructions {
-  background: var(--bg-secondary);
+  background: var(--bg-secondary, #f8f9fa);
   color: var(--text-secondary);
   padding: 15px 20px;
   border-radius: 12px;
@@ -109,15 +113,17 @@
 }
 
 .connectionLine {
-  stroke: var(--text-muted);
+  stroke: var(--text-muted, #4a5568);
   stroke-width: 3;
   stroke-dasharray: 6, 4;
   opacity: 0.8;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .arrowHead {
-  fill: var(--text-muted);
+  fill: var(--text-muted, #4a5568);
   opacity: 0.8;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .workflowStep {
@@ -134,8 +140,13 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   text-align: center;
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)
+  );
 }
 
 .workflowStep:hover {
@@ -153,39 +164,57 @@
 
 /* Step type styling with theme-aware colors */
 .workflowStep.input {
-  background: var(--bg-tertiary);
-  color: var(--accent-primary);
-  border: 2px solid var(--accent-secondary);
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)
+  );
+  color: var(--accent-primary, #1565c0);
+  border: 2px solid var(--accent-secondary, #42a5f5);
 }
 
 .workflowStep.ai {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 2px solid var(--border-secondary);
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%)
+  );
+  color: var(--text-primary, #ad1457);
+  border: 2px solid var(--border-secondary, #f06292);
 }
 
 .workflowStep.processing {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 2px solid var(--border-secondary);
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%)
+  );
+  color: var(--text-primary, #ef6c00);
+  border: 2px solid var(--border-secondary, #ffb74d);
 }
 
 .workflowStep.mcp {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 2px solid var(--border-secondary);
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #f3e5f5 0%, #ce93d8 100%)
+  );
+  color: var(--text-primary, #7b1fa2);
+  border: 2px solid var(--border-secondary, #ba68c8);
 }
 
 .workflowStep.output {
-  background: var(--bg-tertiary);
-  color: #2e7d32;
-  border: 2px solid #81c784;
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)
+  );
+  color: var(--accent-primary, #2e7d32);
+  border: 2px solid var(--accent-secondary, #81c784);
 }
 
 .workflowStep.search {
-  background: linear-gradient(135deg, #e1f5fe 0%, #81d4fa 100%);
-  color: #0277bd;
-  border: 2px solid #4fc3f7;
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #e1f5fe 0%, #81d4fa 100%)
+  );
+  color: var(--accent-primary, #0277bd);
+  border: 2px solid var(--accent-secondary, #4fc3f7);
 }
 
 .stepIcon {
@@ -213,14 +242,18 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
-  color: #1f2937;
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)
+  );
+  color: var(--text-primary, #1f2937);
   padding: 25px;
   border-radius: 15px 15px 0 0;
-  box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.15);
   z-index: 5;
   max-height: 40%;
   overflow-y: auto;
+  border-top: 1px solid var(--border-primary, #e0e0e0);
 }
 
 .stepDetails {
@@ -257,27 +290,27 @@
 }
 
 .stepType.input {
-  background: rgba(144, 202, 249, 0.2);
-  border: 1px solid rgba(144, 202, 249, 0.4);
-  color: #1565c0;
+  background: var(--bg-tertiary, rgba(144, 202, 249, 0.2));
+  border: 1px solid var(--border-secondary, rgba(144, 202, 249, 0.4));
+  color: var(--accent-primary, #1565c0);
 }
 
 .stepType.ai {
-  background: rgba(244, 143, 177, 0.2);
-  border: 1px solid rgba(244, 143, 177, 0.4);
-  color: #ad1457;
+  background: var(--bg-tertiary, rgba(244, 143, 177, 0.2));
+  border: 1px solid var(--border-secondary, rgba(244, 143, 177, 0.4));
+  color: var(--accent-primary, #ad1457);
 }
 
 .stepType.processing {
-  background: rgba(255, 183, 77, 0.2);
-  border: 1px solid rgba(255, 183, 77, 0.4);
-  color: #ef6c00;
+  background: var(--bg-tertiary, rgba(255, 183, 77, 0.2));
+  border: 1px solid var(--border-secondary, rgba(255, 183, 77, 0.4));
+  color: var(--accent-primary, #ef6c00);
 }
 
 .stepType.mcp {
-  background: rgba(186, 104, 200, 0.2);
-  border: 1px solid rgba(186, 104, 200, 0.4);
-  color: #7b1fa2;
+  background: var(--bg-tertiary, rgba(186, 104, 200, 0.2));
+  border: 1px solid var(--border-secondary, rgba(186, 104, 200, 0.4));
+  color: var(--accent-primary, #7b1fa2);
 }
 
 .stepType.output {
