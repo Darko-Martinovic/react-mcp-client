@@ -13,6 +13,16 @@ A modern React TypeScript application for interacting with Model Context Protoco
 - 📈 **Excel Export**: Professional Excel exports with formatting and metadata
 - 🐛 **Debug Tracing**: Comprehensive trace functionality for troubleshooting
 
+## 🎬 Demo Video
+
+See the React MCP Client in action with intelligent query processing and data visualization:
+
+https://github.com/user-attachments/assets/your-video-id-here
+
+*Note: The video demonstrates smart query processing, automatic data visualization, and multilingual chat capabilities.*
+
+> **Alternative viewing**: You can also view the demo video locally by opening `Smart Query.mp4` in the project root folder.
+
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 18 + TypeScript, Vite, CSS Modules
