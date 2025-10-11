@@ -19,13 +19,13 @@ See the React MCP Client in action with intelligent query processing and data vi
 
 <!-- Embedded video (may render inline on GitHub) -->
 <video controls width="720">
-  <source src="./Smart Query.mp4" type="video/mp4">
+  <source src="./Smart%20Query.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
 <!-- Fallback link (guaranteed to work) -->
 
-**Can't see the video above?** [Click here to play demo video](./Smart Query.mp4)
+**Can't see the video above?** [Click here to play demo video](./Smart%20Query.mp4)
 
 _Note: The video demonstrates smart query processing, automatic data visualization, and multilingual chat capabilities._
 
