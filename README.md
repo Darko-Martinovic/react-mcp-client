@@ -19,7 +19,7 @@ See the React MCP Client in action with intelligent query processing and data vi
 
 https://github.com/user-attachments/assets/your-video-id-here
 
-*Note: The video demonstrates smart query processing, automatic data visualization, and multilingual chat capabilities.*
+_Note: The video demonstrates smart query processing, automatic data visualization, and multilingual chat capabilities._
 
 > **Alternative viewing**: You can also view the demo video locally by opening `Smart Query.mp4` in the project root folder.
 
