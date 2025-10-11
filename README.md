@@ -17,11 +17,17 @@ A modern React TypeScript application for interacting with Model Context Protoco
 
 See the React MCP Client in action with intelligent query processing and data visualization:
 
-https://github.com/user-attachments/assets/your-video-id-here
+<!-- Embedded video (may render inline on GitHub) -->
+<video controls width="720">
+  <source src="./Smart Query.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<!-- Fallback link (guaranteed to work) -->
+
+**Can't see the video above?** [Click here to play demo video](./Smart Query.mp4)
 
 _Note: The video demonstrates smart query processing, automatic data visualization, and multilingual chat capabilities._
-
-> **Alternative viewing**: You can also view the demo video locally by opening `Smart Query.mp4` in the project root folder.
 
 ## 🛠️ Technology Stack
 
