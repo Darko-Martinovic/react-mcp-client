@@ -172,6 +172,12 @@ MIT License - see LICENSE file for details.
 - [Azure OpenAI](https://docs.microsoft.com/en-us/azure/cognitive-services/openai/)
 - [React](https://react.dev/) | [Vite](https://vitejs.dev/) | [Recharts](https://recharts.org/)
 
+## 🛡️ Disclaimer
+
+This project was developed independently on personal equipment and in personal time.  
+It is not affiliated with, endorsed by, or derived from the intellectual property of EPAM Systems or any of its clients.  
+All examples, configurations, and data are generic and intended solely for demonstration and educational purposes.
+
 ---
 
 **Built with ❤️ using React + TypeScript + MCP**
