@@ -17,7 +17,7 @@ A modern React TypeScript application for interacting with Model Context Protoco
 
 See the React MCP Client in action with intelligent query processing and data visualization:
 
-https://github.com/user-attachments/assets/3b6d9bb0-61f3-44d4-8df5-61ec53a29ec0
+https://github.com/user-attachments/assets/c06299ae-9ed7-42bc-a93f-4879ca464a8a
 
 _The demo showcases smart query processing, automatic data visualization, and multilingual chat capabilities._
 
