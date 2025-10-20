@@ -777,7 +777,10 @@ ${schema.fields
           <button
             type="button"
             className={styles.questionButton}
-            onClick={() => setShowQuestionPicker(!showQuestionPicker)}
+            onClick={() => {
+              setShowQuestionPicker(!showQuestionPicker);
+              setShowEmojiPicker(false); // Close emoji picker when opening question picker
+            }}
             disabled={loading}
             title="Standard questions"
           >
@@ -786,7 +789,10 @@ ${schema.fields
           <button
             type="button"
             className={styles.emojiButton}
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            onClick={() => {
+              setShowEmojiPicker(!showEmojiPicker);
+              setShowQuestionPicker(false); // Close question picker when opening emoji picker
+            }}
             disabled={loading}
             title="Add emoji"
           >
