@@ -80,14 +80,15 @@ html.dark .languageButton:hover,
   right: 0;
   z-index: 1000;
   margin-top: 4px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-primary);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 6px;
-  box-shadow: 0 10px 25px var(--shadow-medium), 0 4px 6px var(--shadow-light);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   animation: slideDown 0.2s ease-out;
   min-width: 140px;
   width: max-content;
+  backdrop-filter: blur(8px);
 }
 
 /* Dark theme overrides for language dropdown */
@@ -118,8 +119,8 @@ html.dark .languageDropdown,
   gap: 6px;
   padding: 8px 10px;
   border: none;
-  background: var(--bg-primary);
-  color: var(--text-secondary);
+  background: #ffffff;
+  color: #4a5568;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -128,12 +129,12 @@ html.dark .languageDropdown,
 }
 
 .languageOption:hover {
-  background: var(--bg-tertiary);
+  background: #f7fafc;
 }
 
 .languageOption.active {
   background: #eff6ff;
-  color: var(--accent-primary);
+  color: #3b82f6;
 }
 
 /* Dark theme overrides for language options */
