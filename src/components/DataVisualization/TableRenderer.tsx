@@ -12,10 +12,7 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
   const formatCellValue = (value: unknown): string => {
     if (value === null || value === undefined) return "-";
     if (typeof value === "number") {
-      // Format currency if it looks like a price
-      if (value % 1 !== 0 && value < 1000) {
-        return `$${value.toFixed(2)}`;
-      }
+      // Format numbers with proper locale formatting (no currency symbol)
       return value.toLocaleString();
     }
     if (
@@ -48,8 +45,20 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
       totalAmount: "Total",
       saleDate: "Sale Date",
       saleId: "Sale ID",
+      totalSales: "Total Sales",
+      totalQuantity: "Total Quantity",
     };
-    return headerMap[col] || col.charAt(0).toUpperCase() + col.slice(1);
+
+    // If not in headerMap, convert camelCase to readable format
+    if (headerMap[col]) {
+      return headerMap[col];
+    }
+
+    // Convert camelCase to Title Case with spaces
+    return col
+      .replace(/([A-Z])/g, " $1") // Add space before capital letters
+      .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
+      .trim(); // Remove any leading/trailing spaces
   };
 
   // Function to get cell content class based on column type and value
@@ -60,9 +69,13 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
       className += ` ${styles.cellContentName}`;
     } else if (
       col.toLowerCase().includes("price") ||
-      col.toLowerCase().includes("amount")
+      col.toLowerCase().includes("amount") ||
+      col.toLowerCase().includes("sales") ||
+      col.toLowerCase().includes("total") ||
+      col.toLowerCase().includes("quantity") ||
+      typeof value === "number"
     ) {
-      className += ` ${styles.cellContentPrice}`;
+      className += ` ${styles.cellContentNumber}`;
     } else if (col.toLowerCase().includes("stock") && Number(value) < 30) {
       className += ` ${styles.cellContentLowStock}`;
     } else if (col.toLowerCase().includes("id")) {

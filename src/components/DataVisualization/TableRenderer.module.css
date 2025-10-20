@@ -189,6 +189,12 @@ html.dark .tableCell,
   text-align: right;
 }
 
+.cellContentNumber {
+  font-weight: 500;
+  text-align: right;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+}
+
 .cellContentLowStock {
   color: #dc2626;
   font-weight: 600;
@@ -220,6 +226,13 @@ html[data-theme="dark"] .cellContentPrice,
 html.dark .cellContentPrice,
 .dark .cellContentPrice {
   color: #63b3ed !important;
+}
+
+[data-theme="dark"] .cellContentNumber,
+html[data-theme="dark"] .cellContentNumber,
+html.dark .cellContentNumber,
+.dark .cellContentNumber {
+  color: #e2e8f0 !important;
 }
 
 [data-theme="dark"] .cellContentLowStock,
