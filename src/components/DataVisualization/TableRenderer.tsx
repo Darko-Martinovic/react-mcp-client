@@ -9,11 +9,29 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
   const columns = Object.keys(data[0]);
 
   // Function to format cell values
-  const formatCellValue = (value: unknown): string => {
+  const formatCellValue = (value: unknown, columnName?: string): string => {
     if (value === null || value === undefined) return "-";
     if (typeof value === "number") {
-      // Format numbers with proper locale formatting (no currency symbol)
-      return value.toLocaleString();
+      // Check if this is a monetary column that should show 2 decimal places
+      const isMonetaryColumn =
+        columnName &&
+        (columnName.toLowerCase().includes("sales") ||
+          columnName.toLowerCase().includes("amount") ||
+          columnName.toLowerCase().includes("price") ||
+          columnName.toLowerCase().includes("total") ||
+          columnName.toLowerCase().includes("revenue") ||
+          columnName.toLowerCase().includes("cost"));
+
+      if (isMonetaryColumn) {
+        // Format monetary values with exactly 2 decimal places
+        return value.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      } else {
+        // Format other numbers (quantities, counts, etc.) without forcing decimals
+        return value.toLocaleString();
+      }
     }
     if (
       typeof value === "string" &&
@@ -41,13 +59,21 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
       productId: "ID",
       productName: "Product Name",
       stockQuantity: "Stock",
-      unitPrice: "Unit Price",
-      totalAmount: "Total",
+      unitPrice: "Unit Price (in €)",
+      totalAmount: "Total (in €)",
       saleDate: "Sale Date",
       saleId: "Sale ID",
-      totalSales: "Total Sales",
+      totalSales: "Total Sales (in €)",
       totalQuantity: "Total Quantity",
     };
+
+    // Check if this is a monetary column
+    const isMonetaryColumn = col.toLowerCase().includes('sales') ||
+      col.toLowerCase().includes('amount') ||
+      col.toLowerCase().includes('price') ||
+      col.toLowerCase().includes('total') ||
+      col.toLowerCase().includes('revenue') ||
+      col.toLowerCase().includes('cost');
 
     // If not in headerMap, convert camelCase to readable format
     if (headerMap[col]) {
@@ -55,10 +81,17 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
     }
 
     // Convert camelCase to Title Case with spaces
-    return col
+    let formattedHeader = col
       .replace(/([A-Z])/g, " $1") // Add space before capital letters
       .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
       .trim(); // Remove any leading/trailing spaces
+
+    // Add currency indicator for monetary columns
+    if (isMonetaryColumn) {
+      formattedHeader += " (in €)";
+    }
+
+    return formattedHeader;
   };
 
   // Function to get cell content class based on column type and value
@@ -114,7 +147,7 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
                 {columns.map((col) => (
                   <td key={col} className={styles.tableCell}>
                     <span className={getCellContentClass(col, row[col])}>
-                      {formatCellValue(row[col])}
+                      {formatCellValue(row[col], col)}
                     </span>
                   </td>
                 ))}
