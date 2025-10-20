@@ -68,12 +68,13 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
     };
 
     // Check if this is a monetary column
-    const isMonetaryColumn = col.toLowerCase().includes('sales') ||
-      col.toLowerCase().includes('amount') ||
-      col.toLowerCase().includes('price') ||
-      col.toLowerCase().includes('total') ||
-      col.toLowerCase().includes('revenue') ||
-      col.toLowerCase().includes('cost');
+    const isMonetaryColumn =
+      col.toLowerCase().includes("sales") ||
+      col.toLowerCase().includes("amount") ||
+      col.toLowerCase().includes("price") ||
+      col.toLowerCase().includes("total") ||
+      col.toLowerCase().includes("revenue") ||
+      col.toLowerCase().includes("cost");
 
     // If not in headerMap, convert camelCase to readable format
     if (headerMap[col]) {
