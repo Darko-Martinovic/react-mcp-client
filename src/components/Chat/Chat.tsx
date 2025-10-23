@@ -273,6 +273,21 @@ ${schema.fields
                   traceData: traceData,
                 },
               ]);
+            } else if (
+              typeof mcpResponse === "object" &&
+              mcpResponse.jsonData
+            ) {
+              setMessages([
+                ...baseMessages,
+                userMsg,
+                {
+                  sender: "system",
+                  text: mcpResponse.summary,
+                  jsonData: mcpResponse.jsonData,
+                  toolName: mcpResponse.toolName,
+                  traceData: traceData,
+                },
+              ]);
             } else if (typeof mcpResponse === "object" && mcpResponse.text) {
               setMessages([
                 ...baseMessages,
@@ -342,6 +357,18 @@ ${schema.fields
                 sender: "system",
                 text: mcpResponse.summary,
                 tableData: mcpResponse.tableData,
+                toolName: mcpResponse.toolName,
+                traceData: traceData,
+              },
+            ]);
+          } else if (typeof mcpResponse === "object" && mcpResponse.jsonData) {
+            setMessages([
+              ...baseMessages,
+              userMsg,
+              {
+                sender: "system",
+                text: mcpResponse.summary,
+                jsonData: mcpResponse.jsonData,
                 toolName: mcpResponse.toolName,
                 traceData: traceData,
               },
@@ -591,22 +618,65 @@ ${schema.fields
                       </button>
                       {copiedMessageId === String(idx) && (
                         <div className={styles.copyTooltip}>
-                          {t("table.copied") || "Copied!"}
+                          {t("app.copied") || "Copied!"}
                         </div>
                       )}
                     </div>
+                  </div>
+                </>
+              ) : msg.jsonData ? (
+                <>
+                  {/* Show summary text above the JSON if it exists */}
+                  {msg.text && (
+                    <span
+                      className={`${styles.messageBubble} ${
+                        msg.sender === "user"
+                          ? styles.messageBubbleUser
+                          : styles.messageBubbleSystem
+                      }`}
+                      style={{ marginBottom: "10px", display: "block" }}
+                    >
+                      {msg.text}
+                    </span>
+                  )}
 
-                    {/* Trace Call checkbox - only show for system messages with trace data */}
-                    {msg.sender === "system" && msg.traceData && (
-                      <label className={styles.traceToggle}>
-                        <input
-                          type="checkbox"
-                          checked={visibleTraces.has(idx)}
-                          onChange={() => toggleTraceVisibility(idx)}
-                        />
-                        {t("trace.showTrace") || "Show Trace Call"}
-                      </label>
-                    )}
+                  <DataVisualization
+                    data={msg.jsonData}
+                    toolName={msg.toolName}
+                    query={msg.traceData?.userInput}
+                    t={t}
+                    displayMode="json"
+                  />
+
+                  {/* Copy button for JSON data */}
+                  <div
+                    className={`${styles.messageActions} ${
+                      msg.sender === "user"
+                        ? styles.messageActionsUser
+                        : styles.messageActionsSystem
+                    }`}
+                  >
+                    <div className={styles.copyButtonContainer}>
+                      <button
+                        onClick={() =>
+                          handleCopyMessage(
+                            JSON.stringify(msg.jsonData, null, 2),
+                            idx
+                          )
+                        }
+                        className={styles.copyButton}
+                        title="Copy JSON"
+                      >
+                        <span role="img" aria-label="copy">
+                          📋
+                        </span>
+                      </button>
+                      {copiedMessageId === String(idx) && (
+                        <div className={styles.copyTooltip}>
+                          {t("app.copied") || "Copied!"}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </>
               ) : (

@@ -1,0 +1,355 @@
+/* JsonRenderer.module.css */
+.jsonRenderer {
+  background: #ffffff;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+}
+
+.jsonHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.jsonTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.jsonIcon {
+  font-size: 16px;
+}
+
+.toolName {
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: normal;
+}
+
+.jsonControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jsonButton {
+  background: none;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.jsonButton:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.jsonButton:active {
+  transform: translateY(1px);
+}
+
+.copyFeedback {
+  font-size: 11px;
+  color: #28a745;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.jsonContent {
+  padding: 16px;
+  background: #ffffff;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.jsonContainer {
+  display: block;
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.toggleButton:hover {
+  background: rgba(0, 123, 255, 0.05);
+}
+
+.toggleIcon {
+  display: inline-block;
+  width: 12px;
+  color: #6c757d;
+  font-size: 10px;
+  margin-right: 4px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.jsonContent {
+  margin-left: 16px;
+  border-left: 1px solid #e9ecef;
+  padding-left: 12px;
+  margin-top: 4px;
+}
+
+.jsonItem {
+  margin: 2px 0;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.jsonKey {
+  color: #0066cc;
+  font-weight: 500;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.jsonIndex {
+  color: #6f42c1;
+  font-weight: 500;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.jsonString {
+  color: #28a745;
+  word-break: break-word;
+}
+
+.jsonNumber {
+  color: #fd7e14;
+  font-weight: 500;
+}
+
+.jsonBoolean {
+  color: #6f42c1;
+  font-weight: 500;
+}
+
+.jsonNull {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.jsonArray {
+  color: #495057;
+}
+
+.jsonObject {
+  color: #495057;
+}
+
+.jsonUnknown {
+  color: #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.jsonBracket {
+  color: #495057;
+  font-weight: 500;
+}
+
+.jsonPreview {
+  color: #6c757d;
+  font-style: italic;
+  margin: 0 8px;
+  font-size: 12px;
+}
+
+.jsonComma {
+  color: #495057;
+  margin-left: 2px;
+}
+
+.jsonClosing {
+  margin-top: 2px;
+  color: #495057;
+  font-weight: 500;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .jsonRenderer {
+    background: #2c2c2c;
+    border-color: #404040;
+    color: #e9ecef;
+  }
+
+  .jsonHeader {
+    background: #404040;
+    border-color: #555;
+  }
+
+  .jsonTitle {
+    color: #e9ecef;
+  }
+
+  .toolName {
+    color: #adb5bd;
+  }
+
+  .jsonButton {
+    border-color: #555;
+    color: #e9ecef;
+  }
+
+  .jsonButton:hover {
+    background: #495057;
+    border-color: #6c757d;
+  }
+
+  .jsonContent {
+    background: #2c2c2c;
+    border-color: #555;
+  }
+
+  .toggleButton:hover {
+    background: rgba(0, 123, 255, 0.1);
+  }
+
+  .jsonKey {
+    color: #5bc0de;
+  }
+
+  .jsonIndex {
+    color: #d63384;
+  }
+
+  .jsonString {
+    color: #20c997;
+  }
+
+  .jsonNumber {
+    color: #fd7e14;
+  }
+
+  .jsonBoolean {
+    color: #e83e8c;
+  }
+
+  .jsonNull {
+    color: #adb5bd;
+  }
+
+  .jsonBracket,
+  .jsonArray,
+  .jsonObject,
+  .jsonClosing {
+    color: #e9ecef;
+  }
+
+  .jsonPreview {
+    color: #adb5bd;
+  }
+
+  .toggleIcon {
+    color: #adb5bd;
+  }
+
+  .jsonUnknown {
+    color: #f5c6cb;
+    background: rgba(220, 53, 69, 0.2);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .jsonRenderer {
+    font-size: 12px;
+  }
+
+  .jsonHeader {
+    padding: 8px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .jsonControls {
+    align-self: stretch;
+    justify-content: flex-end;
+  }
+
+  .jsonContent {
+    padding: 12px;
+  }
+
+  .jsonButton {
+    padding: 6px 10px;
+  }
+}
+
+/* Scrollbar styles */
+.jsonContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.jsonContent::-webkit-scrollbar-track {
+  background: #f1f3f4;
+  border-radius: 4px;
+}
+
+.jsonContent::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.jsonContent::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+@media (prefers-color-scheme: dark) {
+  .jsonContent::-webkit-scrollbar-track {
+    background: #404040;
+  }
+
+  .jsonContent::-webkit-scrollbar-thumb {
+    background: #666;
+  }
+
+  .jsonContent::-webkit-scrollbar-thumb:hover {
+    background: #777;
+  }
+}

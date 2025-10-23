@@ -45,12 +45,20 @@ export interface MCPResponse {
   tableData?: Record<string, unknown>[];
   toolName?: string;
   summary?: string;
+  jsonData?: any;
+  isJsonResponse?: boolean;
+  mongoMetadata?: {
+    totalDocuments?: number;
+    totalUniqueTypes?: number;
+    isMongoDb?: boolean;
+  };
 }
 
 export interface Message {
   sender: "user" | "system";
   text?: string;
   tableData?: Record<string, unknown>[];
+  jsonData?: any;
   toolName?: string;
   traceData?: {
     aiResponse?: any;
@@ -642,6 +650,12 @@ export const formatStructuredMCPResponse = (
     }
   }
 
+  // Detect if this is a MongoDB/GkApi response
+  const isMongoResponse =
+    toolName?.toLowerCase().includes("gkapi") ||
+    data.totalDocuments !== undefined ||
+    data.totalUniqueTypes !== undefined;
+
   // Handle successful responses with data array
   if (data.success !== undefined) {
     if (data.data && Array.isArray(data.data)) {
@@ -653,26 +667,30 @@ export const formatStructuredMCPResponse = (
         };
       }
 
-      // Option 1: Remove the summary panel completely - just return table data
-      // let summary = `✅ **${toolName}** executed successfully${paramInfo}\n\n📊 **Results (${
-      //   data.count || tableData.length
-      // }):**`;
-
-      // Option 2: Compact summary (uncomment this line instead)
-      // let summary = `✅ ${toolName} (${data.count || tableData.length} records)`;
+      // For MongoDB responses, include additional metadata
+      let mongoMetadata = {};
+      if (isMongoResponse) {
+        mongoMetadata = {
+          totalDocuments: data.totalDocuments,
+          totalUniqueTypes: data.totalUniqueTypes,
+          isMongoDb: true,
+        };
+      }
 
       return {
-        // summary,  // Comment this out to remove the first panel completely
         tableData,
         toolName,
+        mongoMetadata,
+        timestamp: data.timestamp,
+        count: data.count || tableData.length,
       };
     } else if (data.success) {
+      // Non-array successful response - likely a single document or complex object
       return {
-        text: `✅ **${toolName}** executed successfully${paramInfo}\n\n📊 **Result:** ${JSON.stringify(
-          data,
-          null,
-          2
-        )}`,
+        jsonData: data,
+        toolName,
+        timestamp: data.timestamp,
+        isJsonResponse: true,
       };
     } else {
       return {
@@ -695,24 +713,18 @@ export const formatStructuredMCPResponse = (
       };
     }
 
-    // Remove summary panel for this case too
-    // let summary = `📊 **${toolName} Results:**${paramInfo}`;
-
     return {
-      // summary,  // Comment this out to remove the first panel completely
       tableData,
       toolName,
     };
   }
 
-  // Handle other response types
-  if (typeof data === "object") {
+  // Handle complex objects that should be displayed as JSON
+  if (typeof data === "object" && data !== null) {
     return {
-      text: `📊 **${toolName} Results:**${paramInfo}\n\n${JSON.stringify(
-        data,
-        null,
-        2
-      )}`,
+      jsonData: data,
+      toolName,
+      isJsonResponse: true,
     };
   }
 
