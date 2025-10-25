@@ -5,6 +5,12 @@
 
 import { cacheManager, generateAICacheKey } from "./cacheManager";
 
+export interface TokenUsage {
+  prompt: number;
+  completion: number;
+  total: number;
+}
+
 export interface FunctionCall {
   name: string;
   arguments: Record<string, unknown>;
@@ -13,6 +19,9 @@ export interface FunctionCall {
 export interface AzureOpenAIResponse {
   functionCalls: FunctionCall[];
   aiMessage: string;
+  tokensUsed?: TokenUsage;
+  estimatedCost?: number;
+  model?: string;
 }
 
 export async function askAzureOpenAI(
@@ -226,9 +235,48 @@ export async function askAzureOpenAI(
     }
   }
 
+  // Extract token usage from Azure OpenAI response
+  let tokensUsed: TokenUsage | undefined;
+  let estimatedCost: number | undefined;
+  const model = data.model || "gpt-4o"; // Default to gpt-4o if not specified
+
+  if (data.usage) {
+    tokensUsed = {
+      prompt: data.usage.prompt_tokens || 0,
+      completion: data.usage.completion_tokens || 0,
+      total: data.usage.total_tokens || 0,
+    };
+
+    // Calculate estimated cost based on model pricing (per 1M tokens)
+    const pricing: Record<string, { input: number; output: number }> = {
+      "gpt-4o": { input: 2.5, output: 10.0 },
+      "gpt-4": { input: 30.0, output: 60.0 },
+      "gpt-3.5-turbo": { input: 0.5, output: 1.5 },
+    };
+
+    const modelKey =
+      Object.keys(pricing).find((key) => model.toLowerCase().includes(key)) ||
+      "gpt-4o";
+
+    const modelPricing = pricing[modelKey];
+    const promptCost = (tokensUsed.prompt / 1000000) * modelPricing.input;
+    const completionCost =
+      (tokensUsed.completion / 1000000) * modelPricing.output;
+    estimatedCost = promptCost + completionCost;
+
+    console.log("=== TOKEN USAGE & COST ===");
+    console.log("Model:", model);
+    console.log("Tokens Used:", tokensUsed);
+    console.log("Estimated Cost: $", estimatedCost.toFixed(6));
+    console.log("=========================");
+  }
+
   const result: AzureOpenAIResponse = {
     functionCalls,
     aiMessage,
+    tokensUsed,
+    estimatedCost,
+    model,
   };
 
   console.log("=== CACHING AI RESPONSE DEBUG ===");

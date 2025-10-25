@@ -13,6 +13,9 @@ import { cacheManager } from "./cacheManager";
 export interface AIResponse {
   aiMessage: string;
   functionCalls?: any[];
+  tokensUsed?: TokenUsage;
+  estimatedCost?: number;
+  model?: string;
 }
 
 export interface MCPCall {
@@ -54,6 +57,12 @@ export interface MCPResponse {
   };
 }
 
+export interface TokenUsage {
+  prompt: number;
+  completion: number;
+  total: number;
+}
+
 export interface Message {
   sender: "user" | "system";
   text?: string;
@@ -70,6 +79,12 @@ export interface Message {
     userInput?: string;
     error?: string;
   };
+  // Token usage and cost tracking
+  tokensUsed?: TokenUsage;
+  estimatedCost?: number;
+  model?: string;
+  usedTools?: boolean;
+  toolsCalled?: string[];
 }
 
 // Function to get AI intent without displaying the response

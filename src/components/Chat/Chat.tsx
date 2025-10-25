@@ -20,6 +20,7 @@ import QuestionPicker from "../QuestionPicker";
 import SpeechToTextSimple from "../SpeechToText/SpeechToTextSimple";
 import { DataVisualization } from "../DataVisualization";
 import { isSimpleTable } from "../DataVisualization/DataTransformer";
+import { TokenUsageFooter } from "../TokenUsageFooter";
 import {
   exportChat,
   exportChatAsText,
@@ -271,6 +272,13 @@ ${schema.fields
                   tableData: mcpResponse.tableData,
                   toolName: mcpResponse.toolName,
                   traceData: traceData,
+                  tokensUsed: aiResponse.tokensUsed,
+                  estimatedCost: aiResponse.estimatedCost,
+                  model: aiResponse.model,
+                  usedTools: true,
+                  toolsCalled: mcpResponse.toolName
+                    ? [mcpResponse.toolName]
+                    : [],
                 },
               ]);
             } else if (
@@ -286,6 +294,13 @@ ${schema.fields
                   jsonData: mcpResponse.jsonData,
                   toolName: mcpResponse.toolName,
                   traceData: traceData,
+                  tokensUsed: aiResponse.tokensUsed,
+                  estimatedCost: aiResponse.estimatedCost,
+                  model: aiResponse.model,
+                  usedTools: true,
+                  toolsCalled: mcpResponse.toolName
+                    ? [mcpResponse.toolName]
+                    : [],
                 },
               ]);
             } else if (typeof mcpResponse === "object" && mcpResponse.text) {
@@ -296,6 +311,11 @@ ${schema.fields
                   sender: "system",
                   text: mcpResponse.text,
                   traceData: traceData,
+                  tokensUsed: aiResponse.tokensUsed,
+                  estimatedCost: aiResponse.estimatedCost,
+                  model: aiResponse.model,
+                  usedTools: true,
+                  toolsCalled: [],
                 },
               ]);
             } else {
@@ -309,6 +329,11 @@ ${schema.fields
                       ? mcpResponse
                       : JSON.stringify(mcpResponse),
                   traceData: traceData,
+                  tokensUsed: aiResponse.tokensUsed,
+                  estimatedCost: aiResponse.estimatedCost,
+                  model: aiResponse.model,
+                  usedTools: true,
+                  toolsCalled: [],
                 },
               ]);
             }
@@ -324,6 +349,9 @@ ${schema.fields
                 sender: "system",
                 text: "Sorry, I couldn't process your request through the MCP server. Please try again.",
                 traceData: traceData,
+                tokensUsed: aiResponse.tokensUsed,
+                estimatedCost: aiResponse.estimatedCost,
+                model: aiResponse.model,
               },
             ]);
             return;
@@ -593,6 +621,17 @@ ${schema.fields
                     t={t}
                   />
 
+                  {/* Token Usage Footer for AI responses */}
+                  {msg.sender === "system" && (
+                    <TokenUsageFooter
+                      tokensUsed={msg.tokensUsed}
+                      estimatedCost={msg.estimatedCost}
+                      model={msg.model}
+                      usedTools={msg.usedTools}
+                      toolsCalled={msg.toolsCalled}
+                    />
+                  )}
+
                   {/* Copy button for table data */}
                   <div
                     className={`${styles.messageActions} ${
@@ -648,6 +687,17 @@ ${schema.fields
                     displayMode="json"
                   />
 
+                  {/* Token Usage Footer for AI responses */}
+                  {msg.sender === "system" && (
+                    <TokenUsageFooter
+                      tokensUsed={msg.tokensUsed}
+                      estimatedCost={msg.estimatedCost}
+                      model={msg.model}
+                      usedTools={msg.usedTools}
+                      toolsCalled={msg.toolsCalled}
+                    />
+                  )}
+
                   {/* Copy button for JSON data */}
                   <div
                     className={`${styles.messageActions} ${
@@ -690,6 +740,18 @@ ${schema.fields
                   >
                     {msg.text}
                   </span>
+
+                  {/* Token Usage Footer for AI responses */}
+                  {msg.sender === "system" && (
+                    <TokenUsageFooter
+                      tokensUsed={msg.tokensUsed}
+                      estimatedCost={msg.estimatedCost}
+                      model={msg.model}
+                      usedTools={msg.usedTools}
+                      toolsCalled={msg.toolsCalled}
+                    />
+                  )}
+
                   {/* Copy button for text messages */}
                   <div
                     className={`${styles.messageActions} ${

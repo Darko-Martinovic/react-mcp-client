@@ -1,0 +1,80 @@
+.tokenFooter {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  font-size: 0.85em;
+}
+
+.tokenStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #495057;
+}
+
+.icon {
+  font-size: 1.1em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.label {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.value {
+  font-weight: 600;
+  color: #212529;
+}
+
+.detail {
+  font-size: 0.9em;
+  color: #868e96;
+  font-style: italic;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .tokenFooter {
+    background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+    border-color: #495057;
+  }
+
+  .stat {
+    color: #adb5bd;
+  }
+
+  .label {
+    color: #868e96;
+  }
+
+  .value {
+    color: #e9ecef;
+  }
+
+  .detail {
+    color: #6c757d;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .tokenStats {
+    gap: 12px;
+    font-size: 0.9em;
+  }
+
+  .tokenFooter {
+    padding: 6px 10px;
+  }
+}
