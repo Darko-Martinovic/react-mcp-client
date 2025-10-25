@@ -712,20 +712,45 @@ function extractParametersFromQuery(query) {
 
   // Extract name search terms from queries
   const namePatterns = [
+    // Pattern 1: "articles with COLA", "items named PEPSI"
     /(?:named?|called?)\s+['""]?([a-z0-9\s]+)['""]?/i,
+    // Pattern 2: "containing COLA in name", "with PEPSI"
     /(?:with|containing?).*?['""]?([a-z0-9\s]+)['""]?.*?(?:in|name)/i,
+    // Pattern 3: "search for COLA", "find with PEPSI"
     /(?:search|find|show|get).*?(?:for|with)\s+['""]?([a-z0-9\s]+)['""]?/i,
+    // Pattern 4: "has COLA in", "contains PEPSI"
     /(?:have|has|contains?)\s+['""]?([a-z0-9\s]+)['""]?\s+in/i,
-    /['""]([a-z0-9\s]+)['""]/, // Quoted strings
+    // Pattern 5: Quoted strings "COLA"
+    /['""]([a-z0-9\s]+)['""]/,
+    // Pattern 6: NEW - Simple pattern "search articles MASTI", "find articles COLA"
+    /(?:search|find|show|get|list|display)\s+(?:articles?|items?|products?)\s+([a-z0-9\s]+)/i,
+    // Pattern 7: NEW - Last word after "articles" as fallback
+    /articles?\s+([a-z0-9]+)$/i,
   ];
 
   for (const pattern of namePatterns) {
     const match = query.match(pattern);
     if (match && match[1] && !params.contentKey) {
       // Don't extract name if we already have contentKey
-      params.name = match[1].trim();
-      console.log(`✓ Extracted name: ${params.name}`);
-      break;
+      const extractedName = match[1].trim();
+      // Skip if extracted name is too generic or a verb
+      const skipWords = [
+        "with",
+        "containing",
+        "named",
+        "called",
+        "by",
+        "that",
+        "contain",
+        "in",
+        "their",
+        "the",
+      ];
+      if (extractedName && !skipWords.includes(extractedName.toLowerCase())) {
+        params.name = extractedName;
+        console.log(`✓ Extracted name: ${params.name}`);
+        break;
+      }
     }
   }
 

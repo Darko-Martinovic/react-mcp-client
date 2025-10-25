@@ -186,6 +186,15 @@
   border-radius: 3px;
 }
 
+.jsonError {
+  color: #dc3545;
+  background: rgba(220, 53, 69, 0.15);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
 .jsonBracket {
   color: #495057;
   font-weight: 500;
