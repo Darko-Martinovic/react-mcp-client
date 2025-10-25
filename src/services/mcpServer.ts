@@ -44,6 +44,19 @@ export async function callMcpTool(
   }
 
   console.log(`🌐 Making fresh API call for ${tool}`);
+  console.log(`📝 Original User Input: "${originalUserInput}"`);
+
+  // Build request body - only include originalUserInput if it's defined (JSON.stringify omits undefined values)
+  const requestBody: any = {
+    tool,
+    arguments: args,
+  };
+  
+  if (originalUserInput !== undefined && originalUserInput !== null) {
+    requestBody.originalUserInput = originalUserInput;
+  }
+  
+  console.log(`📤 Request body:`, JSON.stringify(requestBody, null, 2));
 
   // Use relative URL so Vite proxy can handle it
   const response = await fetch(`/api/tool`, {
@@ -51,7 +64,7 @@ export async function callMcpTool(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tool, arguments: args }),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {

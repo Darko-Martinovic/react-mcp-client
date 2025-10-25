@@ -1,11 +1,17 @@
-// Please rename this file to search-proxy.cjs and run with: node search-proxy.cjs
+// search-proxy.cjs - Complete MCP Tool Proxy with Article Search Support
 //
-// UPDATES FOR MONGODB/GKAPI SUPPORT:
-// - Added GkApi MongoDB tool endpoints to toolEndpointMap
-// - Enhanced response handling with MongoDB metadata (totalDocuments, totalUniqueTypes, isMongoDb)
-// - Support for POST requests for complex MongoDB queries
-// - Multi-plugin schema endpoint support (Supermarket + GkApi)
-// - Complex document response handling
+// READY TO USE: Copy this file to your client project and run with: node search-proxy.cjs
+//
+// FEATURES:
+// - Dual-plugin support (Supermarket SQL + GkApi MongoDB)
+// - Automatic parameter extraction from natural language queries
+// - Path parameter handling for FindArticleByContentKey
+// - Validation for required parameters
+// - Enhanced error messages
+// - MongoDB response metadata
+// - Azure Search integration
+// - CORS support
+// - Health checks
 //
 const express = require("express");
 const axios = require("axios");
@@ -167,7 +173,53 @@ app.post("/api/tool", async (req, res) => {
     }
 
     // Handle single tool calls
-    const result = await callSingleTool(tool, args, mcpServerUrl);
+    // If arguments are empty, try to extract parameters from various possible query sources
+    let finalArgs = args;
+    const hasEmptyArgs = !args || Object.keys(args).length === 0;
+
+    if (hasEmptyArgs) {
+      console.log("⚠ Empty arguments detected for tool:", tool);
+
+      // Try to find the original query in various places
+      const possibleQueries = [
+        req.body.originalUserInput,
+        req.body.query,
+        req.body.userQuery,
+        req.body.originalQuery,
+        req.body.message,
+        req.body.prompt,
+      ];
+
+      let queryFound = null;
+      for (const possibleQuery of possibleQueries) {
+        if (possibleQuery && typeof possibleQuery === "string") {
+          queryFound = possibleQuery;
+          console.log(`✓ Found query in request body:`, queryFound);
+          break;
+        }
+      }
+
+      if (queryFound) {
+        console.log("Attempting parameter extraction from:", queryFound);
+        finalArgs = extractParametersFromQuery(queryFound);
+
+        if (Object.keys(finalArgs).length > 0) {
+          console.log("✓ Successfully extracted parameters:", finalArgs);
+        } else {
+          console.log("⚠ Parameter extraction failed - no parameters found");
+        }
+      } else {
+        console.log(
+          "⚠ No query found in request body to extract parameters from"
+        );
+        console.log("Request body keys:", Object.keys(req.body));
+        console.log(
+          "HINT: Client should send one of: originalUserInput, query, userQuery, message"
+        );
+      }
+    }
+
+    const result = await callSingleTool(tool, finalArgs, mcpServerUrl);
     res.json(result);
   } catch (err) {
     console.error("Error in tool proxy:", err.message);
@@ -187,6 +239,8 @@ app.post("/api/tool", async (req, res) => {
         "GetContentTypesSummary",
         "GetPricesWithoutBaseItem",
         "GetLatestStatistics",
+        "FindArticlesByName",
+        "FindArticleByContentKey",
       ];
       if (mongoDbTools.includes(tool) || tool.toLowerCase().includes("gkapi")) {
         errorResponse.plugin = "gkapi";
@@ -223,6 +277,8 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     GetContentTypesSummary: "/api/gkapi/content-types",
     GetPricesWithoutBaseItem: "/api/gkapi/prices-without-base-item",
     GetLatestStatistics: "/api/gkapi/latest-statistics",
+    FindArticlesByName: "/api/gkapi/articles/search",
+    FindArticleByContentKey: "/api/gkapi/articles",
     GetDocuments: "/api/gkapi/documents",
     GetCollections: "/api/gkapi/collections",
     SearchDocuments: "/api/gkapi/search",
@@ -233,12 +289,6 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     CheckGkApiHealth: "/api/gkapi/health",
     CheckSystemHealth: "/health",
 
-    // Example additional MongoDB tools - update these based on your actual GkApi plugin endpoints:
-    GkApiGetDocuments: "/api/gkapi/documents",
-    GkApiSearchDocuments: "/api/gkapi/search",
-    GkApiGetCollections: "/api/gkapi/collections",
-    GkApiAggregateData: "/api/gkapi/aggregate",
-
     // Handle search queries by mapping to appropriate tools
     search_azure_cognitive: "/api/supermarket/inventory/detailed",
   };
@@ -246,7 +296,6 @@ async function callSingleTool(tool, args, mcpServerUrl) {
   const endpoint = toolEndpointMap[tool];
   if (!endpoint) {
     // If tool is not in the static map, try to infer the endpoint
-    // Check if this might be a GkApi tool based on naming patterns
     if (
       tool.toLowerCase().includes("content") ||
       tool.toLowerCase().includes("summary") ||
@@ -255,17 +304,20 @@ async function callSingleTool(tool, args, mcpServerUrl) {
       tool.toLowerCase().includes("prices") ||
       tool.toLowerCase().includes("analytics") ||
       tool.toLowerCase().includes("health") ||
+      tool.toLowerCase().includes("article") ||
       (tool.startsWith("Get") &&
         !tool.includes("Products") &&
         !tool.includes("Sales") &&
         !tool.includes("Revenue") &&
         !tool.includes("Inventory")) ||
-      (tool.startsWith("Check") && tool.includes("Health"))
+      (tool.startsWith("Check") && tool.includes("Health")) ||
+      tool.startsWith("Find")
     ) {
       // Attempt to construct GkApi endpoint from tool name
       const inferredEndpoint = `/api/gkapi/${tool
         .toLowerCase()
         .replace(/^get/, "")
+        .replace(/^find/, "")
         .replace(/([A-Z])/g, "-$1")
         .toLowerCase()
         .replace(/^-/, "")}`;
@@ -309,41 +361,9 @@ async function callSingleTool(tool, args, mcpServerUrl) {
           mcpRes.status
         );
 
-        // Handle MongoDB response
-        let responseData = mcpRes.data;
-        if (responseData) {
-          if (responseData.data && Array.isArray(responseData.data)) {
-            const documents = responseData.data;
-            const totalDocuments = documents.length;
-            const uniqueTypes = new Set();
-            documents.forEach((doc) => {
-              if (doc && typeof doc === "object") {
-                const keys = Object.keys(doc).sort().join(",");
-                uniqueTypes.add(keys);
-              }
-            });
-            responseData = {
-              ...responseData,
-              totalDocuments: totalDocuments,
-              totalUniqueTypes: uniqueTypes.size,
-              isMongoDb: true,
-            };
-          } else if (
-            responseData &&
-            typeof responseData === "object" &&
-            !Array.isArray(responseData)
-          ) {
-            responseData = {
-              ...responseData,
-              isMongoDb: true,
-              responseType: "document",
-            };
-          }
-        }
-
         return {
           tool,
-          data: responseData,
+          data: enhanceMongoDbResponse(mcpRes.data, true),
         };
       } catch (inferError) {
         console.log(`Inferred endpoint failed: ${inferError.message}`);
@@ -356,28 +376,64 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     );
   }
 
+  // Validate required parameters for GkApi article search tools
+  if (tool === "FindArticleByContentKey") {
+    if (!args || !args.contentKey) {
+      throw new Error(
+        "FindArticleByContentKey requires a 'contentKey' parameter. " +
+          "Please specify the article's content key (e.g., '1615', '7388'). " +
+          "User query should contain a numeric identifier like 'article 7388' or 'item 1615'. " +
+          "Example: { tool: 'FindArticleByContentKey', arguments: { contentKey: '7388' } }"
+      );
+    }
+  }
+
+  if (tool === "FindArticlesByName") {
+    if (!args || !args.name) {
+      throw new Error(
+        "FindArticlesByName requires a 'name' parameter. " +
+          "Please specify the search term for the article name (e.g., 'cola', 'water'). " +
+          "User query should contain a search term like 'articles with cola' or 'items named pepsi'. " +
+          "Example: { tool: 'FindArticlesByName', arguments: { name: 'cola' } }"
+      );
+    }
+  }
+
+  // Special handling for path parameters
+  let finalEndpoint = endpoint;
+  let finalArgs = { ...args }; // Clone args to avoid mutation
+
+  if (tool === "FindArticleByContentKey" && args && args.contentKey) {
+    finalEndpoint = `${endpoint}/${args.contentKey}`;
+    // Remove contentKey from args so it's not added as a query parameter
+    const { contentKey, ...remainingArgs } = finalArgs;
+    finalArgs = remainingArgs;
+    console.log(
+      `FindArticleByContentKey: Using path parameter contentKey=${args.contentKey}`
+    );
+  }
+
   // Determine HTTP method based on tool type and arguments
   const mongoDbTools = [
     "GetContentTypesSummary",
     "GetPricesWithoutBaseItem",
     "GetLatestStatistics",
+    "FindArticlesByName",
+    "FindArticleByContentKey",
     "GetDocuments",
     "GetCollections",
     "SearchDocuments",
     "AggregateData",
   ];
-  const healthCheckTools = [
-    "CheckSupermarketHealth",
-    "CheckGkApiHealth",
-    "CheckSystemHealth",
-  ];
+
   const isGkApiTool =
     tool.toLowerCase().includes("gkapi") || mongoDbTools.includes(tool);
-  const isHealthCheck = healthCheckTools.includes(tool);
-  const hasComplexArgs = args && Object.keys(args).length > 2;
+  const hasComplexArgs = finalArgs && Object.keys(finalArgs).length > 2;
   const shouldUsePost =
     isGkApiTool &&
-    (hasComplexArgs || (args && args.query) || (args && args.filter));
+    (hasComplexArgs ||
+      (finalArgs && finalArgs.query) ||
+      (finalArgs && finalArgs.filter));
 
   console.log(
     `Tool: ${tool}, HTTP Method: ${
@@ -389,85 +445,90 @@ async function callSingleTool(tool, args, mcpServerUrl) {
 
   if (shouldUsePost) {
     // Use POST for complex MongoDB queries
-    const fullUrl = `${mcpServerUrl}${endpoint}`;
+    const fullUrl = `${mcpServerUrl}${finalEndpoint}`;
     console.log(`Making POST request to: ${fullUrl}`);
-    console.log(`POST body:`, JSON.stringify(args, null, 2));
+    console.log(`POST body:`, JSON.stringify(finalArgs, null, 2));
 
-    mcpRes = await axios.post(fullUrl, args, {
+    mcpRes = await axios.post(fullUrl, finalArgs, {
       headers: {
         "Content-Type": "application/json",
       },
     });
   } else {
-    // Use GET with query parameters (original behavior)
+    // Use GET with query parameters
     const queryParams = new URLSearchParams();
-    if (args) {
-      Object.entries(args).forEach(([key, value]) => {
+    if (finalArgs) {
+      Object.entries(finalArgs).forEach(([key, value]) => {
         if (value !== undefined && value !== null && key !== "query") {
           queryParams.append(key, value.toString());
         }
       });
     }
 
-    const fullUrl = `${mcpServerUrl}${endpoint}${
+    const fullUrl = `${mcpServerUrl}${finalEndpoint}${
       queryParams.toString() ? "?" + queryParams.toString() : ""
     }`;
     console.log(`Making GET request to: ${fullUrl}`);
     mcpRes = await axios.get(fullUrl);
   }
+
   console.log("MCP server tool response status:", mcpRes.status);
-
-  // Enhanced response handling for MongoDB/GkApi responses
-  let responseData = mcpRes.data;
-
-  // Check if this is a MongoDB/GkApi response and add metadata
-  if (isGkApiTool && responseData) {
-    console.log("Detected GkApi/MongoDB tool response, adding metadata");
-
-    // If response has MongoDB characteristics, preserve the structure
-    if (responseData.data && Array.isArray(responseData.data)) {
-      // Calculate additional metadata for MongoDB responses
-      const documents = responseData.data;
-      const totalDocuments = documents.length;
-
-      // Count unique document structures/types
-      const uniqueTypes = new Set();
-      documents.forEach((doc) => {
-        if (doc && typeof doc === "object") {
-          const keys = Object.keys(doc).sort().join(",");
-          uniqueTypes.add(keys);
-        }
-      });
-
-      responseData = {
-        ...responseData,
-        totalDocuments: totalDocuments,
-        totalUniqueTypes: uniqueTypes.size,
-        isMongoDb: true,
-      };
-
-      console.log(
-        `MongoDB response enhanced: ${totalDocuments} documents, ${uniqueTypes.size} unique types`
-      );
-    } else if (
-      responseData &&
-      typeof responseData === "object" &&
-      !Array.isArray(responseData)
-    ) {
-      // Handle single document or complex object responses
-      console.log("Detected complex MongoDB document response");
-      responseData = {
-        ...responseData,
-        isMongoDb: true,
-        responseType: "document",
-      };
-    }
-  }
 
   return {
     tool,
-    data: responseData,
+    data: enhanceMongoDbResponse(mcpRes.data, isGkApiTool),
   };
+}
+
+// Helper function to enhance MongoDB responses with metadata
+function enhanceMongoDbResponse(responseData, isGkApiTool) {
+  if (!isGkApiTool || !responseData) {
+    return responseData;
+  }
+
+  console.log("Detected GkApi/MongoDB tool response, adding metadata");
+
+  // If response has MongoDB characteristics, preserve the structure
+  if (responseData.data && Array.isArray(responseData.data)) {
+    // Calculate additional metadata for MongoDB responses
+    const documents = responseData.data;
+    const totalDocuments = documents.length;
+
+    // Count unique document structures/types
+    const uniqueTypes = new Set();
+    documents.forEach((doc) => {
+      if (doc && typeof doc === "object") {
+        const keys = Object.keys(doc).sort().join(",");
+        uniqueTypes.add(keys);
+      }
+    });
+
+    const enhanced = {
+      ...responseData,
+      totalDocuments: totalDocuments,
+      totalUniqueTypes: uniqueTypes.size,
+      isMongoDb: true,
+    };
+
+    console.log(
+      `MongoDB response enhanced: ${totalDocuments} documents, ${uniqueTypes.size} unique types`
+    );
+    return enhanced;
+  } else if (
+    responseData &&
+    typeof responseData === "object" &&
+    !Array.isArray(responseData)
+  ) {
+    // Handle single document or complex object responses
+    console.log("Detected complex MongoDB document response");
+    return {
+      ...responseData,
+      isMongoDb: true,
+      responseType: "document",
+    };
+  }
+
+  return responseData;
 }
 
 // Health check endpoint for the proxy itself
@@ -480,6 +541,7 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Azure Search endpoint - proxy to Azure Cognitive Search
 app.post("/api/search", async (req, res) => {
   console.log("Received request to /api/search");
   console.log("Request body:", req.body);
@@ -510,13 +572,9 @@ app.post("/api/search", async (req, res) => {
     console.log("Azure Search response status:", azureRes.status);
     const data = azureRes.data;
 
-    // Enhanced debugging for category filtering issues
+    // Enhanced debugging
     console.log("=== AZURE SEARCH DEBUG ===");
     console.log("Search query:", query);
-    console.log(
-      "Raw Azure Search response structure:",
-      JSON.stringify(data, null, 2)
-    );
     console.log("Number of results:", data.value?.length || 0);
 
     if (data.value && data.value.length > 0) {
@@ -529,38 +587,10 @@ app.post("/api/search", async (req, res) => {
         console.log(
           `Description: ${tool.description?.substring(0, 150) || "N/A"}...`
         );
-        console.log(`Plugin: ${tool.pluginName || "N/A"}`); // NEW!
+        console.log(`Plugin: ${tool.pluginName || tool.category || "N/A"}`);
         console.log(`Endpoint: ${tool.endpoint || "N/A"}`);
-        console.log(`HTTP Method: ${tool.httpMethod || "N/A"}`);
-        console.log(`Category: ${tool.category || "N/A"}`);
-        console.log(
-          `Is Active: ${tool.isActive !== undefined ? tool.isActive : "N/A"}`
-        );
         if (tool.parameters) {
           console.log(`Parameters: ${tool.parameters.substring(0, 200)}...`);
-        }
-
-        // Check for category-related tools
-        const isCategoryTool =
-          (tool.functionName &&
-            (tool.functionName.toLowerCase().includes("category") ||
-              tool.functionName.toLowerCase().includes("filter") ||
-              tool.functionName.toLowerCase().includes("bycategory"))) ||
-          (tool.description &&
-            (tool.description.toLowerCase().includes("category") ||
-              tool.description.toLowerCase().includes("filter by")));
-
-        // Check for GkApi tools
-        const isGkApiTool =
-          tool.pluginName?.toLowerCase().includes("gkapi") ||
-          tool.endpoint?.includes("/gkapi/");
-
-        if (isCategoryTool) {
-          console.log(`*** CATEGORY TOOL DETECTED ***`);
-        }
-
-        if (isGkApiTool) {
-          console.log(`*** GKAPI ANALYTICS TOOL DETECTED ***`);
         }
       });
     } else {
@@ -625,6 +655,7 @@ async function searchForTool(query) {
         const gkapiTool = searchData.value.find(
           (tool) =>
             tool.pluginName?.toLowerCase().includes("gkapi") ||
+            tool.category?.toLowerCase().includes("gkapi") ||
             tool.endpoint?.includes("/gkapi/")
         );
         if (gkapiTool) {
@@ -653,19 +684,75 @@ async function searchForTool(query) {
   }
 }
 
-// Helper function to extract parameters from query
+// Helper function to extract parameters from natural language query
 function extractParametersFromQuery(query) {
+  if (!query || typeof query !== "string") {
+    console.log("No valid query provided for parameter extraction");
+    return {};
+  }
+
   const params = {};
-  const lowerQuery = query.toLowerCase();
+  console.log(`Attempting to extract parameters from: "${query}"`);
 
-  // For inventory queries, we typically don't need special parameters
-  // but we can add logic here for other query types
+  // Extract content key from queries like "article 7388" or "item 1615"
+  const contentKeyPatterns = [
+    /(?:article|item|product|key|id|number|code)\s+(\d+)/i,
+    /#(\d+)/,
+    /\b(\d{4,})\b/, // 4+ digit numbers standalone
+  ];
 
-  console.log(`Extracted parameters for query "${query}":`, params);
+  for (const pattern of contentKeyPatterns) {
+    const match = query.match(pattern);
+    if (match) {
+      params.contentKey = match[1] || match[2];
+      console.log(`✓ Extracted contentKey: ${params.contentKey}`);
+      break;
+    }
+  }
+
+  // Extract name search terms from queries
+  const namePatterns = [
+    /(?:named?|called?)\s+['""]?([a-z0-9\s]+)['""]?/i,
+    /(?:with|containing?).*?['""]?([a-z0-9\s]+)['""]?.*?(?:in|name)/i,
+    /(?:search|find|show|get).*?(?:for|with)\s+['""]?([a-z0-9\s]+)['""]?/i,
+    /(?:have|has|contains?)\s+['""]?([a-z0-9\s]+)['""]?\s+in/i,
+    /['""]([a-z0-9\s]+)['""]/, // Quoted strings
+  ];
+
+  for (const pattern of namePatterns) {
+    const match = query.match(pattern);
+    if (match && match[1] && !params.contentKey) {
+      // Don't extract name if we already have contentKey
+      params.name = match[1].trim();
+      console.log(`✓ Extracted name: ${params.name}`);
+      break;
+    }
+  }
+
+  if (Object.keys(params).length === 0) {
+    console.log("⚠ No parameters could be extracted from the query");
+  }
+
+  console.log(`Final extracted parameters:`, params);
   return params;
 }
 
+// Start server
 const PORT = process.env.PORT || 5002;
-app.listen(PORT, () =>
-  console.log(`Proxy running on http://localhost:${PORT}`)
-);
+app.listen(PORT, () => {
+  console.log(`=================================`);
+  console.log(`MCP Tool Proxy Server Running`);
+  console.log(`=================================`);
+  console.log(`Port: ${PORT}`);
+  console.log(`URL: http://localhost:${PORT}`);
+  console.log(
+    `MCP Server: ${process.env.VITE_MCP_SERVER_URL || "http://localhost:5000"}`
+  );
+  console.log(`=================================`);
+  console.log(`Available endpoints:`);
+  console.log(`  GET  /health              - Proxy health check`);
+  console.log(`  GET  /api/tools/schema    - Get MCP tools schema`);
+  console.log(`  POST /api/tool            - Call MCP tool`);
+  console.log(`  POST /api/search          - Azure Search proxy`);
+  console.log(`=================================`);
+});
