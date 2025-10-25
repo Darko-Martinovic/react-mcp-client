@@ -51,11 +51,11 @@ export async function callMcpTool(
     tool,
     arguments: args,
   };
-  
+
   if (originalUserInput !== undefined && originalUserInput !== null) {
     requestBody.originalUserInput = originalUserInput;
   }
-  
+
   console.log(`📤 Request body:`, JSON.stringify(requestBody, null, 2));
 
   // Use relative URL so Vite proxy can handle it
