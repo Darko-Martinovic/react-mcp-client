@@ -14,21 +14,25 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
 }) => {
   // Initialize with all nodes expanded by default
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(() => {
-    const getAllPaths = (obj: any, currentPath: string = "", depth: number = 0): string[] => {
+    const getAllPaths = (
+      obj: any,
+      currentPath: string = "",
+      depth: number = 0
+    ): string[] => {
       const paths: string[] = [];
-      
+
       // Prevent infinite recursion and stack overflow
       if (depth > 50) {
         console.warn("Max depth reached at path:", currentPath);
         return paths;
       }
-      
+
       if (typeof obj === "object" && obj !== null) {
         // Always add the current path itself (for both arrays and objects)
         if (currentPath) {
           paths.push(currentPath);
         }
-        
+
         try {
           if (Array.isArray(obj)) {
             obj.forEach((item, index) => {
@@ -49,11 +53,14 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
       }
       return paths;
     };
-    
+
     try {
       // Start from root node path to match renderJsonValue call
       const allPaths = getAllPaths(data, ".root", 0);
-      console.log("Initial expanded paths (first 15):", Array.from(allPaths).slice(0, 15));
+      console.log(
+        "Initial expanded paths (first 15):",
+        Array.from(allPaths).slice(0, 15)
+      );
       console.log("Total paths:", allPaths.length);
       return new Set(allPaths);
     } catch (error) {
@@ -64,7 +71,12 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
 
   const toggleNode = (path: string) => {
-    console.log("Toggling path:", path, "Currently expanded:", expandedNodes.has(path));
+    console.log(
+      "Toggling path:",
+      path,
+      "Currently expanded:",
+      expandedNodes.has(path)
+    );
     const newExpanded = new Set(expandedNodes);
     if (newExpanded.has(path)) {
       newExpanded.delete(path);
@@ -96,7 +108,7 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
     if (level > 100) {
       return <span className={styles.jsonError}>Max depth reached</span>;
     }
-    
+
     try {
       const currentPath = `${path}.${key}`;
       const isExpanded = expandedNodes.has(currentPath);
@@ -129,7 +141,9 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
               onClick={() => toggleNode(currentPath)}
               aria-label={isExpanded ? "Collapse array" : "Expand array"}
             >
-              <span className={styles.toggleIcon}>{isExpanded ? "▼" : "▶"}</span>
+              <span className={styles.toggleIcon}>
+                {isExpanded ? "▼" : "▶"}
+              </span>
               <span className={styles.jsonBracket}>[</span>
               {!isExpanded && (
                 <span className={styles.jsonPreview}>
@@ -141,7 +155,10 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
             {isExpanded && (
               <div className={styles.jsonContent}>
                 {value.map((item, index) => (
-                  <div key={`${currentPath}.${index}`} className={styles.jsonItem}>
+                  <div
+                    key={`${currentPath}.${index}`}
+                    className={styles.jsonItem}
+                  >
                     <span className={styles.jsonIndex}>{index}:</span>
                     {renderJsonValue(item, index, currentPath, level + 1)}
                     {index < value.length - 1 && (
@@ -171,7 +188,9 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
               onClick={() => toggleNode(currentPath)}
               aria-label={isExpanded ? "Collapse object" : "Expand object"}
             >
-              <span className={styles.toggleIcon}>{isExpanded ? "▼" : "▶"}</span>
+              <span className={styles.toggleIcon}>
+                {isExpanded ? "▼" : "▶"}
+              </span>
               <span className={styles.jsonBracket}>{"{"}</span>
               {!isExpanded && (
                 <span className={styles.jsonPreview}>
@@ -183,7 +202,10 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
             {isExpanded && (
               <div className={styles.jsonContent}>
                 {keys.map((objKey, index) => (
-                  <div key={`${currentPath}.${objKey}`} className={styles.jsonItem}>
+                  <div
+                    key={`${currentPath}.${objKey}`}
+                    className={styles.jsonItem}
+                  >
                     <span className={styles.jsonKey}>"{objKey}":</span>
                     {renderJsonValue(
                       value[objKey],
@@ -207,27 +229,35 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
 
       return <span className={styles.jsonUnknown}>{String(value)}</span>;
     } catch (error) {
-      console.error("Error rendering JSON value at path:", `${path}.${key}`, error);
+      console.error(
+        "Error rendering JSON value at path:",
+        `${path}.${key}`,
+        error
+      );
       return <span className={styles.jsonError}>Error rendering value</span>;
     }
   };
 
   const expandAll = () => {
-    const getAllPaths = (obj: any, currentPath: string = "", depth: number = 0): string[] => {
+    const getAllPaths = (
+      obj: any,
+      currentPath: string = "",
+      depth: number = 0
+    ): string[] => {
       const paths: string[] = [];
-      
+
       // Prevent infinite recursion and stack overflow
       if (depth > 50) {
         console.warn("Max depth reached at path:", currentPath);
         return paths;
       }
-      
+
       if (typeof obj === "object" && obj !== null) {
         // Always add the current path itself (for both arrays and objects)
         if (currentPath) {
           paths.push(currentPath);
         }
-        
+
         try {
           if (Array.isArray(obj)) {
             obj.forEach((item, index) => {
@@ -252,7 +282,10 @@ export const JsonRenderer: React.FC<JsonRendererProps> = ({
     try {
       // Start from root node path to match renderJsonValue call
       const allPaths = getAllPaths(data, ".root", 0);
-      console.log("Expanding all - first 15 paths:", Array.from(allPaths).slice(0, 15));
+      console.log(
+        "Expanding all - first 15 paths:",
+        Array.from(allPaths).slice(0, 15)
+      );
       console.log("Expanding all - total paths:", allPaths.length);
       setExpandedNodes(new Set(allPaths));
     } catch (error) {
