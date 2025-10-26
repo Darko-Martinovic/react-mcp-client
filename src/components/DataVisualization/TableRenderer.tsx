@@ -147,7 +147,10 @@ export const TableRenderer: React.FC<TableProps> = ({ data, toolName, t }) => {
               >
                 {columns.map((col) => (
                   <td key={col} className={styles.tableCell}>
-                    <span className={getCellContentClass(col, row[col])}>
+                    <span
+                      className={getCellContentClass(col, row[col])}
+                      data-column={col}
+                    >
                       {formatCellValue(row[col], col)}
                     </span>
                   </td>

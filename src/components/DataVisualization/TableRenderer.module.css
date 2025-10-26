@@ -178,6 +178,21 @@ html.dark .tableCell,
   max-width: 200px;
 }
 
+/* Column-specific width overrides */
+.cellContent[data-column="className"] {
+  max-width: 250px;
+}
+
+.cellContent[data-column="contentType"] {
+  max-width: 600px;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.cellContent[data-column="count"] {
+  max-width: 100px;
+}
+
 .cellContentName {
   font-weight: 600;
   color: var(--text-primary, #1e293b);
