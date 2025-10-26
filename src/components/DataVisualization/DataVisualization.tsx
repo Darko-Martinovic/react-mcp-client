@@ -45,6 +45,40 @@ export const DataVisualization: React.FC<VisualizationProps> = ({
 
   // Handle non-array data (single document/object)
   if (!Array.isArray(data)) {
+    // Special handling for GetLatestStatistics - extract contentTypes array
+    if (
+      toolName &&
+      toolName.toLowerCase().includes("getlateststatistics") &&
+      data.contentTypes &&
+      Array.isArray(data.contentTypes)
+    ) {
+      // Extract and transform the contentTypes array for table display
+      const transformedData = data.contentTypes.map((item: any) => ({
+        className: item.className || "",
+        count: item.count || 0,
+        contenttype: item.contenttype || "",
+      }));
+
+      return (
+        <div className={styles.visualizationContainer}>
+          {/* Table View */}
+          <TableRenderer data={transformedData} toolName={toolName} t={t} />
+
+          {/* JSON View Header */}
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionIcon}>📋</span>
+            <span className={styles.sectionTitle}>
+              {t ? t("view.rawPayload") : "Raw JSON Payload"}
+            </span>
+          </div>
+
+          {/* JSON View */}
+          <JsonRenderer data={data} toolName={toolName} t={t} />
+        </div>
+      );
+    }
+
+    // Default: show only JSON for non-array data
     return (
       <div className={styles.visualizationContainer}>
         <JsonRenderer data={data} toolName={toolName} t={t} />
