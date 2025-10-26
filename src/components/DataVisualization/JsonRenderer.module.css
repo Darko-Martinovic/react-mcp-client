@@ -218,89 +218,108 @@
   font-weight: 500;
 }
 
-/* Dark theme support */
-@media (prefers-color-scheme: dark) {
-  .jsonRenderer {
-    background: #2c2c2c;
-    border-color: #404040;
-    color: #e9ecef;
-  }
+/* Dark theme support - Use app theme instead of system preference */
+html[data-theme="dark"] .jsonRenderer,
+html.dark .jsonRenderer {
+  background: #2c2c2c;
+  border-color: #404040;
+  color: #e9ecef;
+}
 
-  .jsonHeader {
-    background: #404040;
-    border-color: #555;
-  }
+html[data-theme="dark"] .jsonHeader,
+html.dark .jsonHeader {
+  background: #404040;
+  border-color: #555;
+}
 
-  .jsonTitle {
-    color: #e9ecef;
-  }
+html[data-theme="dark"] .jsonTitle,
+html.dark .jsonTitle {
+  color: #e9ecef;
+}
 
-  .toolName {
-    color: #adb5bd;
-  }
+html[data-theme="dark"] .toolName,
+html.dark .toolName {
+  color: #adb5bd;
+}
 
-  .jsonButton {
-    border-color: #555;
-    color: #e9ecef;
-  }
+html[data-theme="dark"] .jsonButton,
+html.dark .jsonButton {
+  border-color: #555;
+  color: #e9ecef;
+}
 
-  .jsonButton:hover {
-    background: #495057;
-    border-color: #6c757d;
-  }
+html[data-theme="dark"] .jsonButton:hover,
+html.dark .jsonButton:hover {
+  background: #495057;
+  border-color: #6c757d;
+}
 
-  .jsonContent {
-    background: #2c2c2c;
-    border-color: #555;
-  }
+html[data-theme="dark"] .jsonContent,
+html.dark .jsonContent {
+  background: #2c2c2c;
+  border-color: #555;
+}
 
-  .toggleButton:hover {
-    background: rgba(0, 123, 255, 0.1);
-  }
+html[data-theme="dark"] .toggleButton:hover,
+html.dark .toggleButton:hover {
+  background: rgba(0, 123, 255, 0.1);
+}
 
-  .jsonKey {
-    color: #5bc0de;
-  }
+html[data-theme="dark"] .jsonKey,
+html.dark .jsonKey {
+  color: #5bc0de;
+}
 
-  .jsonIndex {
-    color: #d63384;
-  }
+html[data-theme="dark"] .jsonIndex,
+html.dark .jsonIndex {
+  color: #d63384;
+}
 
-  .jsonString {
-    color: #20c997;
-  }
+html[data-theme="dark"] .jsonString,
+html.dark .jsonString {
+  color: #20c997;
+}
 
-  .jsonNumber {
-    color: #fd7e14;
-  }
+html[data-theme="dark"] .jsonNumber,
+html.dark .jsonNumber {
+  color: #fd7e14;
+}
 
-  .jsonBoolean {
-    color: #e83e8c;
-  }
+html[data-theme="dark"] .jsonBoolean,
+html.dark .jsonBoolean {
+  color: #e83e8c;
+}
 
-  .jsonNull {
-    color: #adb5bd;
-  }
+html[data-theme="dark"] .jsonNull,
+html.dark .jsonNull {
+  color: #adb5bd;
+}
 
-  .jsonBracket,
-  .jsonArray,
-  .jsonObject,
-  .jsonClosing {
-    color: #e9ecef;
-  }
+html[data-theme="dark"] .jsonBracket,
+html.dark .jsonBracket,
+html[data-theme="dark"] .jsonArray,
+html.dark .jsonArray,
+html[data-theme="dark"] .jsonObject,
+html.dark .jsonObject,
+html[data-theme="dark"] .jsonClosing,
+html.dark .jsonClosing {
+  color: #e9ecef;
+}
 
-  .jsonPreview {
-    color: #adb5bd;
-  }
+html[data-theme="dark"] .jsonPreview,
+html.dark .jsonPreview {
+  color: #adb5bd;
+}
 
-  .toggleIcon {
-    color: #adb5bd;
-  }
+html[data-theme="dark"] .toggleIcon,
+html.dark .toggleIcon {
+  color: #adb5bd;
+}
 
-  .jsonUnknown {
-    color: #f5c6cb;
-    background: rgba(220, 53, 69, 0.2);
-  }
+html[data-theme="dark"] .jsonUnknown,
+html.dark .jsonUnknown {
+  color: #f5c6cb;
+  background: rgba(220, 53, 69, 0.2);
 }
 
 /* Responsive design */
@@ -349,16 +368,18 @@
   background: #a8a8a8;
 }
 
-@media (prefers-color-scheme: dark) {
-  .jsonContent::-webkit-scrollbar-track {
-    background: #404040;
-  }
+/* Dark theme scrollbar - Use app theme instead of system preference */
+html[data-theme="dark"] .jsonContent::-webkit-scrollbar-track,
+html.dark .jsonContent::-webkit-scrollbar-track {
+  background: #404040;
+}
 
-  .jsonContent::-webkit-scrollbar-thumb {
-    background: #666;
-  }
+html[data-theme="dark"] .jsonContent::-webkit-scrollbar-thumb,
+html.dark .jsonContent::-webkit-scrollbar-thumb {
+  background: #666;
+}
 
-  .jsonContent::-webkit-scrollbar-thumb:hover {
-    background: #777;
-  }
+html[data-theme="dark"] .jsonContent::-webkit-scrollbar-thumb:hover,
+html.dark .jsonContent::-webkit-scrollbar-thumb:hover {
+  background: #777;
 }

@@ -279,6 +279,7 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     GetLatestStatistics: "/api/gkapi/latest-statistics",
     FindArticlesByName: "/api/gkapi/articles/search",
     FindArticleByContentKey: "/api/gkapi/articles",
+    GetPluData: "/api/gkapi/plu-data",
     GetDocuments: "/api/gkapi/documents",
     GetCollections: "/api/gkapi/collections",
     SearchDocuments: "/api/gkapi/search",

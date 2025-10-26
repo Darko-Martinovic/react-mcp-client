@@ -43,28 +43,31 @@
   font-style: italic;
 }
 
-/* Dark theme support */
-@media (prefers-color-scheme: dark) {
-  .tokenFooter {
-    background: linear-gradient(135deg, #343a40 0%, #495057 100%);
-    border-color: #495057;
-  }
+/* Dark theme support - Use app theme instead of system preference */
+html[data-theme="dark"] .tokenFooter,
+html.dark .tokenFooter {
+  background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+  border-color: #495057;
+}
 
-  .stat {
-    color: #adb5bd;
-  }
+html[data-theme="dark"] .stat,
+html.dark .stat {
+  color: #adb5bd;
+}
 
-  .label {
-    color: #868e96;
-  }
+html[data-theme="dark"] .label,
+html.dark .label {
+  color: #868e96;
+}
 
-  .value {
-    color: #e9ecef;
-  }
+html[data-theme="dark"] .value,
+html.dark .value {
+  color: #e9ecef;
+}
 
-  .detail {
-    color: #6c757d;
-  }
+html[data-theme="dark"] .detail,
+html.dark .detail {
+  color: #6c757d;
 }
 
 /* Responsive design */
