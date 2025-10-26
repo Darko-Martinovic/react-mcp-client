@@ -49,14 +49,15 @@ export const DataVisualization: React.FC<VisualizationProps> = ({
     if (
       toolName &&
       toolName.toLowerCase().includes("getlateststatistics") &&
-      data.contentTypes &&
-      Array.isArray(data.contentTypes)
+      data.data &&
+      data.data.contentTypes &&
+      Array.isArray(data.data.contentTypes)
     ) {
       // Extract and transform the contentTypes array for table display
-      const transformedData = data.contentTypes.map((item: any) => ({
+      const transformedData = data.data.contentTypes.map((item: any) => ({
         className: item.className || "",
         count: item.count || 0,
-        contenttype: item.contenttype || "",
+        contentType: item.contentType || "",
       }));
 
       return (
