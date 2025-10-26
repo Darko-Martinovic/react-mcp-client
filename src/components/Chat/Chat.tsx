@@ -684,7 +684,7 @@ ${schema.fields
                     toolName={msg.toolName}
                     query={msg.traceData?.userInput}
                     t={t}
-                    displayMode="json"
+                    displayMode="auto"
                   />
 
                   {/* Token Usage Footer for AI responses */}

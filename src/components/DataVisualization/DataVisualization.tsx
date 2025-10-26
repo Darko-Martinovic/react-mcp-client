@@ -26,6 +26,18 @@ export const DataVisualization: React.FC<VisualizationProps> = ({
 }) => {
   const [currentView, setCurrentView] = useState<"table" | "json">("table");
 
+  // Debug logging
+  console.log("DataVisualization - toolName:", toolName);
+  console.log("DataVisualization - displayMode:", displayMode);
+  console.log(
+    "DataVisualization - data type:",
+    Array.isArray(data) ? "array" : typeof data
+  );
+  console.log(
+    "DataVisualization - data sample:",
+    Array.isArray(data) ? data[0] : data
+  );
+
   // Handle empty data
   if (!data || (Array.isArray(data) && data.length === 0)) {
     return null;
@@ -90,10 +102,74 @@ export const DataVisualization: React.FC<VisualizationProps> = ({
       ? flattenForTable(data)
       : data;
 
+  // Check if this is a tool that should show both table and JSON
+  const shouldShowBothViews =
+    toolName &&
+    (toolName.toLowerCase().includes("plu") ||
+      toolName.toLowerCase().includes("getpludata") ||
+      toolName.toLowerCase().includes("getlateststatistics"));
+
+  console.log("shouldShowBothViews:", shouldShowBothViews);
+  console.log("showTable before force:", showTable);
+  console.log("showJson before force:", showJson);
+
+  // Force both views for specific tools
+  if (shouldShowBothViews) {
+    showTable = true;
+    showJson = true;
+    showChart = false; // Disable chart in dual view mode
+  }
+
+  console.log("showTable after force:", showTable);
+  console.log("showJson after force:", showJson);
+
+  // Transform GetLatestStatistics data for table view
+  const transformGetLatestStatisticsData = (data: any[]): any[] => {
+    if (!Array.isArray(data) || data.length === 0) return data;
+
+    // Check if this is GetLatestStatistics data structure
+    const firstItem = data[0];
+    if (
+      !firstItem ||
+      typeof firstItem !== "object" ||
+      !("content" in firstItem)
+    ) {
+      return data;
+    }
+
+    // Extract and flatten the content array
+    const transformedData: any[] = [];
+    for (const item of data) {
+      if (Array.isArray(item.content)) {
+        for (const contentItem of item.content) {
+          if (contentItem && typeof contentItem === "object") {
+            transformedData.push({
+              className: contentItem.className || "",
+              count: contentItem.count || 0,
+              contenttype: contentItem.contenttype || "",
+            });
+          }
+        }
+      }
+    }
+
+    return transformedData.length > 0 ? transformedData : data;
+  };
+
+  // Prepare table data
+  let finalTableData = tableData;
+  if (
+    toolName &&
+    toolName.toLowerCase().includes("getlateststatistics") &&
+    shouldShowBothViews
+  ) {
+    finalTableData = transformGetLatestStatisticsData(data);
+  }
+
   return (
     <div className={styles.visualizationContainer}>
       {/* View Toggle Controls */}
-      {allowToggle && showJson && showTable && (
+      {allowToggle && showJson && showTable && !shouldShowBothViews && (
         <div className={styles.viewControls}>
           <div className={styles.viewToggle}>
             <button
@@ -128,18 +204,44 @@ export const DataVisualization: React.FC<VisualizationProps> = ({
       )}
 
       {/* Chart Rendering */}
-      {showChart && currentView === "table" && (
+      {showChart && currentView === "table" && !shouldShowBothViews && (
         <ChartRenderer data={data} chartType={chartType} query={query} />
       )}
 
-      {/* Table Rendering */}
-      {showTable && (allowToggle ? currentView === "table" : true) && (
-        <TableRenderer data={tableData} toolName={toolName} t={t} />
-      )}
+      {/* Show both table and JSON for specific tools */}
+      {shouldShowBothViews && showTable ? (
+        <>
+          {/* Chart for table view */}
+          {showChart && (
+            <ChartRenderer data={data} chartType={chartType} query={query} />
+          )}
 
-      {/* JSON Rendering */}
-      {showJson && (allowToggle ? currentView === "json" : true) && (
-        <JsonRenderer data={data} toolName={toolName} t={t} />
+          {/* Table View */}
+          <TableRenderer data={finalTableData} toolName={toolName} t={t} />
+
+          {/* JSON View Header */}
+          <div className={styles.sectionHeader}>
+            <span className={styles.sectionIcon}>📋</span>
+            <span className={styles.sectionTitle}>
+              {t ? t("view.rawPayload") : "Raw JSON Payload"}
+            </span>
+          </div>
+
+          {/* JSON View */}
+          <JsonRenderer data={data} toolName={toolName} t={t} />
+        </>
+      ) : (
+        <>
+          {/* Table Rendering */}
+          {showTable && (allowToggle ? currentView === "table" : true) && (
+            <TableRenderer data={tableData} toolName={toolName} t={t} />
+          )}
+
+          {/* JSON Rendering */}
+          {showJson && (allowToggle ? currentView === "json" : true) && (
+            <JsonRenderer data={data} toolName={toolName} t={t} />
+          )}
+        </>
       )}
     </div>
   );
