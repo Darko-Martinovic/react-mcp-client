@@ -123,6 +123,12 @@ export const DataVisualization: React.FC<VisualizationProps> = ({
   console.log("showTable after force:", showTable);
   console.log("showJson after force:", showJson);
 
+  console.log("Render condition check:", {
+    shouldShowBothViews,
+    showTable,
+    willRenderDualView: shouldShowBothViews && showTable,
+  });
+
   // Transform GetLatestStatistics data for table view
   const transformGetLatestStatisticsData = (data: any[]): any[] => {
     if (!Array.isArray(data) || data.length === 0) return data;
