@@ -21,6 +21,22 @@ https://github.com/user-attachments/assets/c06299ae-9ed7-42bc-a93f-4879ca464a8a
 
 _The demo showcases smart query processing, automatic data visualization, and multilingual chat capabilities._
 
+## 🆕 Latest Features
+
+Experience the newest enhancements in our React MCP Client:
+
+https://github.com/user-attachments/assets/b1bcc904-3729-42d8-81dd-f165dcd010ff
+
+**Recent Additions:**
+
+1. **Custom Plugin Support** - Define custom logic to access your database or API through configurable plugins
+2. **Advanced JSON Viewer** - Interactive data visualizer with expand/collapse functionality and intelligent formatting
+3. **Enhanced AI Response Tracking** - Each AI response now includes detailed metadata:
+   - Number of tokens used (prompt + completion)
+   - Estimated cost breakdown
+   - Tools utilized during processing
+   - AI model information
+
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 18 + TypeScript, Vite, CSS Modules
