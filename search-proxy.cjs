@@ -1,7 +1,3 @@
-// search-proxy.cjs - Complete MCP Tool Proxy with Article Search Support
-//
-// READY TO USE: Copy this file to your client project and run with: node search-proxy.cjs
-//
 // FEATURES:
 // - Dual-plugin support (Supermarket SQL + GkApi MongoDB)
 // - Automatic parameter extraction from natural language queries
@@ -60,7 +56,7 @@ app.get("/api/tools/schema", async (req, res) => {
       console.warn("Supermarket schema not available:", err.message);
     }
 
-    // Get GkApi plugin schema (if available)
+   
     try {
       const gkapiRes = await axios.get(
         `${mcpServerUrl}/api/gkapi/tools/schema`
