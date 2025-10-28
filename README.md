@@ -23,10 +23,6 @@ _The demo showcases smart query processing, automatic data visualization, and mu
 
 ## 🆕 Latest Features
 
-Experience the newest enhancements in our React MCP Client:
-
-https://github.com/user-attachments/assets/b1bcc904-3729-42d8-81dd-f165dcd010ff
-
 **Recent Additions:**
 
 1. **Custom Plugin Support** - Define custom logic to access your database or API through configurable plugins
