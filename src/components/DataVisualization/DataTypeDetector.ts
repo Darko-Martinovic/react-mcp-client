@@ -256,11 +256,11 @@ export function shouldDisplayAsTable(data: any[], query?: string): boolean {
 }
 
 /**
- * Detect if response is from MongoDB/GkApi based on plugin information
+ * Detect if response is from MongoDB/ThirdApi based on plugin information
  */
 export function isMongoDbResponse(toolName?: string, data?: any): boolean {
-  // Check tool name for GkApi indicators
-  if (toolName && toolName.toLowerCase().includes("gkapi")) {
+  // Check tool name for thirdapi indicators
+  if (toolName && toolName.toLowerCase().includes("thirdapi")) {
     return true;
   }
 

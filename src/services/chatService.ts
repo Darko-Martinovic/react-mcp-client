@@ -665,9 +665,9 @@ export const formatStructuredMCPResponse = (
     }
   }
 
-  // Detect if this is a MongoDB/GkApi response
+  // Detect if this is a MongoDB/ThirdApi response
   const isMongoResponse =
-    toolName?.toLowerCase().includes("gkapi") ||
+    toolName?.toLowerCase().includes("thirdapi") ||
     data.totalDocuments !== undefined ||
     data.totalUniqueTypes !== undefined;
 
