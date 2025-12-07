@@ -11,6 +11,12 @@ import { useTeamWorkspace } from "../hooks/useTeamWorkspace";
 import { getLanguageStorageKey } from "../i18n/i18n";
 import { Message } from "../services/chatService";
 import { ChatSession } from "../types/chat";
+import {
+  generateId,
+  createNewChatSession,
+  normalizeImportedChat,
+} from "../utils/chatHelpers";
+import { getWelcomeMessage } from "../utils/welcomeMessages";
 import styles from "./App.module.css";
 
 // Lazy load heavy components
@@ -24,83 +30,6 @@ const SystemPromptEditor = lazy(() => import("./SystemPromptEditor"));
 const AnalyticsDashboard = lazy(() => import("./AnalyticsDashboard"));
 
 const LOCAL_STORAGE_KEY = "mcpChats";
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-// Helper function to create a new ChatSession with all required properties
-function createNewChatSession(
-  overrides: Partial<ChatSession> = {}
-): ChatSession {
-  return {
-    id: generateId(),
-    title: "New Chat",
-    messages: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    tags: [],
-    isStarred: false,
-    messageCount: 0,
-    hasDataExports: false,
-    hasCharts: false,
-    isShared: false,
-    collaborators: [],
-    comments: [],
-    shareLinks: [],
-    ...overrides,
-  };
-}
-
-// Helper function to ensure imported chat has all required properties
-function normalizeImportedChat(partialChat: any): ChatSession {
-  return {
-    id: partialChat.id || generateId(),
-    title: partialChat.title || "Imported Chat",
-    messages: partialChat.messages || [],
-    createdAt: partialChat.createdAt || new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    tags: partialChat.tags || [],
-    isStarred: partialChat.isStarred || false,
-    messageCount: partialChat.messageCount || partialChat.messages?.length || 0,
-    hasDataExports: partialChat.hasDataExports || false,
-    hasCharts: partialChat.hasCharts || false,
-    category: partialChat.category,
-    chatType: partialChat.chatType,
-    lastActivity: partialChat.lastActivity,
-  };
-}
-
-// Get welcome message for new language
-function getWelcomeMessage(
-  language: string
-): { title: string; message: Message } | null {
-  const welcomeMessages = {
-    en: {
-      title: "Welcome to MCP Client",
-      message: {
-        sender: "system" as const,
-        text: '👋 Welcome to the MCP (Model Context Protocol) Client!\n\nThis is your English chat session. You can:\n• Ask questions about your business data\n• Query inventory, sales, and products\n• Get insights through AI-powered analysis\n\nTry asking: "Show me recent sales data" or "What products are low in stock?"',
-      },
-    },
-    fr: {
-      title: "Bienvenue dans MCP Client",
-      message: {
-        sender: "system" as const,
-        text: '👋 Bienvenue dans le Client MCP (Model Context Protocol) !\n\nCeci est votre session de chat en français. Vous pouvez :\n• Poser des questions sur vos données commerciales\n• Consulter l\'inventaire, les ventes et les produits\n• Obtenir des insights grâce à l\'analyse IA\n\nEssayez de demander : "Montrez-moi les données de ventes récentes" ou "Quels produits sont en rupture de stock ?"',
-      },
-    },
-    nl: {
-      title: "Welkom bij MCP Client",
-      message: {
-        sender: "system" as const,
-        text: '👋 Welkom bij de MCP (Model Context Protocol) Client!\n\nDit is uw Nederlandse chat sessie. U kunt:\n• Vragen stellen over uw bedrijfsgegevens\n• Inventaris, verkoop en producten opvragen\n• Inzichten krijgen door AI-analyse\n\nProbeer te vragen: "Toon me recente verkoopgegevens" of "Welke producten hebben weinig voorraad?"',
-      },
-    },
-  };
-
-  return welcomeMessages[language as keyof typeof welcomeMessages] || null;
-}
 
 const App: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -116,6 +45,7 @@ const App: React.FC = () => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showTeamWorkspace, setShowTeamWorkspace] = useState(false);
   const [chatToShare, setChatToShare] = useState<ChatSession | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const didLoadChats = useRef(false);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -624,7 +554,11 @@ const App: React.FC = () => {
   return (
     <div className={styles.appContainer}>
       {/* Sidebar for chat archive */}
-      <div className={styles.sidebar}>
+      <div
+        className={`${styles.sidebar} ${
+          isSidebarCollapsed ? styles.sidebarCollapsed : ""
+        }`}
+      >
         <div className={styles.sidebarHeader}>
           <div className={styles.topRow}>
             <button
@@ -703,6 +637,19 @@ const App: React.FC = () => {
           </Suspense>
         </div>
       </div>
+
+      {/* Sidebar Toggle Button */}
+      <button
+        className={styles.sidebarToggle}
+        onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        title={
+          isSidebarCollapsed
+            ? t("app.showSidebar", "Show sidebar")
+            : t("app.hideSidebar", "Hide sidebar")
+        }
+      >
+        {isSidebarCollapsed ? "▶" : "◀"}
+      </button>
 
       {/* Main content area */}
       <div className={styles.mainContent}>

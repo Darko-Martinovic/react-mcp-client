@@ -7,6 +7,7 @@ import {
 } from "../../utils/exporters";
 import { Message } from "../../services/chatService";
 import styles from "./Chat.module.css";
+import reactLogo from "../../assets/react.svg";
 
 interface ChatHeaderProps {
   messages: Message[];
@@ -41,12 +42,14 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ messages, title }) => {
   return (
     <div className={styles.exportSection}>
       <div className={styles.appTitle}>
+        <img src={reactLogo} alt="SmartQuery" className={styles.appIcon} />
         <h1 className={styles.appTitleText}>
           {t("app.title") || "SmartQuery"}
+          <span className={styles.appSubtitle}>
+            {" · "}
+            {t("app.subtitle") || "AI-Powered Data Intelligence"}
+          </span>
         </h1>
-        <span className={styles.appSubtitle}>
-          {t("app.subtitle") || "AI-Powered Data Intelligence"}
-        </span>
       </div>
       <div ref={exportMenuRef} className={styles.exportMenuContainer}>
         <button

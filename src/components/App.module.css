@@ -22,7 +22,14 @@ html[data-theme="dark"] .appContainer {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: width 0.3s ease, background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.sidebarCollapsed {
+  width: 0 !important;
+  border-right: none !important;
+  min-width: 0 !important;
 }
 
 /* Dark theme for sidebar */
@@ -282,6 +289,49 @@ html[data-theme="dark"] .sidebarTitle {
 
 .chatActionButton:hover {
   background: rgba(0, 0, 0, 0.1);
+}
+
+.sidebarToggle {
+  position: absolute;
+  left: 300px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 60px;
+  background: var(--accent-primary, #1976d2);
+  border: none;
+  border-radius: 0 8px 8px 0;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: left 0.3s ease, background-color 0.2s ease;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebarToggle:hover {
+  background: var(--accent-secondary, #1565c0);
+}
+
+.sidebarCollapsed ~ .sidebarToggle {
+  left: 0;
+}
+
+[data-theme="dark"] .sidebarToggle,
+html.dark .sidebarToggle,
+.dark .sidebarToggle,
+html[data-theme="dark"] .sidebarToggle {
+  background: #63b3ed !important;
+}
+
+[data-theme="dark"] .sidebarToggle:hover,
+html.dark .sidebarToggle:hover,
+.dark .sidebarToggle:hover,
+html[data-theme="dark"] .sidebarToggle:hover {
+  background: #90cdf4 !important;
 }
 
 .mainContent {
