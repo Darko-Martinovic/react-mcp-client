@@ -196,31 +196,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
               toolsCalled={message.toolsCalled}
             />
           )}
-
-          {/* Copy button for text messages */}
-          <div
-            className={`${styles.messageActions} ${
-              message.sender === "user"
-                ? styles.messageActionsUser
-                : styles.messageActionsSystem
-            }`}
-          >
-            <div className={styles.copyButtonContainer}>
-              <button
-                onClick={() => onCopy(message.text || "", messageIndex)}
-                className={styles.copyButton}
-              >
-                <span role="img" aria-label="copy">
-                  📋
-                </span>
-              </button>
-              {copiedMessageId === `text-${messageIndex}` && (
-                <div className={styles.copyTooltip}>
-                  {t("app.copied") || "Copied!"}
-                </div>
-              )}
-            </div>
-          </div>
         </>
       )}
     </div>
