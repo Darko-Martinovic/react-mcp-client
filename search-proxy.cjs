@@ -313,8 +313,8 @@ async function callSingleTool(tool, args, mcpServerUrl) {
       (tool.startsWith("Check") && tool.includes("Health")) ||
       tool.startsWith("Find")
     ) {
-      // Attempt to construct GkApi endpoint from tool name
-      const inferredEndpoint = `/api/gkapi/${tool
+      // Attempt to construct ThirdApi endpoint from tool name
+      const inferredEndpoint = `/api/thirdapi/${tool
         .toLowerCase()
         .replace(/^get/, "")
         .replace(/^find/, "")
@@ -322,15 +322,15 @@ async function callSingleTool(tool, args, mcpServerUrl) {
         .toLowerCase()
         .replace(/^-/, "")}`;
       console.log(
-        `Attempting to infer GkApi endpoint for ${tool}: ${inferredEndpoint}`
+        `Attempting to infer ThirdApi endpoint for ${tool}: ${inferredEndpoint}`
       );
 
       // Try the inferred endpoint
       try {
-        const isGkApiTool = true;
+        const isThirdApiTool = true;
         const hasComplexArgs = args && Object.keys(args).length > 2;
         const shouldUsePost =
-          isGkApiTool &&
+          isThirdApiTool &&
           (hasComplexArgs || (args && args.query) || (args && args.filter));
 
         let mcpRes;
@@ -376,7 +376,7 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     );
   }
 
-  // Validate required parameters for GkApi article search tools
+  // Validate required parameters for ThirdApi article search tools
   if (tool === "FindArticleByContentKey") {
     if (!args || !args.contentKey) {
       throw new Error(
@@ -426,11 +426,11 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     "AggregateData",
   ];
 
-  const isGkApiTool =
-    tool.toLowerCase().includes("gkapi") || mongoDbTools.includes(tool);
+  const isThirdApiTool =
+    tool.toLowerCase().includes("thirdapi") || mongoDbTools.includes(tool);
   const hasComplexArgs = finalArgs && Object.keys(finalArgs).length > 2;
   const shouldUsePost =
-    isGkApiTool &&
+    isThirdApiTool &&
     (hasComplexArgs ||
       (finalArgs && finalArgs.query) ||
       (finalArgs && finalArgs.filter));
@@ -438,7 +438,7 @@ async function callSingleTool(tool, args, mcpServerUrl) {
   console.log(
     `Tool: ${tool}, HTTP Method: ${
       shouldUsePost ? "POST" : "GET"
-    }, IsGkApi: ${isGkApiTool}`
+    }, IsThirdApi: ${isThirdApiTool}`
   );
 
   let mcpRes;
@@ -476,17 +476,17 @@ async function callSingleTool(tool, args, mcpServerUrl) {
 
   return {
     tool,
-    data: enhanceMongoDbResponse(mcpRes.data, isGkApiTool),
+    data: enhanceMongoDbResponse(mcpRes.data, isThirdApiTool),
   };
 }
 
 // Helper function to enhance MongoDB responses with metadata
-function enhanceMongoDbResponse(responseData, isGkApiTool) {
-  if (!isGkApiTool || !responseData) {
+function enhanceMongoDbResponse(responseData, isThirdApiTool) {
+  if (!isThirdApiTool || !responseData) {
     return responseData;
   }
 
-  console.log("Detected GkApi/MongoDB tool response, adding metadata");
+  console.log("Detected ThirdApi/MongoDB tool response, adding metadata");
 
   // If response has MongoDB characteristics, preserve the structure
   if (responseData.data && Array.isArray(responseData.data)) {
@@ -624,7 +624,7 @@ async function searchForTool(query) {
     query.toLowerCase().includes("analytics") ||
     query.toLowerCase().includes("statistics") ||
     query.toLowerCase().includes("content") ||
-    query.toLowerCase().includes("gk") ||
+    query.toLowerCase().includes("thirdapi") ||
     query.toLowerCase().includes("mongodb") ||
     query.toLowerCase().includes("prices") ||
     query.toLowerCase().includes("summary");
@@ -650,21 +650,21 @@ async function searchForTool(query) {
     const searchData = azureRes.data;
 
     if (searchData.value && searchData.value.length > 0) {
-      // Prefer GkApi tools for analytics queries
+      // Prefer ThirdApi tools for analytics queries
       if (isAnalyticsQuery) {
-        const gkapiTool = searchData.value.find(
+        const thirdapiTool = searchData.value.find(
           (tool) =>
-            tool.pluginName?.toLowerCase().includes("gkapi") ||
-            tool.category?.toLowerCase().includes("gkapi") ||
-            tool.endpoint?.includes("/gkapi/")
+            tool.pluginName?.toLowerCase().includes("thirdapi") ||
+            tool.category?.toLowerCase().includes("thirdapi") ||
+            tool.endpoint?.includes("/thirdapi/")
         );
-        if (gkapiTool) {
+        if (thirdapiTool) {
           console.log(
-            `Selected GkApi tool for analytics query: ${
-              gkapiTool.functionName || gkapiTool.name
+            `Selected ThirdApi tool for analytics query: ${
+              thirdapiTool.functionName || thirdapiTool.name
             }`
           );
-          return gkapiTool;
+          return thirdapiTool;
         }
       }
 

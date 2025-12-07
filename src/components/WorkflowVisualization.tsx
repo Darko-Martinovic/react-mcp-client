@@ -46,9 +46,9 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
     {
       id: "azure-search",
       title: "Azure Search",
-      description: "Tool discovery & indexing",
+      description: "Knowledge indexing & AI extension",
       details:
-        "Azure Search maintains an indexed registry of all available MCP tools with their descriptions, parameters, and endpoints. When the AI determines the user's intent, it searches this index to find the most appropriate tools that can fulfill the request. The index contains 8 registered tools including GetProducts, GetSalesData, GetTotalRevenue, GetLowStockProducts, GetSalesByCategory, GetInventoryStatus, GetDailySummary, and GetDetailedInventory.",
+        "Azure Search serves as a knowledge index that extends AI capabilities by maintaining structured information about available tools and domain knowledge. When the AI processes user queries, it can search this index to discover relevant tools and context.\n\nEach tool is indexed with metadata including descriptions, parameters, and capabilities. This approach enables dynamic tool discovery and contextual AI responses based on available capabilities.",
       icon: "🔍",
       type: "search",
       position: { x: 60, y: 25 },
@@ -65,10 +65,10 @@ const WorkflowVisualization: React.FC<WorkflowVisualizationProps> = ({
     {
       id: "mcp-server",
       title: t("workflow.steps.mcpServer.title"),
-      description: "Proxy-mediated communication",
+      description: "MCP Tool Execution",
       details:
-        "Frontend requests are routed through a proxy architecture for proper CORS handling and request management:\n\n🌐 Frontend (/api/tool)\n⬇️ Vite Dev Proxy (vite.config.js)\n⬇️ Search Proxy Server (port 5002)\n⬇️ MCP Server (port 9090)\n\nThis proxy chain is essential because:\n• Browsers block direct cross-origin requests (CORS)\n• The proxy handles request/response transformation\n• Provides consistent error handling and logging\n• Maps frontend API calls to correct MCP endpoints\n\nThe proxy server (search-proxy.cjs) acts as a bridge, forwarding tool calls to the actual MCP server while handling authentication, request formatting, and response processing.",
-      icon: "🔗",
+        "Model Context Protocol (MCP) is an open protocol that extends the capabilities of Large Language Models by providing standardized access to external tools and data sources.\n\n🏗️ Architecture Benefits:\n• Plugin-based architecture with dependency injection\n• Standardized tool interface and parameter validation\n• Consistent error handling across all tools\n• Easy extensibility for new business functions\n\nThe MCP server acts as a runtime environment where tools are registered as plugins, allowing the AI to dynamically discover and execute business logic while maintaining separation of concerns between the AI layer and domain-specific operations.",
+      icon: "�",
       type: "mcp",
       position: { x: 85, y: 70 },
     },
