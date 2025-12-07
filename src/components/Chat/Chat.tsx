@@ -49,6 +49,9 @@ const Chat: React.FC<ChatProps> = ({
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [clearSpeechTrigger, setClearSpeechTrigger] = useState(0);
   const [stopSpeechTrigger, setStopSpeechTrigger] = useState(0);
+  const [collapsedMessages, setCollapsedMessages] = useState<Set<number>>(
+    new Set()
+  );
   const [systemConfig, setSystemConfig] = useState(() =>
     getSystemPromptConfig()
   );
@@ -471,10 +474,83 @@ ${schema.fields
     inputRef.current?.focus();
   };
 
+  const handleToggleMessage = (index: number) => {
+    setCollapsedMessages((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
+  };
+
+  const handleCollapseAll = () => {
+    const systemMessageIndices = messages
+      .map((msg, idx) => (msg.sender === "system" ? idx : -1))
+      .filter((idx) => idx !== -1);
+    setCollapsedMessages(new Set(systemMessageIndices));
+  };
+
+  const handleExpandAll = () => {
+    setCollapsedMessages(new Set());
+  };
+
+  const handleToggleAll = () => {
+    const systemMessageIndices = messages
+      .map((msg, idx) => (msg.sender === "system" ? idx : -1))
+      .filter((idx) => idx !== -1);
+
+    // If any messages are expanded, collapse all; otherwise expand all
+    const hasExpandedMessages = systemMessageIndices.some(
+      (idx) => !collapsedMessages.has(idx)
+    );
+
+    if (hasExpandedMessages) {
+      setCollapsedMessages(new Set(systemMessageIndices));
+    } else {
+      setCollapsedMessages(new Set());
+    }
+  };
+
   return (
     <div className={styles.chatContainer}>
       {/* Header with App Title and Export Button */}
       <ChatHeader messages={messages} title={title} />
+
+      {/* Collapse/Expand All Controls */}
+      {messages.some((msg) => msg.sender === "system") && (
+        <div className={styles.messageControls}>
+          <button
+            onClick={handleToggleAll}
+            className={styles.controlButton}
+            title={
+              messages
+                .filter((msg) => msg.sender === "system")
+                .some(
+                  (msg, idx) => !collapsedMessages.has(messages.indexOf(msg))
+                )
+                ? t("app.collapseAll", "Collapse all responses")
+                : t("app.expandAll", "Expand all responses")
+            }
+          >
+            {messages
+              .filter((msg) => msg.sender === "system")
+              .some(
+                (msg, idx) => !collapsedMessages.has(messages.indexOf(msg))
+              ) ? (
+              <>
+                <span>📁</span> {t("app.collapseAll", "Collapse All")}
+              </>
+            ) : (
+              <>
+                <span>📂</span> {t("app.expandAll", "Expand All")}
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Message list */}
       <div className={styles.messagesContainer}>
@@ -491,6 +567,8 @@ ${schema.fields
               messageIndex={idx}
               copiedMessageId={copiedMessageId}
               onCopy={handleCopyMessage}
+              isCollapsed={collapsedMessages.has(idx)}
+              onToggleCollapse={() => handleToggleMessage(idx)}
             />
           ))}
           <div ref={messagesEndRef} />

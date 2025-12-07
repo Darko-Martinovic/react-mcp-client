@@ -75,21 +75,79 @@ html.dark .chatContainer,
 .exportButton {
   padding: 6px 16px;
   border-radius: 8px;
-  border: none;
-  background: var(--accent-primary, #1976d2);
-  color: #fff;
-  font-weight: bold;
+  border: 1px solid var(--accent-primary, #1976d2);
+  background: transparent;
+  color: var(--accent-primary, #1976d2);
+  font-weight: 500;
   font-size: 14px;
   margin-bottom: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 4px;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .exportButton:hover {
-  background: var(--accent-secondary, #1565c0);
+  background: rgba(25, 118, 210, 0.08);
+  border-color: var(--accent-secondary, #1565c0);
+  color: var(--accent-secondary, #1565c0);
+}
+
+/* Message Controls (Collapse/Expand All) */
+.messageControls {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-bottom: 1px solid var(--border-primary, #e0e0e0);
+  justify-content: flex-end;
+}
+
+.controlButton {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--accent-primary, #1976d2);
+  background: transparent;
+  color: var(--accent-primary, #1976d2);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.controlButton:hover {
+  background: rgba(25, 118, 210, 0.08);
+  border-color: var(--accent-secondary, #1565c0);
+  color: var(--accent-secondary, #1565c0);
+}
+
+[data-theme="dark"] .messageControls,
+html[data-theme="dark"] .messageControls,
+html.dark .messageControls,
+.dark .messageControls {
+  background: #2d3748 !important;
+  border-bottom-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .controlButton,
+html[data-theme="dark"] .controlButton,
+html.dark .controlButton,
+.dark .controlButton {
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
+}
+
+[data-theme="dark"] .controlButton:hover,
+html[data-theme="dark"] .controlButton:hover,
+html.dark .controlButton:hover,
+.dark .controlButton:hover {
+  background: rgba(99, 179, 237, 0.15) !important;
+  border-color: #90cdf4 !important;
+  color: #90cdf4 !important;
 }
 
 /* Dark theme overrides for export button */
@@ -97,14 +155,17 @@ html.dark .chatContainer,
 html[data-theme="dark"] .exportButton,
 html.dark .exportButton,
 .dark .exportButton {
-  background: #63b3ed !important;
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
 }
 
 [data-theme="dark"] .exportButton:hover,
 html[data-theme="dark"] .exportButton:hover,
 html.dark .exportButton:hover,
 .dark .exportButton:hover {
-  background: #90cdf4 !important;
+  background: rgba(99, 179, 237, 0.15) !important;
+  border-color: #90cdf4 !important;
+  color: #90cdf4 !important;
 }
 
 /* Dark theme overrides for export section and app title */
@@ -221,6 +282,11 @@ html.dark .emptyMessages,
 .messageItem {
   margin: 12px 0;
   position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.messageCollapsed {
+  opacity: 0.7;
 }
 
 .messageItemUser {
@@ -229,6 +295,21 @@ html.dark .emptyMessages,
 
 .messageItemSystem {
   text-align: left;
+}
+
+/* Message label wrapper for collapse toggle */
+.messageLabelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.messageItemUser .messageLabelWrapper {
+  justify-content: flex-end;
+}
+
+.messageItemSystem .messageLabelWrapper {
+  justify-content: flex-start;
 }
 
 /* Message Labels */
@@ -255,6 +336,63 @@ html.dark .messageLabel,
   text-align: left;
 }
 
+/* Collapse toggle button */
+.collapseToggle {
+  background: transparent;
+  border: 1px solid var(--accent-primary, #1976d2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  color: var(--accent-primary, #1976d2);
+  transition: all 0.2s ease;
+  margin: 0 8px;
+}
+
+.collapseToggle:hover {
+  background: var(--accent-primary, #1976d2);
+  border-color: var(--accent-primary, #1976d2);
+  color: #fff;
+}
+
+[data-theme="dark"] .collapseToggle,
+html[data-theme="dark"] .collapseToggle,
+html.dark .collapseToggle,
+.dark .collapseToggle {
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
+}
+
+[data-theme="dark"] .collapseToggle:hover,
+html[data-theme="dark"] .collapseToggle:hover,
+html.dark .collapseToggle:hover,
+.dark .collapseToggle:hover {
+  background: #63b3ed !important;
+  border-color: #63b3ed !important;
+  color: #1a202c !important;
+}
+
+/* Collapsed indicator */
+.collapsedIndicator {
+  padding: 8px 16px;
+  margin: 4px 24px;
+  background: #e3f2fd;
+  border: 1px dashed var(--accent-primary, #1976d2);
+  border-radius: 6px;
+  color: var(--accent-primary, #1976d2);
+  font-size: 13px;
+  font-style: italic;
+}
+
+[data-theme="dark"] .collapsedIndicator,
+html[data-theme="dark"] .collapsedIndicator,
+html.dark .collapsedIndicator,
+.dark .collapsedIndicator {
+  background: rgba(99, 179, 237, 0.15) !important;
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
+}
+
 /* Message Bubbles */
 .messageBubble {
   display: inline-block;
@@ -269,7 +407,7 @@ html.dark .messageLabel,
 }
 
 .messageBubbleUser {
-  background: var(--accent-primary, #1976d2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   border-bottom-right-radius: 4px;
 }
@@ -286,7 +424,7 @@ html.dark .messageLabel,
 html[data-theme="dark"] .messageBubbleUser,
 html.dark .messageBubbleUser,
 .dark .messageBubbleUser {
-  background: #63b3ed !important;
+  background: linear-gradient(135deg, #81c784 0%, #64b5f6 100%) !important;
   color: #1a202c !important;
 }
 
@@ -511,7 +649,7 @@ html.dark .loadingMessage,
 /* Input Area */
 .inputArea {
   padding: 16px 24px 24px;
-  background: var(--bg-primary, #fff);
+  background: var(--bg-secondary, #f5f7fa);
   border-top: 1px solid var(--border-primary, #e0e0e0);
   position: relative;
   width: 100%;
@@ -608,17 +746,30 @@ html.dark .chatInput:disabled,
 .sendButton {
   background: var(--accent-primary, #1976d2);
   color: #fff;
-  padding: 10px 16px;
+  padding: 14px 32px;
   font-weight: 600;
+  font-size: 16px;
+  min-width: 100px;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+  transition: all 0.2s ease;
 }
 
 .sendButton:hover:not(:disabled) {
   background: var(--accent-secondary, #1565c0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+}
+
+.sendButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.3);
 }
 
 .sendButton:disabled {
   background: var(--text-muted, #ccc);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Dark theme overrides for input buttons */
@@ -651,6 +802,7 @@ html.dark .sendButton,
 .dark .sendButton {
   background: #63b3ed !important;
   color: #1a202c !important;
+  box-shadow: 0 2px 8px rgba(99, 179, 237, 0.3) !important;
 }
 
 [data-theme="dark"] .sendButton:hover:not(:disabled),
@@ -658,6 +810,7 @@ html[data-theme="dark"] .sendButton:hover:not(:disabled),
 html.dark .sendButton:hover:not(:disabled),
 .dark .sendButton:hover:not(:disabled) {
   background: #90cdf4 !important;
+  box-shadow: 0 4px 12px rgba(99, 179, 237, 0.4) !important;
 }
 
 [data-theme="dark"] .sendButton:disabled,

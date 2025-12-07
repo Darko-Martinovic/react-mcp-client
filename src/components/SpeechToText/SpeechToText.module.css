@@ -8,29 +8,30 @@
 
 /* Microphone Button */
 .micButton {
-  background: var(--color-primary, #007acc);
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
 }
 
 .micButton:hover:not(:disabled) {
-  background: var(--color-primary-hover, #005a9e);
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
 }
 
 .micButton:active:not(:disabled) {
-  transform: scale(0.95);
+  transform: scale(0.98);
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.3);
 }
 
 .micButton.listening {
@@ -205,12 +206,14 @@
 /* Dark Theme Support */
 
 [data-theme="dark"] .micButton {
-  background: #0d6efd;
+  background: linear-gradient(135deg, #63b3ed 0%, #4299e1 100%) !important;
+  box-shadow: 0 2px 8px rgba(99, 179, 237, 0.3) !important;
   color: white;
 }
 
 [data-theme="dark"] .micButton:hover:not(:disabled) {
-  background: #0b5ed7;
+  background: linear-gradient(135deg, #90cdf4 0%, #63b3ed 100%) !important;
+  box-shadow: 0 4px 12px rgba(99, 179, 237, 0.4) !important;
 }
 
 [data-theme="dark"] .micButton.listening {
