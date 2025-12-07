@@ -1,12 +1,5 @@
-import React, {
-  useState,
-  FormEvent,
-  ChangeEvent,
-  useRef,
-  useEffect,
-} from "react";
+import React, { useState, FormEvent, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import i18n from "../../i18n/i18n";
 import styles from "./Chat.module.css";
 import {
   fetchArticlesFromAzureSearch,
@@ -15,24 +8,19 @@ import {
   getFilterableFields,
 } from "../../services/azureSearch";
 import { getSystemPromptConfig } from "../SystemPromptEditor";
-import EmojiPicker from "../EmojiPicker";
-import QuestionPicker from "../QuestionPicker";
-import SpeechToTextSimple from "../SpeechToText/SpeechToTextSimple";
-import { DataVisualization } from "../DataVisualization";
-import { isSimpleTable } from "../DataVisualization/DataTransformer";
-import { TokenUsageFooter } from "../TokenUsageFooter";
-import {
-  exportChat,
-  exportChatAsText,
-  exportChatAsMarkdown,
-  copyToClipboard,
-} from "../../utils/exporters";
+import { copyToClipboard } from "../../utils/exporters";
 import {
   Message,
   getAIIntent,
   parseAIResponseForMCPCall,
   callMCPServer,
 } from "../../services/chatService";
+import { ChatHeader } from "./ChatHeader";
+import { MessageItem } from "./MessageItem";
+import { ChatInput } from "./ChatInput";
+import EmojiPicker from "../EmojiPicker";
+import QuestionPicker from "../QuestionPicker";
+import SpeechToTextSimple from "../SpeechToText/SpeechToTextSimple";
 
 interface ChatProps {
   messages: Message[];
@@ -465,7 +453,7 @@ ${schema.fields
     }
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
 
@@ -513,60 +501,7 @@ ${schema.fields
   return (
     <div className={styles.chatContainer}>
       {/* Header with App Title and Export Button */}
-      <div className={styles.exportSection}>
-        <div className={styles.appTitle}>
-          <h1 className={styles.appTitleText}>
-            {t("app.title") || "SmartQuery"}
-          </h1>
-          <span className={styles.appSubtitle}>
-            {t("app.subtitle") || "AI-Powered Data Intelligence"}
-          </span>
-        </div>
-        <div ref={exportMenuRef} className={styles.exportMenuContainer}>
-          <button
-            onClick={() => setShowExportMenu(!showExportMenu)}
-            className={styles.exportButton}
-          >
-            <span role="img" aria-label="export">
-              📤
-            </span>
-            {t("export.button") || "Export"}
-            <span style={{ marginLeft: 4 }}>▼</span>
-          </button>
-
-          {showExportMenu && (
-            <div className={styles.exportDropdown}>
-              <button
-                onClick={() => {
-                  exportChat(messages, title || "chat");
-                  setShowExportMenu(false);
-                }}
-                className={styles.exportOption}
-              >
-                📋 {t("export.json") || "JSON"}
-              </button>
-              <button
-                onClick={() => {
-                  exportChatAsText(messages, title || "chat");
-                  setShowExportMenu(false);
-                }}
-                className={styles.exportOption}
-              >
-                📄 {t("export.text") || "Text"}
-              </button>
-              <button
-                onClick={() => {
-                  exportChatAsMarkdown(messages, title || "chat");
-                  setShowExportMenu(false);
-                }}
-                className={styles.exportOption}
-              >
-                📝 {t("export.markdown") || "Markdown"}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      <ChatHeader messages={messages} title={title} />
 
       {/* Message list */}
       <div className={styles.messagesContainer}>
@@ -577,313 +512,15 @@ ${schema.fields
             </div>
           )}
           {messages.map((msg, idx) => (
-            <div
+            <MessageItem
               key={idx}
-              className={`${styles.messageItem} ${
-                msg.sender === "user"
-                  ? styles.messageItemUser
-                  : styles.messageItemSystem
-              }`}
-            >
-              {/* Message label */}
-              <div
-                className={`${styles.messageLabel} ${
-                  msg.sender === "user"
-                    ? styles.messageLabelUser
-                    : styles.messageLabelSystem
-                }`}
-              >
-                {msg.sender === "user"
-                  ? t("app.you") || "You"
-                  : t("app.ai") || "AI"}
-              </div>
-
-              {msg.tableData ? (
-                <>
-                  {/* Show summary text above the table if it exists */}
-                  {msg.text && (
-                    <span
-                      className={`${styles.messageBubble} ${
-                        msg.sender === "user"
-                          ? styles.messageBubbleUser
-                          : styles.messageBubbleSystem
-                      }`}
-                      style={{ marginBottom: "10px", display: "block" }}
-                    >
-                      {msg.text}
-                    </span>
-                  )}
-
-                  <DataVisualization
-                    data={msg.tableData}
-                    toolName={msg.toolName}
-                    query={msg.traceData?.userInput}
-                    t={t}
-                  />
-
-                  {/* Token Usage Footer for AI responses */}
-                  {msg.sender === "system" && (
-                    <TokenUsageFooter
-                      tokensUsed={msg.tokensUsed}
-                      estimatedCost={msg.estimatedCost}
-                      model={msg.model}
-                      usedTools={msg.usedTools}
-                      toolsCalled={msg.toolsCalled}
-                    />
-                  )}
-
-                  {/* Copy button for table data */}
-                  <div
-                    className={`${styles.messageActions} ${
-                      msg.sender === "user"
-                        ? styles.messageActionsUser
-                        : styles.messageActionsSystem
-                    }`}
-                  >
-                    <div className={styles.copyButtonContainer}>
-                      <button
-                        onClick={() =>
-                          handleCopyMessage(
-                            JSON.stringify(msg.tableData, null, 2),
-                            idx
-                          )
-                        }
-                        className={styles.copyButton}
-                        title="Copy Table"
-                      >
-                        <span role="img" aria-label="copy">
-                          📋
-                        </span>
-                      </button>
-                      {copiedMessageId === String(idx) && (
-                        <div className={styles.copyTooltip}>
-                          {t("app.copied") || "Copied!"}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </>
-              ) : msg.jsonData ? (
-                <>
-                  {/* Show summary text above the JSON if it exists */}
-                  {msg.text && (
-                    <span
-                      className={`${styles.messageBubble} ${
-                        msg.sender === "user"
-                          ? styles.messageBubbleUser
-                          : styles.messageBubbleSystem
-                      }`}
-                      style={{ marginBottom: "10px", display: "block" }}
-                    >
-                      {msg.text}
-                    </span>
-                  )}
-
-                  <DataVisualization
-                    data={msg.jsonData}
-                    toolName={msg.toolName}
-                    query={msg.traceData?.userInput}
-                    t={t}
-                    displayMode="auto"
-                  />
-
-                  {/* Token Usage Footer for AI responses */}
-                  {msg.sender === "system" && (
-                    <TokenUsageFooter
-                      tokensUsed={msg.tokensUsed}
-                      estimatedCost={msg.estimatedCost}
-                      model={msg.model}
-                      usedTools={msg.usedTools}
-                      toolsCalled={msg.toolsCalled}
-                    />
-                  )}
-
-                  {/* Copy button for JSON data */}
-                  <div
-                    className={`${styles.messageActions} ${
-                      msg.sender === "user"
-                        ? styles.messageActionsUser
-                        : styles.messageActionsSystem
-                    }`}
-                  >
-                    <div className={styles.copyButtonContainer}>
-                      <button
-                        onClick={() =>
-                          handleCopyMessage(
-                            JSON.stringify(msg.jsonData, null, 2),
-                            idx
-                          )
-                        }
-                        className={styles.copyButton}
-                        title="Copy JSON"
-                      >
-                        <span role="img" aria-label="copy">
-                          📋
-                        </span>
-                      </button>
-                      {copiedMessageId === String(idx) && (
-                        <div className={styles.copyTooltip}>
-                          {t("app.copied") || "Copied!"}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span
-                    className={`${styles.messageBubble} ${
-                      msg.sender === "user"
-                        ? styles.messageBubbleUser
-                        : styles.messageBubbleSystem
-                    }`}
-                  >
-                    {msg.text}
-                  </span>
-
-                  {/* Token Usage Footer for AI responses */}
-                  {msg.sender === "system" && (
-                    <TokenUsageFooter
-                      tokensUsed={msg.tokensUsed}
-                      estimatedCost={msg.estimatedCost}
-                      model={msg.model}
-                      usedTools={msg.usedTools}
-                      toolsCalled={msg.toolsCalled}
-                    />
-                  )}
-
-                  {/* Copy button for text messages */}
-                  <div
-                    className={`${styles.messageActions} ${
-                      msg.sender === "user"
-                        ? styles.messageActionsUser
-                        : styles.messageActionsSystem
-                    }`}
-                  >
-                    <div className={styles.copyButtonContainer}>
-                      <button
-                        onClick={() => handleCopyMessage(msg.text || "", idx)}
-                        className={styles.copyButton}
-                        title="Copy Message"
-                      >
-                        <span role="img" aria-label="copy">
-                          📋
-                        </span>
-                      </button>
-                      {copiedMessageId === String(idx) && (
-                        <div className={styles.copyTooltip}>Copied!</div>
-                      )}
-                    </div>
-
-                    {/* Trace Call checkbox - only show for system messages with trace data */}
-                    {msg.sender === "system" && msg.traceData && (
-                      <label className={styles.traceToggle}>
-                        <input
-                          type="checkbox"
-                          checked={visibleTraces.has(idx)}
-                          onChange={() => toggleTraceVisibility(idx)}
-                        />
-                        {t("trace.showTrace") || "Show Trace Call"}
-                      </label>
-                    )}
-                  </div>
-                </>
-              )}
-
-              {/* Trace details panel - only show when checkbox is checked */}
-              {msg.sender === "system" &&
-                msg.traceData &&
-                visibleTraces.has(idx) && (
-                  <div className={styles.tracePanel}>
-                    <div className={styles.traceTitle}>
-                      <span>Trace Information</span>
-                      <div className={styles.copyButtonContainer}>
-                        <button
-                          onClick={() => {
-                            const traceText = JSON.stringify(
-                              msg.traceData,
-                              null,
-                              2
-                            );
-                            handleCopyMessage(traceText, idx);
-                          }}
-                          className={styles.copyButton}
-                          title="Copy Trace Data"
-                        >
-                          <span role="img" aria-label="copy">
-                            📋
-                          </span>
-                        </button>
-                        {copiedMessageId === String(idx) && (
-                          <div className={styles.copyTooltip}>Copied!</div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className={styles.traceItem}>
-                      <strong>Timestamp:</strong> {msg.traceData.timestamp}
-                    </div>
-
-                    {msg.traceData.userInput && (
-                      <div className={styles.traceItem}>
-                        <strong>User Input:</strong> {msg.traceData.userInput}
-                      </div>
-                    )}
-
-                    {msg.traceData.selectedTool && (
-                      <div className={styles.traceItem}>
-                        <strong>Selected Tool:</strong>{" "}
-                        {msg.traceData.selectedTool}
-                      </div>
-                    )}
-
-                    {msg.traceData.parameters &&
-                      Object.keys(msg.traceData.parameters).length > 0 && (
-                        <div className={styles.traceItem}>
-                          <strong>Parameters:</strong>
-                          <pre className={styles.traceCode}>
-                            {JSON.stringify(msg.traceData.parameters, null, 2)}
-                          </pre>
-                        </div>
-                      )}
-
-                    {msg.traceData.aiResponse && (
-                      <div className={styles.traceItem}>
-                        <strong>AI Response:</strong>
-                        <pre className={styles.traceCode}>
-                          {JSON.stringify(msg.traceData.aiResponse, null, 2)}
-                        </pre>
-                      </div>
-                    )}
-
-                    {msg.traceData.mcpCall && (
-                      <div className={styles.traceItem}>
-                        <strong>MCP Call:</strong>
-                        <pre className={styles.traceCode}>
-                          {JSON.stringify(msg.traceData.mcpCall, null, 2)}
-                        </pre>
-                      </div>
-                    )}
-
-                    {msg.traceData.mcpResponse && (
-                      <div className={styles.traceItem}>
-                        <strong>MCP Response:</strong>
-                        <pre className={styles.traceCode}>
-                          {JSON.stringify(msg.traceData.mcpResponse, null, 2)}
-                        </pre>
-                      </div>
-                    )}
-
-                    {msg.traceData.error && (
-                      <div
-                        className={`${styles.traceItem} ${styles.traceItemError}`}
-                      >
-                        <strong>Error:</strong> {msg.traceData.error}
-                      </div>
-                    )}
-                  </div>
-                )}
-            </div>
+              message={msg}
+              messageIndex={idx}
+              visibleTraces={visibleTraces}
+              copiedMessageId={copiedMessageId}
+              onToggleTrace={toggleTraceVisibility}
+              onCopy={handleCopyMessage}
+            />
           ))}
           <div ref={messagesEndRef} />
         </div>
