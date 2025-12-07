@@ -1,5 +1,5 @@
 // FEATURES:
-// - Dual-plugin support (Supermarket SQL + GkApi MongoDB)
+// - Dual-plugin support (Supermarket SQL + ThirdApi MongoDB)
 // - Automatic parameter extraction from natural language queries
 // - Path parameter handling for FindArticleByContentKey
 // - Validation for required parameters
@@ -56,15 +56,15 @@ app.get("/api/tools/schema", async (req, res) => {
       console.warn("Supermarket schema not available:", err.message);
     }
 
-   
+    // Get a third party plugin schema (if available)
     try {
-      const gkapiRes = await axios.get(
-        `${mcpServerUrl}/api/gkapi/tools/schema`
+      const thirdapiRes = await axios.get(
+        `${mcpServerUrl}/api/thirdapi/tools/schema`
       );
-      schemas.gkapi = gkapiRes.data;
-      console.log("GkApi schema retrieved successfully");
+      schemas.thirdapi = thirdapiRes.data;
+      console.log("ThirdApi schema retrieved successfully");
     } catch (err) {
-      console.warn("GkApi schema not available:", err.message);
+      console.warn("ThirdApi schema not available:", err.message);
     }
 
     // Return combined schemas or fallback to supermarket only
@@ -238,8 +238,11 @@ app.post("/api/tool", async (req, res) => {
         "FindArticlesByName",
         "FindArticleByContentKey",
       ];
-      if (mongoDbTools.includes(tool) || tool.toLowerCase().includes("gkapi")) {
-        errorResponse.plugin = "gkapi";
+      if (
+        mongoDbTools.includes(tool) ||
+        tool.toLowerCase().includes("thirdapi")
+      ) {
+        errorResponse.plugin = "thirdapi";
       } else if (
         tool.includes("Products") ||
         tool.includes("Sales") ||
@@ -269,21 +272,21 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     GetSalesByCategory: "/api/supermarket/sales/by-category",
     GetDailySummary: "/api/supermarket/sales/daily-summary",
 
-    // GkApi MongoDB Plugin Tools
-    GetContentTypesSummary: "/api/gkapi/content-types",
-    GetPricesWithoutBaseItem: "/api/gkapi/prices-without-base-item",
-    GetLatestStatistics: "/api/gkapi/latest-statistics",
-    FindArticlesByName: "/api/gkapi/articles/search",
-    FindArticleByContentKey: "/api/gkapi/articles",
-    GetPluData: "/api/gkapi/plu-data",
-    GetDocuments: "/api/gkapi/documents",
-    GetCollections: "/api/gkapi/collections",
-    SearchDocuments: "/api/gkapi/search",
-    AggregateData: "/api/gkapi/aggregate",
+    // ThirdApi MongoDB Plugin Tools
+    GetContentTypesSummary: "/api/thirdapi/content-types",
+    GetPricesWithoutBaseItem: "/api/thirdapi/prices-without-base-item",
+    GetLatestStatistics: "/api/thirdapi/latest-statistics",
+    FindArticlesByName: "/api/thirdapi/articles/search",
+    FindArticleByContentKey: "/api/thirdapi/articles",
+    GetPluData: "/api/thirdapi/plu-data",
+    GetDocuments: "/api/thirdapi/documents",
+    GetCollections: "/api/thirdapi/collections",
+    SearchDocuments: "/api/thirdapi/search",
+    AggregateData: "/api/thirdapi/aggregate",
 
     // Health Check endpoints
     CheckSupermarketHealth: "/api/supermarket/health",
-    CheckGkApiHealth: "/api/gkapi/health",
+    CheckThirdApiHealth: "/api/thirdapi/health",
     CheckSystemHealth: "/health",
 
     // Handle search queries by mapping to appropriate tools
