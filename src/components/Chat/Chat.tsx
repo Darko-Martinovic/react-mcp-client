@@ -18,8 +18,6 @@ import {
 import { ChatHeader } from "./ChatHeader";
 import { MessageItem } from "./MessageItem";
 import { ChatInput } from "./ChatInput";
-import EmojiPicker from "../EmojiPicker";
-import QuestionPicker from "../QuestionPicker";
 import SpeechToTextSimple from "../SpeechToText/SpeechToTextSimple";
 
 interface ChatProps {
@@ -49,9 +47,6 @@ const Chat: React.FC<ChatProps> = ({
   const [loading, setLoading] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
-  const [visibleTraces, setVisibleTraces] = useState<Set<number>>(new Set());
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [showQuestionPicker, setShowQuestionPicker] = useState(false);
   const [clearSpeechTrigger, setClearSpeechTrigger] = useState(0);
   const [stopSpeechTrigger, setStopSpeechTrigger] = useState(0);
   const [systemConfig, setSystemConfig] = useState(() =>
@@ -467,28 +462,6 @@ ${schema.fields
     }
   };
 
-  const toggleTraceVisibility = (messageIndex: number) => {
-    const newVisibleTraces = new Set(visibleTraces);
-    if (newVisibleTraces.has(messageIndex)) {
-      newVisibleTraces.delete(messageIndex);
-    } else {
-      newVisibleTraces.add(messageIndex);
-    }
-    setVisibleTraces(newVisibleTraces);
-  };
-
-  const handleEmojiSelect = (emoji: string) => {
-    setInput((prev) => prev + emoji);
-    setShowEmojiPicker(false);
-    inputRef.current?.focus();
-  };
-
-  const handleQuestionSelect = (question: string) => {
-    setInput(question);
-    setShowQuestionPicker(false);
-    inputRef.current?.focus();
-  };
-
   const handleTranscriptUpdate = (transcript: string) => {
     // Simple: just update the input if not loading and transcript is not empty
     if (!loading && transcript.trim()) {
@@ -516,9 +489,7 @@ ${schema.fields
               key={idx}
               message={msg}
               messageIndex={idx}
-              visibleTraces={visibleTraces}
               copiedMessageId={copiedMessageId}
-              onToggleTrace={toggleTraceVisibility}
               onCopy={handleCopyMessage}
             />
           ))}
@@ -543,30 +514,6 @@ ${schema.fields
             className={styles.chatInput}
             disabled={loading}
           />
-          <button
-            type="button"
-            className={styles.questionButton}
-            onClick={() => {
-              setShowQuestionPicker(!showQuestionPicker);
-              setShowEmojiPicker(false); // Close emoji picker when opening question picker
-            }}
-            disabled={loading}
-            title="Standard questions"
-          >
-            ❓
-          </button>
-          <button
-            type="button"
-            className={styles.emojiButton}
-            onClick={() => {
-              setShowEmojiPicker(!showEmojiPicker);
-              setShowQuestionPicker(false); // Close question picker when opening emoji picker
-            }}
-            disabled={loading}
-            title="Add emoji"
-          >
-            😀
-          </button>
           <SpeechToTextSimple
             onTranscriptUpdate={handleTranscriptUpdate}
             language="en-US" // Always use English for better business term recognition
@@ -584,22 +531,6 @@ ${schema.fields
               : t("app.send") || "Send"}
           </button>
         </form>
-
-        {/* Question Picker */}
-        {showQuestionPicker && (
-          <QuestionPicker
-            onQuestionSelect={handleQuestionSelect}
-            onClose={() => setShowQuestionPicker(false)}
-          />
-        )}
-
-        {/* Emoji Picker */}
-        {showEmojiPicker && (
-          <EmojiPicker
-            onEmojiSelect={handleEmojiSelect}
-            onClose={() => setShowEmojiPicker(false)}
-          />
-        )}
       </div>
     </div>
   );

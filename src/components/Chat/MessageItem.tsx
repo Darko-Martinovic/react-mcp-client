@@ -3,25 +3,20 @@ import { useTranslation } from "react-i18next";
 import { Message } from "../../services/chatService";
 import { DataVisualization } from "../DataVisualization";
 import { TokenUsageFooter } from "../TokenUsageFooter";
-import { TraceDataPanel } from "./TraceDataPanel";
 import { copyToClipboard } from "../../utils/exporters";
 import styles from "./Chat.module.css";
 
 interface MessageItemProps {
   message: Message;
   messageIndex: number;
-  visibleTraces: Set<number>;
   copiedMessageId: string | null;
-  onToggleTrace: (index: number) => void;
   onCopy: (text: string, index: number) => void;
 }
 
 export const MessageItem: React.FC<MessageItemProps> = ({
   message,
   messageIndex,
-  visibleTraces,
   copiedMessageId,
-  onToggleTrace,
   onCopy,
 }) => {
   const { t } = useTranslation();
@@ -227,26 +222,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             </div>
           </div>
         </>
-      )}
-
-      {/* Show trace button if trace data exists */}
-      {message.traceData && (
-        <button
-          onClick={() => onToggleTrace(messageIndex)}
-          className={styles.showTraceButton}
-        >
-          {visibleTraces.has(messageIndex) ? "▼ Hide Trace" : "▶ Show Trace"}
-        </button>
-      )}
-
-      {/* Trace Data Panel */}
-      {visibleTraces.has(messageIndex) && (
-        <TraceDataPanel
-          traceData={message.traceData}
-          messageIndex={messageIndex}
-          onCopy={onCopy}
-          copiedMessageId={copiedMessageId}
-        />
       )}
     </div>
   );
