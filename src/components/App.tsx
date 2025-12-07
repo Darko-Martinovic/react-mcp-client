@@ -1,14 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import Chat from "./Chat/Chat";
-import ChatPreview from "./ChatPreview/ChatPreview";
-import ShareDialog from "./ShareDialog/ShareDialog";
-import TeamWorkspaceManager from "./TeamWorkspace/TeamWorkspace";
 import LanguageSelector from "./LanguageSelector";
 import ThemeToggle from "./ThemeToggle";
-import WorkflowVisualization from "./WorkflowVisualization";
-import SystemPromptEditor from "./SystemPromptEditor";
-import AnalyticsDashboard from "./AnalyticsDashboard";
 import { ToastContainer } from "./Toast";
 import { useToast } from "../hooks/useToast";
 import { useChatCategories } from "../hooks/useChatCategories";
@@ -18,6 +12,16 @@ import { getLanguageStorageKey } from "../i18n/i18n";
 import { Message } from "../services/chatService";
 import { ChatSession } from "../types/chat";
 import styles from "./App.module.css";
+
+// Lazy load heavy components
+const ChatPreview = lazy(() => import("./ChatPreview/ChatPreview"));
+const ShareDialog = lazy(() => import("./ShareDialog/ShareDialog"));
+const TeamWorkspaceManager = lazy(
+  () => import("./TeamWorkspace/TeamWorkspace")
+);
+const WorkflowVisualization = lazy(() => import("./WorkflowVisualization"));
+const SystemPromptEditor = lazy(() => import("./SystemPromptEditor"));
+const AnalyticsDashboard = lazy(() => import("./AnalyticsDashboard"));
 
 const LOCAL_STORAGE_KEY = "mcpChats";
 
@@ -675,26 +679,28 @@ const App: React.FC = () => {
         </div>
         <div className={styles.sidebarTitle}>{t("app.chats", "Chats")}</div>
         <div className={styles.chatList}>
-          {chats.map((chat) => (
-            <ChatPreview
-              key={chat.id}
-              chat={chat}
-              isActive={chat.id === activeChatId}
-              isEditing={editingId === chat.id}
-              onSelect={handleChatClick}
-              onDoubleClick={handleChatDoubleClick}
-              onStar={handleStarChat}
-              onCategorize={handleCategorizeChat}
-              onDelete={handleDeleteChat}
-              onSave={handleSaveChat}
-              onEditTitle={handleEditTitle}
-              onShare={handleShareChat}
-              editTitle={editTitle}
-              onTitleChange={handleTitleChange}
-              onTitleBlur={handleTitleBlur}
-              onTitleKeyDown={handleTitleKeyDown}
-            />
-          ))}
+          <Suspense fallback={<div>Loading chats...</div>}>
+            {chats.map((chat) => (
+              <ChatPreview
+                key={chat.id}
+                chat={chat}
+                isActive={chat.id === activeChatId}
+                isEditing={editingId === chat.id}
+                onSelect={handleChatClick}
+                onDoubleClick={handleChatDoubleClick}
+                onStar={handleStarChat}
+                onCategorize={handleCategorizeChat}
+                onDelete={handleDeleteChat}
+                onSave={handleSaveChat}
+                onEditTitle={handleEditTitle}
+                onShare={handleShareChat}
+                editTitle={editTitle}
+                onTitleChange={handleTitleChange}
+                onTitleBlur={handleTitleBlur}
+                onTitleKeyDown={handleTitleKeyDown}
+              />
+            ))}
+          </Suspense>
         </div>
       </div>
 
@@ -722,49 +728,59 @@ const App: React.FC = () => {
 
       {/* Workflow Visualization Modal */}
       {showWorkflow && (
-        <WorkflowVisualization
-          isOpen={showWorkflow}
-          onClose={() => setShowWorkflow(false)}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <WorkflowVisualization
+            isOpen={showWorkflow}
+            onClose={() => setShowWorkflow(false)}
+          />
+        </Suspense>
       )}
 
       {/* System Prompt Editor Modal */}
       {showSystemPrompt && (
-        <SystemPromptEditor
-          isOpen={showSystemPrompt}
-          onClose={() => setShowSystemPrompt(false)}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <SystemPromptEditor
+            isOpen={showSystemPrompt}
+            onClose={() => setShowSystemPrompt(false)}
+          />
+        </Suspense>
       )}
 
       {/* Share Dialog Modal */}
       {showShareDialog && chatToShare && (
-        <ShareDialog
-          isOpen={showShareDialog}
-          onClose={() => {
-            setShowShareDialog(false);
-            setChatToShare(null);
-          }}
-          chat={chatToShare}
-          onChatUpdate={handleChatUpdate}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ShareDialog
+            isOpen={showShareDialog}
+            onClose={() => {
+              setShowShareDialog(false);
+              setChatToShare(null);
+            }}
+            chat={chatToShare}
+            onChatUpdate={handleChatUpdate}
+          />
+        </Suspense>
       )}
 
       {/* Team Workspace Manager Modal */}
       {showTeamWorkspace && (
-        <TeamWorkspaceManager
-          isOpen={showTeamWorkspace}
-          onClose={() => setShowTeamWorkspace(false)}
-          allChats={chats}
-          onShareChatToWorkspace={handleShareChatToWorkspace}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <TeamWorkspaceManager
+            isOpen={showTeamWorkspace}
+            onClose={() => setShowTeamWorkspace(false)}
+            allChats={chats}
+            onShareChatToWorkspace={handleShareChatToWorkspace}
+          />
+        </Suspense>
       )}
 
       {/* Analytics Dashboard Modal */}
       {showAnalytics && (
-        <AnalyticsDashboard
-          chats={chats}
-          onClose={() => setShowAnalytics(false)}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <AnalyticsDashboard
+            chats={chats}
+            onClose={() => setShowAnalytics(false)}
+          />
+        </Suspense>
       )}
 
       {/* Toast Notifications */}
