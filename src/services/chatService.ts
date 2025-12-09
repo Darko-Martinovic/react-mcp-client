@@ -9,6 +9,7 @@ import {
 import { getSystemPromptConfig } from "../components/SystemPromptEditor";
 import { isSimpleTable } from "../components/DataVisualization/DataTransformer";
 import { cacheManager } from "./cacheManager";
+import { endpoints } from "../config/api";
 
 export interface AIResponse {
   aiMessage: string;
@@ -342,11 +343,11 @@ export const callMCPServer = async (
     console.log("========================");
   }
 
-  console.log("🔍 About to make search request to /api/search");
+  console.log(`🔍 About to make search request to ${endpoints.search}`);
   console.log("Search query:", mcpCall.parameters.query || "*");
 
   // First, get the available tools from Azure Search to find the right tool name and endpoint
-  const searchResponse = await fetch("/api/search", {
+  const searchResponse = await fetch(endpoints.search, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query: mcpCall.parameters.query || "*" }),

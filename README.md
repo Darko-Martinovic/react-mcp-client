@@ -47,8 +47,7 @@ _The demo showcases smart query processing, automatic data visualization, and mu
 
 - Node.js 16+
 - Azure OpenAI account and API key
-- MCP Server running on port 9090
-- Proxy server running on port 5002
+- Backend API server running (default port 9090)
 
 ### Installation
 
@@ -74,13 +73,9 @@ _The demo showcases smart query processing, automatic data visualization, and mu
    AZURE_SEARCH_INDEX=your-index-name
    ```
 
-3. **Start the applications**
+3. **Start the development server**
 
    ```bash
-   # Start proxy server (handles frontend ↔ MCP communication)
-   node search-proxy.cjs
-
-   # Start development server
    npm run dev
    ```
 
@@ -96,6 +91,8 @@ src/
 │   ├── Toast/                 # Toast notification system
 │   ├── DataVisualization/     # Chart rendering & table components
 │   └── LanguageSelector.tsx   # Multi-language support
+├── config/
+│   └── api.ts                 # Centralized API endpoints & versioning
 ├── services/
 │   ├── azureOpenAI.ts         # Azure OpenAI integration
 │   ├── azureSearch.ts         # Azure Search/RAG capabilities
@@ -110,16 +107,15 @@ src/
 ## 🎯 How It Works
 
 ```
-Frontend (React) → Vite Proxy (/api/*) → Proxy Server (5002) → MCP Server (9090) → Data Processing → UI Rendering
+Frontend (React) → Vite Proxy (/api/v1/*) → Backend API (9090) → Data Processing → UI Rendering
 ```
 
 1. **User Input**: User submits query through React chat interface
 2. **AI Processing**: Azure OpenAI analyzes intent and generates function calls
 3. **Parameter Extraction**: Smart extraction of dates, thresholds, categories, suppliers
-4. **Proxy Communication**: Frontend calls /api endpoints, proxied to search-proxy.cjs on port 5002
-5. **MCP Communication**: Proxy server communicates with MCP server on port 9090
-6. **Data Processing**: Intelligent formatting (summary vs detailed data)
-7. **Visualization**: Automatic chart/table rendering with export capabilities
+4. **API Communication**: Frontend calls versioned `/api/v1/*` endpoints via Vite proxy
+5. **Data Processing**: Intelligent formatting (summary vs detailed data)
+6. **Visualization**: Automatic chart/table rendering with export capabilities
 
 ## 💡 Usage Examples
 
@@ -150,11 +146,10 @@ Frontend (React) → Vite Proxy (/api/*) → Proxy Server (5002) → MCP Server 
 - Verify `.env` file has correct `VITE_AOAI_ENDPOINT` and `VITE_AOAI_APIKEY`
 - Ensure endpoint URL includes full path with API version
 
-**MCP Server Issues**
+**Backend API Issues**
 
-- Check MCP server is running on port 9090
-- Check proxy server is running on port 5002
-- Verify proxy can reach MCP server endpoints
+- Check backend API server is running on port 9090
+- Verify Vite proxy configuration in `vite.config.js`
 - Verify server returns data in expected JSON format
 
 **Data Visualization**
@@ -166,13 +161,6 @@ Frontend (React) → Vite Proxy (/api/*) → Proxy Server (5002) → MCP Server 
 
 - Check browser localStorage for language-specific keys
 - Translation files should load in browser network tab
-
-## 🚀 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run code quality checks
 
 ## 📄 License
 

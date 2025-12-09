@@ -1,4 +1,5 @@
 import { cacheManager, generateSearchCacheKey } from "./cacheManager";
+import { endpoints } from "../config/api";
 
 export async function fetchArticlesFromAzureSearch(
   query: string,
@@ -17,7 +18,7 @@ export async function fetchArticlesFromAzureSearch(
 
   console.log(`🔍 Making fresh search request for: "${query}"`);
 
-  const response = await fetch("/api/search", {
+  const response = await fetch(endpoints.search, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query }),
@@ -98,7 +99,7 @@ export async function fetchAzureSearchSchema(): Promise<IndexSchema | null> {
   console.log("📋 Fetching fresh Azure Search schema");
 
   try {
-    const response = await fetch("/api/tools/schema", {
+    const response = await fetch(endpoints.toolsSchema, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });

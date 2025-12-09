@@ -7,6 +7,7 @@ import {
   generateMcpCacheKey,
   getTTLForTool,
 } from "./cacheManager";
+import { endpoints } from "../config/api";
 
 export interface McpToolCall {
   tool: string;
@@ -58,8 +59,8 @@ export async function callMcpTool(
 
   console.log(`📤 Request body:`, JSON.stringify(requestBody, null, 2));
 
-  // Use relative URL so Vite proxy can handle it
-  const response = await fetch(`/api/tool`, {
+  // Use centralized endpoint (Vite proxy handles forwarding)
+  const response = await fetch(endpoints.tool, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
