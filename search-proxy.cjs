@@ -8,6 +8,7 @@
 // - Azure Search integration
 // - CORS support
 // - Health checks
+// - Articles with ingredients support (GetArticlesWithIngredients)
 //
 const express = require("express");
 const axios = require("axios");
@@ -237,6 +238,8 @@ app.post("/api/tool", async (req, res) => {
         "GetLatestStatistics",
         "FindArticlesByName",
         "FindArticleByContentKey",
+        "GetPluData",
+        "GetArticlesWithIngredients",
       ];
       if (
         mongoDbTools.includes(tool) ||
@@ -279,6 +282,7 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     FindArticlesByName: "/api/thirdapi/articles/search",
     FindArticleByContentKey: "/api/thirdapi/articles",
     GetPluData: "/api/thirdapi/plu-data",
+    GetArticlesWithIngredients: "/api/thirdapi/articles/ingredients",
     GetDocuments: "/api/thirdapi/documents",
     GetCollections: "/api/thirdapi/collections",
     SearchDocuments: "/api/thirdapi/search",
@@ -376,6 +380,30 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     );
   }
 
+  // Tools that don't require any parameters - clear any extracted params
+  const noParameterTools = [
+    "GetArticlesWithIngredients",
+    "GetContentTypesSummary",
+    "GetPricesWithoutBaseItem",
+    "GetLatestStatistics",
+    "GetPluData",
+    "GetProducts",
+    "GetSalesData",
+    "GetTotalRevenue",
+    "GetLowStockProducts",
+    "GetSalesByCategory",
+    "GetInventoryStatus",
+    "GetDailySummary",
+    "GetDetailedInventory",
+  ];
+
+  if (noParameterTools.includes(tool)) {
+    console.log(
+      `Tool ${tool} does not require parameters - clearing any extracted params`
+    );
+    args = {}; // Clear any incorrectly extracted parameters
+  }
+
   // Validate required parameters for ThirdApi article search tools
   if (tool === "FindArticleByContentKey") {
     if (!args || !args.contentKey) {
@@ -420,6 +448,8 @@ async function callSingleTool(tool, args, mcpServerUrl) {
     "GetLatestStatistics",
     "FindArticlesByName",
     "FindArticleByContentKey",
+    "GetPluData",
+    "GetArticlesWithIngredients",
     "GetDocuments",
     "GetCollections",
     "SearchDocuments",
@@ -627,7 +657,8 @@ async function searchForTool(query) {
     query.toLowerCase().includes("thirdapi") ||
     query.toLowerCase().includes("mongodb") ||
     query.toLowerCase().includes("prices") ||
-    query.toLowerCase().includes("summary");
+    query.toLowerCase().includes("summary") ||
+    query.toLowerCase().includes("ingredient");
 
   try {
     const azureRes = await axios.post(
