@@ -47,7 +47,7 @@ _The demo showcases smart query processing, automatic data visualization, and mu
 
 - Node.js 16+
 - Azure OpenAI account and API key
-- Backend API server running (default port 9090)
+- Backend API server running (default port 5000)
 
 ### Installation
 
@@ -107,7 +107,7 @@ src/
 ## 🎯 How It Works
 
 ```
-Frontend (React) → Vite Proxy (/api/v1/*) → Backend API (9090) → Data Processing → UI Rendering
+Frontend (React) → Vite Proxy (/api/v1/*) → Backend API (5000) → Data Processing → UI Rendering
 ```
 
 1. **User Input**: User submits query through React chat interface
@@ -148,7 +148,7 @@ Frontend (React) → Vite Proxy (/api/v1/*) → Backend API (9090) → Data Proc
 
 **Backend API Issues**
 
-- Check backend API server is running on port 9090
+- Check backend API server is running on port 5000
 - Verify Vite proxy configuration in `vite.config.js`
 - Verify server returns data in expected JSON format
 
