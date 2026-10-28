@@ -1,0 +1,199 @@
+{
+  "app": {
+    "title": "SmartQuery",
+    "subtitle": "Intelligence de Données IA",
+    "alternativeTitle": "DataChat Pro",
+    "alternativeSubtitle": "Conversations de Données Professionnelles",
+    "loading": "Traitement en cours...",
+    "send": "Envoyer",
+    "processing": "Traitement...",
+    "error": "Une erreur s'est produite. Veuillez réessayer.",
+    "noMessages": "Aucun message pour le moment.",
+    "you": "Vous",
+    "ai": "IA",
+    "newChat": "Nouvelle Conversation",
+    "chats": "Conversations",
+    "selectChat": "Sélectionnez une conversation ou créez-en une nouvelle pour commencer",
+    "placeholder": "Tapez votre message..."
+  },
+  "export": {
+    "button": "Exporter la Conversation",
+    "json": "Format JSON",
+    "text": "Format Texte",
+    "markdown": "Format Markdown",
+    "excel": "Excel",
+    "excelTitle": "Télécharger en fichier Excel"
+  },
+  "table": {
+    "showing": "Affichage de",
+    "results": "résultats",
+    "result": "résultat",
+    "title": "Résultats",
+    "download": "Télécharger en fichier Excel",
+    "copy": "Copier le Tableau",
+    "copied": "Copié !",
+    "headers": {
+      "productId": "ID",
+      "productName": "Nom du Produit",
+      "stockQuantity": "Stock",
+      "unitPrice": "Prix Unitaire",
+      "totalAmount": "Total",
+      "saleDate": "Date de Vente",
+      "saleId": "ID Vente"
+    }
+  },
+  "chart": {
+    "title": {
+      "salesDistribution": "Répartition des Ventes",
+      "salesTrends": "Tendances des Ventes",
+      "salesComparison": "Comparaison des Ventes",
+      "inventoryDistribution": "Répartition des Stocks",
+      "stockLevelsOverTime": "Niveaux de Stock dans le Temps",
+      "stockComparison": "Comparaison des Stocks",
+      "productDistribution": "Répartition des Produits",
+      "productAnalysis": "Analyse des Produits",
+      "distributionAnalysis": "Analyse de Répartition",
+      "trendAnalysis": "Analyse des Tendances",
+      "comparisonAnalysis": "Analyse Comparative"
+    }
+  },
+  "trace": {
+    "showTrace": "Afficher l'Appel de Trace",
+    "title": "Informations de Trace",
+    "timestamp": "Horodatage",
+    "userInput": "Saisie Utilisateur",
+    "selectedTool": "Outil Sélectionné",
+    "parameters": "Paramètres",
+    "aiResponse": "Réponse IA",
+    "mcpCall": "Appel MCP",
+    "mcpResponse": "Réponse MCP",
+    "error": "Erreur",
+    "copy": "Copier les Données de Trace"
+  },
+  "language": {
+    "selector": "Langue",
+    "english": "English",
+    "french": "Français",
+    "dutch": "Nederlands"
+  },
+  "messages": {
+    "copy": "Copier le Message",
+    "errorMcp": "Désolé, je n'ai pas pu traiter votre demande via le serveur MCP. Veuillez réessayer.",
+    "errorSchema": "Impossible de récupérer le schéma de l'index Azure Search. Le point de terminaison du schéma pourrait ne pas être disponible."
+  },
+  "schema": {
+    "title": "Schéma de l'Index Azure Search",
+    "indexName": "Nom de l'Index",
+    "availableFields": "Champs Disponibles",
+    "fieldLegend": "Légende des Champs",
+    "keyField": "Champ clé",
+    "searchable": "Recherchable",
+    "filterable": "Filtrable",
+    "sortable": "Triable",
+    "searchableFields": "Champs Recherchables",
+    "filterableFields": "Champs Filtrables",
+    "totalFields": "Total des Champs",
+    "lastUpdated": "Dernière Mise à Jour"
+  },
+  "speech": {
+    "startListening": "Commencer la saisie vocale",
+    "stopListening": "Arrêter l'écoute",
+    "listening": "Écoute...",
+    "confidence": "Confiance",
+    "unsupported": "Reconnaissance vocale non prise en charge dans ce navigateur",
+    "dismissError": "Ignorer l'erreur",
+    "errors": {
+      "notAllowed": "Accès au microphone refusé. Veuillez autoriser l'accès au microphone et réessayer.",
+      "notFound": "Aucun microphone trouvé. Veuillez vérifier la connexion de votre microphone.",
+      "network": "Erreur réseau lors de la reconnaissance vocale.",
+      "aborted": "La reconnaissance vocale a été interrompue.",
+      "audioCapture": "Échec de la capture audio. Veuillez vérifier votre microphone.",
+      "notAllowedTimeout": "Délai d'attente pour l'autorisation du microphone. Veuillez réessayer.",
+      "serviceNotAllowed": "Service de reconnaissance vocale non autorisé.",
+      "badGrammar": "Erreur de grammaire de reconnaissance vocale.",
+      "languageNotSupported": "Langue non prise en charge pour la reconnaissance vocale.",
+      "noSpeech": "Aucune parole détectée. Veuillez réessayer.",
+      "unknown": "Une erreur inconnue s'est produite lors de la reconnaissance vocale."
+    }
+  },
+  "analytics": {
+    "title": "Tableau de Bord Analytique",
+    "last7Days": "7 Derniers Jours",
+    "last30Days": "30 Derniers Jours",
+    "allTime": "Tout le Temps",
+    "totalChats": "Total Conversations",
+    "totalMessages": "Total Messages",
+    "toolCalls": "Appels d'Outils",
+    "avgMessages": "Moy Messages/Chat",
+    "usageOverTime": "Utilisation dans le Temps",
+    "toolUsage": "Distribution des Outils",
+    "activityByHour": "Activité par Heure",
+    "insights": "Insights Clés",
+    "button": "Analytique"
+  },
+  "systemPrompts": {
+    "aiAssistant": "Vous êtes un assistant intelligent qui aide les utilisateurs à interagir avec les outils MCP (Model Context Protocol).",
+    "structuredFormat": "CRITIQUE : Vous DEVEZ répondre dans ce format structuré EXACT :",
+    "function": "Fonction",
+    "parameters": "Paramètres",
+    "reasoning": "Raisonnement",
+    "noOtherFormat": "NE fournissez AUCUN autre format de réponse. NE formatez PAS les résultats ni n'expliquez les outils. Fournissez simplement l'appel de fonction structuré.",
+    "yourJob": "Votre SEUL travail consiste à :",
+    "understandIntent": "Comprendre l'intention de l'utilisateur",
+    "returnStructured": "Retourner le format d'appel de fonction structuré ci-dessus",
+    "extractTerms": "Extraire les termes de recherche appropriés pour les Paramètres basés sur l'intention",
+    "intentGuidelines": "Directives d'Intention de Requête :",
+    "examples": "Exemples :",
+    "visualizationOptions": "OPTIONS DE VISUALISATION (les utilisateurs peuvent les spécifier dans leurs requêtes) :",
+    "tableOnly": "Affiche le tableau de données sans visualisation",
+    "chartOnly": "Affiche la visualisation sans tableau de données",
+    "barChart": "Force la visualisation en graphique à barres",
+    "pieChart": "Force la visualisation en graphique circulaire",
+    "lineChart": "Force la visualisation en graphique linéaire",
+    "anyChart": "Laisse le système choisir le meilleur type de visualisation",
+    "remember": "RAPPELEZ-VOUS : Répondez toujours avec le format structuré. Ne formatez jamais ni n'affichez les résultats réels - cela sera géré séparément."
+  },
+  "workflow": {
+    "title": "Flux de Travail du Système",
+    "instructions": "Cliquez sur n'importe quelle étape pour en savoir plus sur la façon dont le système traite vos demandes",
+    "steps": {
+      "userInput": {
+        "title": "Saisie Utilisateur",
+        "description": "Requête en langage naturel",
+        "detail": "Les utilisateurs saisissent des questions en langage naturel sur leurs données métier. Le système accepte les requêtes dans plusieurs langues et peut comprendre des demandes complexes d'intelligence métier telles que l'analyse des ventes, les métriques de performance et les comparaisons de données."
+      },
+      "azureOpenAI": {
+        "title": "Azure OpenAI",
+        "description": "Traitement et analyse IA",
+        "detail": "Azure OpenAI traite l'entrée en langage naturel en utilisant des modèles de langage avancés. Il comprend l'intention de l'utilisateur, identifie les métriques métier clés et détermine quel type d'analyse de données est nécessaire pour fournir des insights précis."
+      },
+      "parameterExtraction": {
+        "title": "Extraction de Paramètres",
+        "description": "Extraire les paramètres de requête",
+        "detail": "L'IA extrait des paramètres spécifiques de la requête utilisateur tels que les plages de dates, catégories de produits, régions ou métriques de performance. Ces paramètres sont structurés pour permettre une récupération précise des données depuis les systèmes connectés."
+      },
+      "mcpServer": {
+        "title": "Serveur MCP",
+        "description": "Récupération et traitement des données",
+        "detail": "Le serveur Model Context Protocol (MCP) se connecte à diverses sources de données incluant bases de données, APIs et systèmes métier. Il récupère les données demandées en utilisant les paramètres extraits et applique le filtrage et les agrégations nécessaires."
+      },
+      "dataProcessing": {
+        "title": "Traitement des Données",
+        "description": "Analyse et calcul",
+        "detail": "Les données brutes sont traitées, analysées et transformées en insights métier significatifs. Cela inclut les calculs, l'analyse statistique, l'identification des tendances et la préparation pour la visualisation ou l'export."
+      },
+      "visualization": {
+        "title": "Visualisation",
+        "description": "Graphiques et export de données",
+        "detail": "Les données traitées sont présentées à travers des graphiques interactifs, tableaux et visualisations. Les utilisateurs peuvent exporter les données vers Excel avec un formatage professionnel ou voir des graphiques en temps réel pour des insights immédiats et la prise de décision."
+      }
+    },
+    "legend": {
+      "input": "Entrée",
+      "ai": "Traitement IA",
+      "processing": "Traitement des Données",
+      "mcp": "Source de Données",
+      "output": "Sortie"
+    }
+  }
+}

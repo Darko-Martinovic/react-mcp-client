@@ -1,0 +1,53 @@
+.themeToggle {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #e1e5e9;
+  background: #f8f9fa;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.themeToggle:hover {
+  background: #dee2e6;
+  border-color: #dee2e6;
+  transform: translateY(-1px);
+}
+
+.themeToggle:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+/* Dark theme for theme toggle */
+[data-theme="dark"] .themeToggle,
+html.dark .themeToggle,
+.dark .themeToggle,
+html[data-theme="dark"] .themeToggle {
+  border-color: #4a5568 !important;
+  background: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .themeToggle:hover,
+html.dark .themeToggle:hover,
+.dark .themeToggle:hover,
+html[data-theme="dark"] .themeToggle:hover {
+  background: #718096 !important;
+  border-color: #718096 !important;
+}
+
+[data-theme="dark"] .themeToggle:focus,
+html.dark .themeToggle:focus,
+.dark .themeToggle:focus,
+html[data-theme="dark"] .themeToggle:focus {
+  border-color: #63b3ed !important;
+  box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1) !important;
+}

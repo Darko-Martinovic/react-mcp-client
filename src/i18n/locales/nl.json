@@ -1,0 +1,199 @@
+{
+  "app": {
+    "title": "SmartQuery",
+    "subtitle": "AI-Gestuurde Data Intelligentie",
+    "alternativeTitle": "DataChat Pro",
+    "alternativeSubtitle": "Professionele Data Gesprekken",
+    "loading": "Verwerken...",
+    "send": "Verzenden",
+    "processing": "Verwerken...",
+    "error": "Er is een fout opgetreden. Probeer het opnieuw.",
+    "noMessages": "Nog geen berichten.",
+    "you": "Jij",
+    "ai": "AI",
+    "newChat": "Nieuwe Chat",
+    "chats": "Chats",
+    "selectChat": "Selecteer een chat of maak een nieuwe om te beginnen",
+    "placeholder": "Typ je bericht..."
+  },
+  "export": {
+    "button": "Chat Exporteren",
+    "json": "JSON Formaat",
+    "text": "Tekst Formaat",
+    "markdown": "Markdown Formaat",
+    "excel": "Excel",
+    "excelTitle": "Downloaden als Excel-bestand"
+  },
+  "table": {
+    "showing": "Toont",
+    "results": "resultaten",
+    "result": "resultaat",
+    "title": "Resultaten",
+    "download": "Download als Excel bestand",
+    "copy": "Tabel Kopiëren",
+    "copied": "Gekopieerd!",
+    "headers": {
+      "productId": "ID",
+      "productName": "Productnaam",
+      "stockQuantity": "Voorraad",
+      "unitPrice": "Eenheidsprijs",
+      "totalAmount": "Totaal",
+      "saleDate": "Verkoopdatum",
+      "saleId": "Verkoop ID"
+    }
+  },
+  "chart": {
+    "title": {
+      "salesDistribution": "Verkoop Verdeling",
+      "salesTrends": "Verkoop Trends",
+      "salesComparison": "Verkoop Vergelijking",
+      "inventoryDistribution": "Voorraad Verdeling",
+      "stockLevelsOverTime": "Voorraadniveaus Over Tijd",
+      "stockComparison": "Voorraad Vergelijking",
+      "productDistribution": "Product Verdeling",
+      "productAnalysis": "Product Analyse",
+      "distributionAnalysis": "Verdelings Analyse",
+      "trendAnalysis": "Trend Analyse",
+      "comparisonAnalysis": "Vergelijkings Analyse"
+    }
+  },
+  "trace": {
+    "showTrace": "Trace Oproep Tonen",
+    "title": "Trace Informatie",
+    "timestamp": "Tijdstempel",
+    "userInput": "Gebruiker Invoer",
+    "selectedTool": "Geselecteerde Tool",
+    "parameters": "Parameters",
+    "aiResponse": "AI Reactie",
+    "mcpCall": "MCP Oproep",
+    "mcpResponse": "MCP Reactie",
+    "error": "Fout",
+    "copy": "Trace Data Kopiëren"
+  },
+  "language": {
+    "selector": "Taal",
+    "english": "English",
+    "french": "Français",
+    "dutch": "Nederlands"
+  },
+  "messages": {
+    "copy": "Bericht Kopiëren",
+    "errorMcp": "Sorry, ik kon uw verzoek niet verwerken via de MCP server. Probeer het opnieuw.",
+    "errorSchema": "Kon het Azure Search index schema niet ophalen. Het schema endpoint is mogelijk niet beschikbaar."
+  },
+  "schema": {
+    "title": "Azure Search Index Schema",
+    "indexName": "Index Naam",
+    "availableFields": "Beschikbare Velden",
+    "fieldLegend": "Veld Legenda",
+    "keyField": "Sleutelveld",
+    "searchable": "Doorzoekbaar",
+    "filterable": "Filterbaar",
+    "sortable": "Sorteerbaar",
+    "searchableFields": "Doorzoekbare Velden",
+    "filterableFields": "Filterbare Velden",
+    "totalFields": "Totaal Velden",
+    "lastUpdated": "Laatst Bijgewerkt"
+  },
+  "speech": {
+    "startListening": "Start spraakinvoer",
+    "stopListening": "Stop luisteren",
+    "listening": "Luisteren...",
+    "confidence": "Betrouwbaarheid",
+    "unsupported": "Spraakherkenning wordt niet ondersteund in deze browser",
+    "dismissError": "Fout negeren",
+    "errors": {
+      "notAllowed": "Microfoon toegang geweigerd. Sta microfoon toegang toe en probeer opnieuw.",
+      "notFound": "Geen microfoon gevonden. Controleer uw microfoon verbinding.",
+      "network": "Netwerkfout opgetreden tijdens spraakherkenning.",
+      "aborted": "Spraakherkenning werd afgebroken.",
+      "audioCapture": "Audio opname gefaald. Controleer uw microfoon.",
+      "notAllowedTimeout": "Microfoon toestemming timeout. Probeer opnieuw.",
+      "serviceNotAllowed": "Spraakherkenning service niet toegestaan.",
+      "badGrammar": "Spraakherkenning grammatica fout.",
+      "languageNotSupported": "Taal niet ondersteund voor spraakherkenning.",
+      "noSpeech": "Geen spraak gedetecteerd. Probeer opnieuw.",
+      "unknown": "Een onbekende fout is opgetreden tijdens spraakherkenning."
+    }
+  },
+  "analytics": {
+    "title": "Analytics Dashboard",
+    "last7Days": "Laatste 7 Dagen",
+    "last30Days": "Laatste 30 Dagen",
+    "allTime": "Alle Tijd",
+    "totalChats": "Totaal Chats",
+    "totalMessages": "Totaal Berichten",
+    "toolCalls": "Tool Aanroepen",
+    "avgMessages": "Gem Berichten/Chat",
+    "usageOverTime": "Gebruik over Tijd",
+    "toolUsage": "Tool Gebruik Verdeling",
+    "activityByHour": "Activiteit per Uur",
+    "insights": "Belangrijke Inzichten",
+    "button": "Analytics"
+  },
+  "systemPrompts": {
+    "aiAssistant": "Je bent een intelligente assistent die gebruikers helpt bij het interacteren met MCP (Model Context Protocol) tools.",
+    "structuredFormat": "KRITIEK: Je MOET reageren in dit EXACTE gestructureerde format:",
+    "function": "Functie",
+    "parameters": "Parameters",
+    "reasoning": "Redenering",
+    "noOtherFormat": "Geef GEEN ander antwoordformaat. Formateer GEEN resultaten of leg tools uit. Geef alleen de gestructureerde functie-oproep.",
+    "yourJob": "Je ENIGE taak is om:",
+    "understandIntent": "De intentie van de gebruiker begrijpen",
+    "returnStructured": "Het gestructureerde functie-oproep formaat hierboven teruggeven",
+    "extractTerms": "Passende zoektermen voor de Parameters extraheren gebaseerd op intentie",
+    "intentGuidelines": "Query Intentie Richtlijnen:",
+    "examples": "Voorbeelden:",
+    "visualizationOptions": "VISUALISATIE OPTIES (gebruikers kunnen deze specificeren in hun queries):",
+    "tableOnly": "Toont data tabel zonder visualisatie",
+    "chartOnly": "Toont visualisatie zonder data tabel",
+    "barChart": "Forceert staafgrafiek visualisatie",
+    "pieChart": "Forceert cirkeldiagram visualisatie",
+    "lineChart": "Forceert lijngrafiek visualisatie",
+    "anyChart": "Laat systeem beste visualisatie type kiezen",
+    "remember": "ONTHOUD: Reageer altijd met het gestructureerde formaat. Formateer of toon nooit de werkelijke resultaten - dat wordt apart afgehandeld."
+  },
+  "workflow": {
+    "title": "Systeem Workflow",
+    "instructions": "Klik op elke stap om meer te leren over hoe het systeem uw verzoeken verwerkt",
+    "steps": {
+      "userInput": {
+        "title": "Gebruiker Invoer",
+        "description": "Natuurlijke taal vraag",
+        "detail": "Gebruikers voeren vragen in natuurlijke taal in over hun bedrijfsgegevens. Het systeem accepteert vragen in meerdere talen en kan complexe business intelligence verzoeken begrijpen zoals verkoopanalyse, prestatie metrieken en data vergelijkingen."
+      },
+      "azureOpenAI": {
+        "title": "Azure OpenAI",
+        "description": "AI verwerking & analyse",
+        "detail": "Azure OpenAI verwerkt de natuurlijke taal invoer met geavanceerde taalmodellen. Het begrijpt de intentie van de gebruiker, identificeert belangrijke bedrijfs metrieken en bepaalt welk type data-analyse nodig is om nauwkeurige inzichten te bieden."
+      },
+      "parameterExtraction": {
+        "title": "Parameter Extractie",
+        "description": "Vraag parameters extraheren",
+        "detail": "De AI extraheert specifieke parameters uit de gebruikersvraag zoals datumbereiken, productcategorieën, regio's of prestatie metrieken. Deze parameters worden gestructureerd om precieze data ophaling uit de verbonden systemen mogelijk te maken."
+      },
+      "mcpServer": {
+        "title": "MCP Server",
+        "description": "Data ophaling & verwerking",
+        "detail": "De Model Context Protocol (MCP) server verbindt met verschillende databronnen inclusief databases, API's en bedrijfssystemen. Het haalt de gevraagde data op met de geëxtraheerde parameters en past noodzakelijke filtering en aggregaties toe."
+      },
+      "dataProcessing": {
+        "title": "Data Verwerking",
+        "description": "Analyse & berekening",
+        "detail": "Ruwe data wordt verwerkt, geanalyseerd en getransformeerd tot betekenisvolle bedrijfsinzichten. Dit omvat berekeningen, statistische analyse, trend identificatie en voorbereiding voor visualisatie of export."
+      },
+      "visualization": {
+        "title": "Visualisatie",
+        "description": "Grafieken & data export",
+        "detail": "Verwerkte data wordt gepresenteerd door interactieve grafieken, tabellen en visualisaties. Gebruikers kunnen data exporteren naar Excel met professionele formattering of real-time grafieken bekijken voor onmiddellijke inzichten en besluitvorming."
+      }
+    },
+    "legend": {
+      "input": "Invoer",
+      "ai": "AI Verwerking",
+      "processing": "Data Verwerking",
+      "mcp": "Data Bron",
+      "output": "Uitvoer"
+    }
+  }
+}

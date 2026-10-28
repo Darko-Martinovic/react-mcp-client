@@ -1,0 +1,427 @@
+/* App.module.css */
+.appContainer {
+  display: flex;
+  height: 100vh;
+  background: #f5f7fa;
+  font-family: Inter, system-ui, sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+/* Dark theme for app container */
+[data-theme="dark"] .appContainer,
+html.dark .appContainer,
+.dark .appContainer,
+html[data-theme="dark"] .appContainer {
+  background: #2d3748 !important;
+}
+
+.sidebar {
+  width: 300px;
+  background: #ffffff;
+  border-right: 1px solid #e1e5e9;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.3s ease, background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.sidebarCollapsed {
+  width: 0 !important;
+  border-right: none !important;
+  min-width: 0 !important;
+}
+
+/* Dark theme for sidebar */
+[data-theme="dark"] .sidebar,
+html.dark .sidebar,
+.dark .sidebar,
+html[data-theme="dark"] .sidebar {
+  background: #1a202c !important;
+  border-right-color: #4a5568 !important;
+}
+
+.sidebarHeader {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #e1e5e9;
+  transition: border-color 0.2s ease;
+}
+
+/* Dark theme for sidebar header */
+[data-theme="dark"] .sidebarHeader,
+html.dark .sidebarHeader,
+.dark .sidebarHeader,
+html[data-theme="dark"] .sidebarHeader {
+  border-bottom-color: #4a5568 !important;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-start;
+}
+
+.workflowButton,
+.analyticsButton,
+.systemPromptButton,
+.importButton {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #e1e5e9;
+  background: #f8f9fa;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.workflowButton:hover,
+.analyticsButton:hover,
+.systemPromptButton:hover,
+.importButton:hover {
+  background: #dee2e6;
+  border-color: #dee2e6;
+  transform: translateY(-1px);
+}
+
+/* Dark theme for buttons */
+[data-theme="dark"] .workflowButton,
+[data-theme="dark"] .analyticsButton,
+[data-theme="dark"] .systemPromptButton,
+[data-theme="dark"] .importButton,
+html.dark .workflowButton,
+html.dark .analyticsButton,
+html.dark .systemPromptButton,
+html.dark .importButton {
+  border-color: #4a5568 !important;
+  background: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .workflowButton:hover,
+[data-theme="dark"] .analyticsButton:hover,
+[data-theme="dark"] .systemPromptButton:hover,
+[data-theme="dark"] .importButton:hover,
+html.dark .workflowButton:hover,
+html.dark .analyticsButton:hover,
+html.dark .systemPromptButton:hover,
+html.dark .importButton:hover {
+  background: #718096 !important;
+  border-color: #718096 !important;
+}
+
+.importButton {
+  background: #e3f2fd;
+  border-color: var(--accent-secondary);
+  color: var(--accent-primary);
+}
+
+.importButton:hover {
+  background: #bbdefb;
+  border-color: var(--accent-primary);
+}
+
+.newChatButton {
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  border: 1px solid #1976d2 !important;
+  background: transparent !important;
+  color: #1976d2 !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 1 !important;
+  height: 36px !important;
+  min-width: 140px !important;
+  font-family: inherit !important;
+}
+
+.newChatButton:hover {
+  background: rgba(25, 118, 210, 0.08) !important;
+  border-color: #1565c0 !important;
+  color: #1565c0 !important;
+}
+
+/* Dark theme specific styling for new chat button */
+[data-theme="dark"] .newChatButton,
+html.dark .newChatButton,
+.dark .newChatButton,
+html[data-theme="dark"] .newChatButton {
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .newChatButton:hover,
+html.dark .newChatButton:hover,
+.dark .newChatButton:hover,
+html[data-theme="dark"] .newChatButton:hover {
+  background: rgba(99, 179, 237, 0.15) !important;
+  border-color: #90cdf4 !important;
+  color: #90cdf4 !important;
+}
+
+.sidebarTitle {
+  padding: 16px 16px 8px 16px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #1a1a1a;
+  transition: color 0.2s ease;
+}
+
+/* Dark theme for sidebar title */
+[data-theme="dark"] .sidebarTitle,
+html.dark .sidebarTitle,
+.dark .sidebarTitle,
+html[data-theme="dark"] .sidebarTitle {
+  color: #f7fafc !important;
+}
+
+.chatList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chatItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-height: 50px;
+  gap: 8px; /* Add gap between chatInfo and chatActions */
+}
+
+.chatItem:hover {
+  background: #f8f9fa;
+}
+
+.chatItem.active {
+  background: #e3f2fd;
+  border-right: 3px solid #1976d2;
+}
+
+.chatInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  max-width: calc(100% - 70px); /* Reserve space for action buttons */
+}
+
+.chatTitle {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatTitleInput {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+  border: 1px solid #1976d2;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background: #fff;
+  outline: none;
+  width: 100%;
+  max-width: 180px; /* Limit input width to prevent overlap */
+}
+
+.chatDate {
+  font-size: 12px;
+  color: #666;
+}
+
+.chatActions {
+  display: flex;
+  gap: 4px;
+  opacity: 0.7; /* Always visible but slightly transparent */
+  transition: opacity 0.2s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+  min-width: 60px; /* Ensure minimum width for buttons */
+}
+
+.chatItem:hover .chatActions {
+  opacity: 1; /* Full opacity on hover */
+}
+
+.chatActionButton {
+  padding: 6px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatActionButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.sidebarToggle {
+  position: absolute;
+  left: 300px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 60px;
+  background: var(--accent-primary, #1976d2);
+  border: none;
+  border-radius: 0 8px 8px 0;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: left 0.3s ease, background-color 0.2s ease;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebarToggle:hover {
+  background: var(--accent-secondary, #1565c0);
+}
+
+.sidebarCollapsed ~ .sidebarToggle {
+  left: 0;
+}
+
+[data-theme="dark"] .sidebarToggle,
+html.dark .sidebarToggle,
+.dark .sidebarToggle,
+html[data-theme="dark"] .sidebarToggle {
+  background: #63b3ed !important;
+}
+
+[data-theme="dark"] .sidebarToggle:hover,
+html.dark .sidebarToggle:hover,
+.dark .sidebarToggle:hover,
+html[data-theme="dark"] .sidebarToggle:hover {
+  background: #90cdf4 !important;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 18px;
+  text-align: center;
+  background: #f5f7fa;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Dark theme for placeholder */
+[data-theme="dark"] .placeholder,
+html.dark .placeholder,
+.dark .placeholder,
+html[data-theme="dark"] .placeholder {
+  color: #a0aec0 !important;
+  background: #2d3748 !important;
+}
+
+.placeholderIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .appContainer {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 40vh;
+    border-right: none;
+    border-bottom: 1px solid #e1e5e9;
+  }
+
+  .chatList {
+    max-height: 200px;
+  }
+
+  .newChatButton {
+    margin: 12px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .chatItem {
+    padding: 10px 12px;
+    gap: 6px;
+  }
+
+  .chatInfo {
+    max-width: calc(100% - 60px); /* Adjust for mobile */
+  }
+
+  .chatTitleInput {
+    max-width: 150px; /* Smaller max width on mobile */
+  }
+
+  .chatTitle {
+    font-size: 13px;
+  }
+
+  .chatDate {
+    font-size: 11px;
+  }
+
+  .chatActionButton {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  .chatActions {
+    min-width: 52px; /* Adjust for smaller buttons on mobile */
+  }
+}

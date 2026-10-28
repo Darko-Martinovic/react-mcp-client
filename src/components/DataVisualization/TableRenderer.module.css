@@ -1,0 +1,355 @@
+/* Table Container Styles */
+.tableContainer {
+  margin: 20px 0;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    var(--bg-secondary, #f8fafc) 0%,
+    var(--border-primary, #e2e8f0) 100%
+  );
+  box-shadow: 0 4px 20px var(--shadow-light, rgba(0, 0, 0, 0.1));
+  overflow: hidden;
+  border: 1px solid var(--border-primary, #e2e8f0);
+}
+
+.tableTitle {
+  padding: 8px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary, #3b82f6) 0%,
+    var(--accent-secondary, #1d4ed8) 100%
+  );
+  margin: 0;
+  border-bottom: 1px solid var(--border-primary, #e2e8f0);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Table Styles */
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: var(--bg-primary, white);
+}
+
+.tableHeader {
+  background: linear-gradient(
+    135deg,
+    var(--text-secondary, #64748b) 0%,
+    var(--text-primary, #475569) 100%
+  );
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tableHeaderCell {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: white;
+  border-right: 1px solid var(--border-secondary, #94a3b8);
+  white-space: nowrap;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tableHeaderCell:last-child {
+  border-right: none;
+}
+
+/* Dark theme overrides for table */
+[data-theme="dark"] .tableContainer,
+html[data-theme="dark"] .tableContainer,
+html.dark .tableContainer,
+.dark .tableContainer {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .tableTitle,
+html[data-theme="dark"] .tableTitle,
+html.dark .tableTitle,
+.dark .tableTitle {
+  background: linear-gradient(135deg, #63b3ed 0%, #90cdf4 100%) !important;
+  color: #1a202c !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .dataTable,
+html[data-theme="dark"] .dataTable,
+html.dark .dataTable,
+.dark .dataTable {
+  background: #1a202c !important;
+}
+
+[data-theme="dark"] .tableHeader,
+html[data-theme="dark"] .tableHeader,
+html.dark .tableHeader,
+.dark .tableHeader {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+}
+
+[data-theme="dark"] .tableHeaderCell,
+html[data-theme="dark"] .tableHeaderCell,
+html.dark .tableHeaderCell,
+.dark .tableHeaderCell {
+  color: #f7fafc !important;
+  border-color: #718096 !important;
+}
+
+/* Row Styles */
+.tableRow {
+  transition: all 0.2s ease;
+}
+
+.tableRow:hover {
+  background-color: var(--bg-secondary, #f1f5f9) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--shadow-light, rgba(0, 0, 0, 0.1));
+}
+
+.tableRowEven {
+  background-color: var(--bg-primary, #ffffff);
+}
+
+.tableRowOdd {
+  background-color: var(--bg-secondary, #f8fafc);
+}
+
+.tableCell {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-primary, #e2e8f0);
+  color: var(--text-primary, #374151);
+  vertical-align: middle;
+}
+
+/* Dark theme overrides for table rows */
+[data-theme="dark"] .tableRow:hover,
+html[data-theme="dark"] .tableRow:hover,
+html.dark .tableRow:hover,
+.dark .tableRow:hover {
+  background-color: #2d3748 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .tableRowEven,
+html[data-theme="dark"] .tableRowEven,
+html.dark .tableRowEven,
+.dark .tableRowEven {
+  background-color: #1a202c !important;
+}
+
+[data-theme="dark"] .tableRowOdd,
+html[data-theme="dark"] .tableRowOdd,
+html.dark .tableRowOdd,
+.dark .tableRowOdd {
+  background-color: #2d3748 !important;
+}
+
+[data-theme="dark"] .tableCell,
+html[data-theme="dark"] .tableCell,
+html.dark .tableCell,
+.dark .tableCell {
+  border-color: #4a5568 !important;
+  color: #f7fafc !important;
+}
+
+.tableCell:last-child {
+  border-right: none;
+}
+
+/* Cell Content Styles */
+.cellContent {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Column-specific width overrides */
+.cellContent[data-column="className"] {
+  max-width: 250px;
+}
+
+.cellContent[data-column="contentType"] {
+  max-width: 600px;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.cellContent[data-column="count"] {
+  max-width: 100px;
+}
+
+.cellContentName {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.cellContentPrice {
+  font-weight: 600;
+  color: var(--accent-primary, #059669);
+  text-align: right;
+}
+
+.cellContentNumber {
+  font-weight: 500;
+  text-align: right;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+}
+
+.cellContentLowStock {
+  color: #dc2626;
+  font-weight: 600;
+  background-color: #fef2f2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.cellContentId {
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b7280);
+  background-color: var(--bg-secondary, #f3f4f6);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Dark theme overrides for cell content */
+[data-theme="dark"] .cellContentName,
+html[data-theme="dark"] .cellContentName,
+html.dark .cellContentName,
+.dark .cellContentName {
+  color: #f7fafc !important;
+}
+
+[data-theme="dark"] .cellContentPrice,
+html[data-theme="dark"] .cellContentPrice,
+html.dark .cellContentPrice,
+.dark .cellContentPrice {
+  color: #63b3ed !important;
+}
+
+[data-theme="dark"] .cellContentNumber,
+html[data-theme="dark"] .cellContentNumber,
+html.dark .cellContentNumber,
+.dark .cellContentNumber {
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .cellContentLowStock,
+html[data-theme="dark"] .cellContentLowStock,
+html.dark .cellContentLowStock,
+.dark .cellContentLowStock {
+  color: #fca5a5 !important;
+  background-color: #7f1d1d !important;
+}
+
+[data-theme="dark"] .cellContentId,
+html[data-theme="dark"] .cellContentId,
+html.dark .cellContentId,
+.dark .cellContentId {
+  color: #a0aec0 !important;
+  background-color: #4a5568 !important;
+}
+
+/* Footer Styles */
+.tableFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(
+    135deg,
+    var(--bg-secondary, #f8fafc) 0%,
+    var(--border-primary, #e2e8f0) 100%
+  );
+  border-top: 1px solid var(--border-primary, #e2e8f0);
+  font-size: 0.9rem;
+  color: var(--text-secondary, #64748b);
+}
+
+.excelButton {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.excelButton:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.excelButton:active {
+  transform: translateY(0);
+}
+
+/* Dark theme overrides for table footer */
+[data-theme="dark"] .tableFooter,
+html[data-theme="dark"] .tableFooter,
+html.dark .tableFooter,
+.dark .tableFooter {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%) !important;
+  border-color: #4a5568 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tableContainer {
+    margin: 10px 0;
+    border-radius: 8px;
+  }
+
+  .tableTitle {
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+
+  .tableHeaderCell {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .tableCell {
+    padding: 8px 12px;
+  }
+
+  .cellContent {
+    max-width: 120px;
+  }
+
+  .tableFooter {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .excelButton {
+    align-self: center;
+  }
+}

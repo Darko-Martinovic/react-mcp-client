@@ -1,0 +1,1078 @@
+/* Main Chat Container */
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: var(--bg-secondary, #f5f7fa);
+  color: var(--text-primary, #1a1a1a);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Dark theme overrides for chat container */
+[data-theme="dark"] .chatContainer,
+html[data-theme="dark"] .chatContainer,
+html.dark .chatContainer,
+.dark .chatContainer {
+  background: #2d3748 !important;
+  color: #f7fafc !important;
+}
+
+/* Export Section */
+.exportSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px 8px 24px;
+  background: var(--bg-primary, #fff);
+  border-bottom: 1px solid var(--border-primary, #e0e0e0);
+}
+
+/* App Title Styling */
+.appTitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.appIcon {
+  height: 32px;
+  width: 32px;
+  object-fit: contain;
+}
+
+.appTitleText {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    sans-serif;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  display: flex;
+  align-items: baseline;
+}
+
+.appSubtitle {
+  font-size: 14px;
+  color: var(--text-muted, #666);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  margin-left: 0;
+}
+
+.exportMenuContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.exportButton {
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--accent-primary, #1976d2);
+  background: transparent;
+  color: var(--accent-primary, #1976d2);
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.exportButton:hover {
+  background: rgba(25, 118, 210, 0.08);
+  border-color: var(--accent-secondary, #1565c0);
+  color: var(--accent-secondary, #1565c0);
+}
+
+/* Message Controls (Collapse/Expand All) */
+.messageControls {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-bottom: 1px solid var(--border-primary, #e0e0e0);
+  justify-content: flex-end;
+}
+
+.controlButton {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--accent-primary, #1976d2);
+  background: transparent;
+  color: var(--accent-primary, #1976d2);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.controlButton:hover {
+  background: rgba(25, 118, 210, 0.08);
+  border-color: var(--accent-secondary, #1565c0);
+  color: var(--accent-secondary, #1565c0);
+}
+
+[data-theme="dark"] .messageControls,
+html[data-theme="dark"] .messageControls,
+html.dark .messageControls,
+.dark .messageControls {
+  background: #2d3748 !important;
+  border-bottom-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .controlButton,
+html[data-theme="dark"] .controlButton,
+html.dark .controlButton,
+.dark .controlButton {
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
+}
+
+[data-theme="dark"] .controlButton:hover,
+html[data-theme="dark"] .controlButton:hover,
+html.dark .controlButton:hover,
+.dark .controlButton:hover {
+  background: rgba(99, 179, 237, 0.15) !important;
+  border-color: #90cdf4 !important;
+  color: #90cdf4 !important;
+}
+
+/* Dark theme overrides for export button */
+[data-theme="dark"] .exportButton,
+html[data-theme="dark"] .exportButton,
+html.dark .exportButton,
+.dark .exportButton {
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
+}
+
+[data-theme="dark"] .exportButton:hover,
+html[data-theme="dark"] .exportButton:hover,
+html.dark .exportButton:hover,
+.dark .exportButton:hover {
+  background: rgba(99, 179, 237, 0.15) !important;
+  border-color: #90cdf4 !important;
+  color: #90cdf4 !important;
+}
+
+/* Dark theme overrides for export section and app title */
+[data-theme="dark"] .exportSection,
+html[data-theme="dark"] .exportSection,
+html.dark .exportSection,
+.dark .exportSection {
+  background: #1a202c !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .appTitleText,
+html[data-theme="dark"] .appTitleText,
+html.dark .appTitleText,
+.dark .appTitleText {
+  background: linear-gradient(135deg, #81c784 0%, #64b5f6 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+[data-theme="dark"] .appSubtitle,
+html[data-theme="dark"] .appSubtitle,
+html.dark .appSubtitle,
+.dark .appSubtitle {
+  color: #a0aec0 !important;
+}
+
+.exportDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-primary, #ccc);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow-medium, rgba(0, 0, 0, 0.15));
+  z-index: 1000;
+  min-width: 180px;
+}
+
+/* Dark theme overrides for export dropdown */
+[data-theme="dark"] .exportDropdown,
+html[data-theme="dark"] .exportDropdown,
+html.dark .exportDropdown,
+.dark .exportDropdown {
+  background: #1a202c !important;
+  border-color: #4a5568 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.exportOption {
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: Inter, system-ui, sans-serif;
+  transition: background-color 0.2s ease;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.exportOption:hover {
+  background: var(--bg-secondary, #f5f5f5);
+}
+
+/* Dark theme overrides for export options */
+[data-theme="dark"] .exportOption,
+html[data-theme="dark"] .exportOption,
+html.dark .exportOption,
+.dark .exportOption {
+  color: #f7fafc !important;
+}
+
+[data-theme="dark"] .exportOption:hover,
+html[data-theme="dark"] .exportOption:hover,
+html.dark .exportOption:hover,
+.dark .exportOption:hover {
+  background: #2d3748 !important;
+}
+
+.exportOption:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+/* Messages Section */
+.messagesContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 0 16px 0;
+  width: 100%;
+}
+
+.messagesWrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.emptyMessages {
+  color: var(--text-muted, #888);
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* Dark theme overrides for empty messages */
+[data-theme="dark"] .emptyMessages,
+html[data-theme="dark"] .emptyMessages,
+html.dark .emptyMessages,
+.dark .emptyMessages {
+  color: #a0aec0 !important;
+}
+
+.messageItem {
+  margin: 12px 0;
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.messageCollapsed {
+  opacity: 0.7;
+}
+
+.messageItemUser {
+  text-align: right;
+}
+
+.messageItemSystem {
+  text-align: left;
+}
+
+/* Message label wrapper for collapse toggle */
+.messageLabelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.messageItemUser .messageLabelWrapper {
+  justify-content: flex-end;
+}
+
+.messageItemSystem .messageLabelWrapper {
+  justify-content: flex-start;
+}
+
+/* Message Labels */
+.messageLabel {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 24px 4px;
+  color: var(--text-muted, #666);
+}
+
+/* Dark theme overrides for message labels */
+[data-theme="dark"] .messageLabel,
+html[data-theme="dark"] .messageLabel,
+html.dark .messageLabel,
+.dark .messageLabel {
+  color: #a0aec0 !important;
+}
+
+.messageLabelUser {
+  text-align: right;
+}
+
+.messageLabelSystem {
+  text-align: left;
+}
+
+/* Collapse toggle button */
+.collapseToggle {
+  background: transparent;
+  border: 1px solid var(--accent-primary, #1976d2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  color: var(--accent-primary, #1976d2);
+  transition: all 0.2s ease;
+  margin: 0 8px;
+}
+
+.collapseToggle:hover {
+  background: var(--accent-primary, #1976d2);
+  border-color: var(--accent-primary, #1976d2);
+  color: #fff;
+}
+
+[data-theme="dark"] .collapseToggle,
+html[data-theme="dark"] .collapseToggle,
+html.dark .collapseToggle,
+.dark .collapseToggle {
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
+}
+
+[data-theme="dark"] .collapseToggle:hover,
+html[data-theme="dark"] .collapseToggle:hover,
+html.dark .collapseToggle:hover,
+.dark .collapseToggle:hover {
+  background: #63b3ed !important;
+  border-color: #63b3ed !important;
+  color: #1a202c !important;
+}
+
+/* Collapsed indicator */
+.collapsedIndicator {
+  padding: 8px 16px;
+  margin: 4px 24px;
+  background: #e3f2fd;
+  border: 1px dashed var(--accent-primary, #1976d2);
+  border-radius: 6px;
+  color: var(--accent-primary, #1976d2);
+  font-size: 13px;
+  font-style: italic;
+}
+
+[data-theme="dark"] .collapsedIndicator,
+html[data-theme="dark"] .collapsedIndicator,
+html.dark .collapsedIndicator,
+.dark .collapsedIndicator {
+  background: rgba(99, 179, 237, 0.15) !important;
+  border-color: #63b3ed !important;
+  color: #63b3ed !important;
+}
+
+/* Message Bubbles */
+.messageBubble {
+  display: inline-block;
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 80%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 24px;
+}
+
+.messageBubbleUser {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.messageBubbleSystem {
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #333);
+  border: 1px solid var(--border-primary, #e0e0e0);
+  border-bottom-left-radius: 4px;
+}
+
+/* Dark theme overrides for message bubbles */
+[data-theme="dark"] .messageBubbleUser,
+html[data-theme="dark"] .messageBubbleUser,
+html.dark .messageBubbleUser,
+.dark .messageBubbleUser {
+  background: linear-gradient(135deg, #81c784 0%, #64b5f6 100%) !important;
+  color: #1a202c !important;
+}
+
+[data-theme="dark"] .messageBubbleSystem,
+html[data-theme="dark"] .messageBubbleSystem,
+html.dark .messageBubbleSystem,
+.dark .messageBubbleSystem {
+  background: #1a202c !important;
+  color: #f7fafc !important;
+  border-color: #4a5568 !important;
+}
+
+/* Message Actions */
+.messageActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 24px 0;
+}
+
+.messageActionsUser {
+  justify-content: flex-end;
+}
+
+.messageActionsSystem {
+  justify-content: flex-start;
+}
+
+.copyButtonContainer {
+  position: relative;
+}
+
+.copyButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-muted, #666);
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.copyButton:hover {
+  background: var(--bg-secondary, #f0f0f0);
+}
+
+.copyTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary, #333);
+  color: var(--bg-primary, #fff);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.traceToggle {
+  font-size: 12px;
+  color: var(--text-muted, #666);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Dark theme overrides for copy elements */
+[data-theme="dark"] .copyButton,
+html[data-theme="dark"] .copyButton,
+html.dark .copyButton,
+.dark .copyButton {
+  color: #a0aec0 !important;
+}
+
+[data-theme="dark"] .copyButton:hover,
+html[data-theme="dark"] .copyButton:hover,
+html.dark .copyButton:hover,
+.dark .copyButton:hover {
+  background: #4a5568 !important;
+}
+
+[data-theme="dark"] .copyTooltip,
+html[data-theme="dark"] .copyTooltip,
+html.dark .copyTooltip,
+.dark .copyTooltip {
+  background: #f7fafc !important;
+  color: #1a202c !important;
+}
+
+[data-theme="dark"] .traceToggle,
+html[data-theme="dark"] .traceToggle,
+html.dark .traceToggle,
+.dark .traceToggle {
+  color: #a0aec0 !important;
+}
+
+.traceToggle input {
+  margin: 0;
+}
+
+/* Trace Panel */
+.tracePanel {
+  background: var(--bg-secondary, #f8f9fa);
+  border: 1px solid var(--border-primary, #e0e0e0);
+  border-radius: 8px;
+  margin: 8px 24px 0;
+  overflow: hidden;
+}
+
+.traceTitle {
+  background: var(--accent-primary, #1976d2);
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.traceItem {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-primary, #e0e0e0);
+  font-size: 12px;
+  color: var(--text-primary, #333);
+}
+
+.traceItem:last-child {
+  border-bottom: none;
+}
+
+.traceItem strong {
+  color: var(--text-primary, #333);
+  margin-right: 8px;
+}
+
+.traceCode {
+  background: var(--bg-tertiary, #f0f0f0);
+  padding: 8px;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+}
+
+/* Dark theme overrides for trace panel */
+[data-theme="dark"] .tracePanel,
+html[data-theme="dark"] .tracePanel,
+html.dark .tracePanel,
+.dark .tracePanel {
+  background: #2d3748 !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .traceTitle,
+html[data-theme="dark"] .traceTitle,
+html.dark .traceTitle,
+.dark .traceTitle {
+  background: #63b3ed !important;
+  color: #1a202c !important;
+}
+
+[data-theme="dark"] .traceItem,
+html[data-theme="dark"] .traceItem,
+html.dark .traceItem,
+.dark .traceItem {
+  border-color: #4a5568 !important;
+  color: #f7fafc !important;
+}
+
+[data-theme="dark"] .traceItem strong,
+html[data-theme="dark"] .traceItem strong,
+html.dark .traceItem strong,
+.dark .traceItem strong {
+  color: #f7fafc !important;
+}
+
+[data-theme="dark"] .traceCode,
+html[data-theme="dark"] .traceCode,
+html.dark .traceCode,
+.dark .traceCode {
+  background: #4a5568 !important;
+  color: #f7fafc !important;
+  font-size: 11px;
+  margin-top: 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.traceItemError {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Dark theme overrides for trace error */
+[data-theme="dark"] .traceItemError,
+html[data-theme="dark"] .traceItemError,
+html.dark .traceItemError,
+.dark .traceItemError {
+  background: #7f1d1d !important;
+  color: #fca5a5 !important;
+}
+
+/* Loading Message */
+.loadingMessage {
+  text-align: center;
+  color: var(--text-muted, #666);
+  font-style: italic;
+  margin: 20px 0;
+}
+
+/* Dark theme overrides for loading message */
+[data-theme="dark"] .loadingMessage,
+html[data-theme="dark"] .loadingMessage,
+html.dark .loadingMessage,
+.dark .loadingMessage {
+  color: #a0aec0 !important;
+}
+
+/* Input Area */
+.inputArea {
+  padding: 16px 24px 24px;
+  background: var(--bg-secondary, #f5f7fa);
+  border-top: 1px solid var(--border-primary, #e0e0e0);
+  position: relative;
+  width: 100%;
+}
+
+/* Dark theme overrides for input area */
+[data-theme="dark"] .inputArea,
+html[data-theme="dark"] .inputArea,
+html.dark .inputArea,
+.dark .inputArea {
+  background: #1a202c !important;
+  border-color: #4a5568 !important;
+}
+
+.inputForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--border-primary, #ddd);
+  border-radius: 24px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-width: 0; /* Allows flex item to shrink below content size */
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #1a1a1a);
+}
+
+.chatInput:focus {
+  border-color: var(--accent-primary, #1976d2);
+}
+
+.chatInput:disabled {
+  background: var(--bg-secondary, #f5f5f5);
+  color: var(--text-muted, #999);
+}
+
+/* Dark theme overrides for chat input */
+[data-theme="dark"] .chatInput,
+html[data-theme="dark"] .chatInput,
+html.dark .chatInput,
+.dark .chatInput {
+  background: #2d3748 !important;
+  color: #f7fafc !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .chatInput:focus,
+html[data-theme="dark"] .chatInput:focus,
+html.dark .chatInput:focus,
+.dark .chatInput:focus {
+  border-color: #63b3ed !important;
+}
+
+[data-theme="dark"] .chatInput:disabled,
+html[data-theme="dark"] .chatInput:disabled,
+html.dark .chatInput:disabled,
+.dark .chatInput:disabled {
+  background: #4a5568 !important;
+  color: #a0aec0 !important;
+}
+
+.questionButton,
+.emojiButton,
+.sendButton {
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Prevents buttons from shrinking */
+}
+
+.questionButton,
+.emojiButton {
+  background: var(--bg-secondary, #f0f0f0);
+  color: var(--text-muted, #666);
+}
+
+.questionButton:hover,
+.emojiButton:hover {
+  background: var(--bg-tertiary, #e0e0e0);
+}
+
+.sendButton {
+  background: var(--accent-primary, #1976d2);
+  color: #fff;
+  padding: 14px 32px;
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 100px;
+  border-radius: 24px;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+  transition: all 0.2s ease;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: var(--accent-secondary, #1565c0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+}
+
+.sendButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(25, 118, 210, 0.3);
+}
+
+.sendButton:disabled {
+  background: var(--text-muted, #ccc);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Dark theme overrides for input buttons */
+[data-theme="dark"] .questionButton,
+[data-theme="dark"] .emojiButton,
+html[data-theme="dark"] .questionButton,
+html[data-theme="dark"] .emojiButton,
+html.dark .questionButton,
+html.dark .emojiButton,
+.dark .questionButton,
+.dark .emojiButton {
+  background: #4a5568 !important;
+  color: #a0aec0 !important;
+}
+
+[data-theme="dark"] .questionButton:hover,
+[data-theme="dark"] .emojiButton:hover,
+html[data-theme="dark"] .questionButton:hover,
+html[data-theme="dark"] .emojiButton:hover,
+html.dark .questionButton:hover,
+html.dark .emojiButton:hover,
+.dark .questionButton:hover,
+.dark .emojiButton:hover {
+  background: #718096 !important;
+}
+
+[data-theme="dark"] .sendButton,
+html[data-theme="dark"] .sendButton,
+html.dark .sendButton,
+.dark .sendButton {
+  background: #63b3ed !important;
+  color: #1a202c !important;
+  box-shadow: 0 2px 8px rgba(99, 179, 237, 0.3) !important;
+}
+
+[data-theme="dark"] .sendButton:hover:not(:disabled),
+html[data-theme="dark"] .sendButton:hover:not(:disabled),
+html.dark .sendButton:hover:not(:disabled),
+.dark .sendButton:hover:not(:disabled) {
+  background: #90cdf4 !important;
+  box-shadow: 0 4px 12px rgba(99, 179, 237, 0.4) !important;
+}
+
+[data-theme="dark"] .sendButton:disabled,
+html[data-theme="dark"] .sendButton:disabled,
+html.dark .sendButton:disabled,
+.dark .sendButton:disabled {
+  background: #4a5568 !important;
+  color: #a0aec0 !important;
+}
+
+/* Picker Overlays - positioned relative to input area */
+.emojiPickerOverlay,
+.questionPickerOverlay {
+  position: absolute;
+  bottom: 100%;
+  left: 24px;
+  right: 24px;
+  margin-bottom: 8px;
+  z-index: 1000;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Table styles */
+.tableContainer {
+  margin: 16px 24px;
+  background: var(--bg-primary, #fff);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px var(--shadow-light, rgba(0, 0, 0, 0.1));
+  overflow: hidden;
+}
+
+.tableTitle {
+  background: var(--accent-primary, #1976d2);
+  color: #fff;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tableHeader {
+  background: var(--bg-secondary, #f5f5f5);
+}
+
+.tableHeaderCell {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  border-bottom: 2px solid var(--border-primary, #e0e0e0);
+}
+
+.tableRow {
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+  background: var(--bg-secondary, #f9f9f9);
+}
+
+.tableRowEven {
+  background: var(--bg-primary, #fff);
+}
+
+.tableRowOdd {
+  background: var(--bg-tertiary, #fafafa);
+}
+
+.tableCell {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-primary, #e0e0e0);
+  vertical-align: middle;
+  color: var(--text-primary, #333);
+}
+
+.cellContent {
+  display: block;
+}
+
+.cellContentName {
+  font-weight: 500;
+  color: var(--accent-primary, #1976d2);
+}
+
+/* Dark theme overrides for tables */
+[data-theme="dark"] .tableContainer,
+html[data-theme="dark"] .tableContainer,
+html.dark .tableContainer,
+.dark .tableContainer {
+  background: #1a202c !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .tableTitle,
+html[data-theme="dark"] .tableTitle,
+html.dark .tableTitle,
+.dark .tableTitle {
+  background: #63b3ed !important;
+  color: #1a202c !important;
+}
+
+[data-theme="dark"] .tableHeader,
+html[data-theme="dark"] .tableHeader,
+html.dark .tableHeader,
+.dark .tableHeader {
+  background: #2d3748 !important;
+}
+
+[data-theme="dark"] .tableHeaderCell,
+html[data-theme="dark"] .tableHeaderCell,
+html.dark .tableHeaderCell,
+.dark .tableHeaderCell {
+  color: #f7fafc !important;
+  border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .tableRow:hover,
+html[data-theme="dark"] .tableRow:hover,
+html.dark .tableRow:hover,
+.dark .tableRow:hover {
+  background: #2d3748 !important;
+}
+
+[data-theme="dark"] .tableRowEven,
+html[data-theme="dark"] .tableRowEven,
+html.dark .tableRowEven,
+.dark .tableRowEven {
+  background: #1a202c !important;
+}
+
+[data-theme="dark"] .tableRowOdd,
+html[data-theme="dark"] .tableRowOdd,
+html.dark .tableRowOdd,
+.dark .tableRowOdd {
+  background: #2d3748 !important;
+}
+
+[data-theme="dark"] .tableCell,
+html[data-theme="dark"] .tableCell,
+html.dark .tableCell,
+.dark .tableCell {
+  border-color: #4a5568 !important;
+  color: #f7fafc !important;
+}
+
+[data-theme="dark"] .cellContentName,
+html[data-theme="dark"] .cellContentName,
+html.dark .cellContentName,
+.dark .cellContentName {
+  color: #63b3ed !important;
+}
+
+.cellContentPrice {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.cellContentLowStock {
+  font-weight: 600;
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cellContentId {
+  font-family: monospace;
+  color: #666;
+  font-size: 12px;
+}
+
+.tableFooter {
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #666;
+}
+
+.excelButton {
+  background: #2e7d32;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.excelButton:hover {
+  background: #1b5e20;
+}
+
+/* Chart styles */
+.chartContainer {
+  margin: 16px 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+}
+
+.chartTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .exportSection {
+    padding: 8px 16px 6px 16px;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .appTitle {
+    align-items: center;
+    text-align: center;
+  }
+
+  .appTitleText {
+    font-size: 24px;
+  }
+
+  .appSubtitle {
+    font-size: 11px;
+  }
+
+  .messageBubble {
+    max-width: 90%;
+    margin: 0 12px;
+  }
+
+  .messageActions {
+    margin: 8px 12px 0;
+  }
+
+  .inputForm {
+    padding: 0 12px;
+  }
+
+  .tableContainer,
+  .chartContainer {
+    margin: 16px 12px;
+  }
+}

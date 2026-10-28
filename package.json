@@ -1,0 +1,69 @@
+{
+  "name": "react-mcp-client",
+  "version": "1.0.0",
+  "description": "A modern React-based client for interacting with Model Context Protocol (MCP) servers, featuring AI-powered chat interface with Azure OpenAI integration and advanced trace debugging capabilities.",
+  "type": "module",
+  "license": "MIT",
+  "author": {
+    "name": "Darko Martinovic",
+    "email": "darko.martinovic@outlook.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Darko-Martinovic/react-mcp-client.git"
+  },
+  "homepage": "https://github.com/Darko-Martinovic/react-mcp-client#readme",
+  "bugs": {
+    "url": "https://github.com/Darko-Martinovic/react-mcp-client/issues"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "mcp",
+    "model-context-protocol",
+    "azure-openai",
+    "ai",
+    "chat",
+    "debugging",
+    "trace",
+    "azure-search",
+    "rag"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server-github": "^2025.4.8",
+    "@types/recharts": "^1.8.29",
+    "axios": "^1.10.0",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "i18next": "^25.3.2",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "i18next-http-backend": "^3.0.2",
+    "node-fetch": "^3.3.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-i18next": "^15.6.0",
+    "react-router-dom": "^7.6.3",
+    "recharts": "^3.1.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  }
+}

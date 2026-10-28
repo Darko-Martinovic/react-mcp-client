@@ -1,0 +1,491 @@
+.workspaceManager {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.workspaceContent {
+  background: var(--bg-primary, rgba(255, 255, 255, 0.95));
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-primary, rgba(255, 255, 255, 0.2));
+  backdrop-filter: blur(20px);
+}
+
+.workspaceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-primary, #e0e0e0);
+}
+
+.workspaceTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--text-secondary, #666);
+}
+
+.closeButton:hover {
+  background: var(--bg-tertiary, #f0f0f0);
+  color: var(--text-primary, #333);
+}
+
+.workspaceSelector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 8px;
+  border: 1px solid var(--border-primary, #e0e0e0);
+  flex-wrap: wrap;
+}
+
+.currentWorkspace {
+  font-weight: 500;
+  color: var(--text-primary, #333);
+  white-space: nowrap;
+}
+
+.workspaceSelect {
+  padding: 8px 12px;
+  border: 1px solid var(--border-primary, #d0d0d0);
+  border-radius: 6px;
+  background: var(--bg-primary, white);
+  color: var(--text-primary, #333);
+  cursor: pointer;
+  font-size: 14px;
+  min-width: 150px;
+  flex: 1;
+}
+
+.workspaceSelect:focus {
+  outline: none;
+  border-color: var(--accent-primary, #007acc);
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
+}
+
+.createWorkspaceButton {
+  padding: 8px 16px;
+  background: var(--accent-primary, #007acc);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.createWorkspaceButton:hover {
+  background: var(--accent-secondary, #005999);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 122, 204, 0.3);
+}
+
+.createWorkspaceButton:active {
+  transform: translateY(0);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .workspaceSelector {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .currentWorkspace {
+    text-align: center;
+  }
+
+  .workspaceSelect {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .createWorkspaceButton {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+.workspaceSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionIcon {
+  font-size: 18px;
+}
+
+.createWorkspaceForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-secondary, rgba(248, 249, 250, 0.9));
+  border-radius: 8px;
+  border: 1px solid var(--border-primary, rgba(225, 229, 233, 0.8));
+  backdrop-filter: blur(10px);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.formLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #333);
+}
+
+.formInput {
+  padding: 10px 12px;
+  border: 1px solid var(--border-primary, #e0e0e0);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #333);
+}
+
+.formTextarea {
+  padding: 10px 12px;
+  border: 1px solid var(--border-primary, #e0e0e0);
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.formButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.submitButton {
+  padding: 10px 16px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.submitButton:hover {
+  background: #388e3c;
+}
+
+.cancelButton {
+  padding: 10px 16px;
+  background: var(--bg-primary, #fff);
+  color: var(--text-secondary, #666);
+  border: 1px solid var(--border-primary, #e0e0e0);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cancelButton:hover {
+  background: var(--bg-tertiary, #f0f0f0);
+}
+
+.workspaceInfo {
+  padding: 16px;
+  background: var(
+    --bg-secondary,
+    linear-gradient(135deg, #f0f7ff 0%, #e3f2fd 100%)
+  );
+  border: 1px solid var(--border-primary, #bbdefb);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.workspaceName {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent-primary, #1976d2);
+  margin-bottom: 8px;
+}
+
+.workspaceDescription {
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.workspaceStats {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #666;
+}
+
+.membersList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.memberItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.memberName {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.memberEmail {
+  color: #666;
+  font-size: 12px;
+}
+
+.memberActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ownerBadge {
+  padding: 4px 8px;
+  background: #fff3e0;
+  color: #f57c00;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.permissionBadge {
+  padding: 4px 8px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.removeButton:hover {
+  background: #ffebee;
+}
+
+.removeButton:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.addMemberForm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.emailInput {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.permissionSelect {
+  padding: 10px 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.addButton {
+  padding: 10px 16px;
+  background: #007acc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.addButton:hover {
+  background: #005999;
+}
+
+.addButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.sharedChatsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sharedChatItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
+}
+
+.chatInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chatTitle {
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.chatMeta {
+  color: #666;
+  font-size: 12px;
+}
+
+.removeChatButton {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.removeChatButton:hover {
+  background: #ffebee;
+}
+
+.noMembers {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}
+
+.noSharedChats {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}
+
+.deleteWorkspaceButton {
+  padding: 10px 16px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.deleteWorkspaceButton:hover {
+  background: #b71c1c;
+}
+
+/* Help text styling */
+.helpText {
+  text-align: left;
+  color: var(--text-secondary, #666);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.helpText strong {
+  color: var(--text-primary, #333);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.helpList {
+  margin: 8px 0 0 20px;
+  padding: 0;
+  color: var(--text-secondary, #666);
+}
+
+.helpList li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}

@@ -1,0 +1,191 @@
+/* Language Selector Container */
+.languageSelector {
+  position: relative;
+  display: inline-block;
+}
+
+.languageButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 90px;
+  height: 36px;
+}
+
+/* Dark theme overrides for language button */
+[data-theme="dark"] .languageButton,
+html[data-theme="dark"] .languageButton,
+html.dark .languageButton,
+.dark .languageButton {
+  border-color: #4a5568 !important;
+  background: #1a202c !important;
+  color: #e2e8f0 !important;
+}
+
+.languageButton:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+/* Dark theme overrides for language button hover */
+[data-theme="dark"] .languageButton:hover,
+html[data-theme="dark"] .languageButton:hover,
+html.dark .languageButton:hover,
+.dark .languageButton:hover {
+  border-color: #63b3ed !important;
+  background: #2d3748 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.languageButton:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--shadow-light);
+}
+
+.flag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.languageName {
+  flex: 1;
+  text-align: left;
+}
+
+.arrow {
+  font-size: 10px;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.languageButton:hover .arrow {
+  transform: translateY(-1px);
+}
+
+/* Dropdown */
+.languageDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  margin-top: 4px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+  min-width: 140px;
+  width: max-content;
+  backdrop-filter: blur(8px);
+}
+
+/* Dark theme overrides for language dropdown */
+[data-theme="dark"] .languageDropdown,
+html[data-theme="dark"] .languageDropdown,
+html.dark .languageDropdown,
+.dark .languageDropdown {
+  background: #1a202c !important;
+  border-color: #4a5568 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.languageOption {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: none;
+  background: #ffffff;
+  color: #4a5568;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.languageOption:hover {
+  background: #f7fafc;
+}
+
+.languageOption.active {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+/* Dark theme overrides for language options */
+[data-theme="dark"] .languageOption,
+html[data-theme="dark"] .languageOption,
+html.dark .languageOption,
+.dark .languageOption {
+  background: #1a202c !important;
+  color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .languageOption:hover,
+html[data-theme="dark"] .languageOption:hover,
+html.dark .languageOption:hover,
+.dark .languageOption:hover {
+  background: #2d3748 !important;
+}
+
+[data-theme="dark"] .languageOption.active,
+html[data-theme="dark"] .languageOption.active,
+html.dark .languageOption.active,
+.dark .languageOption.active {
+  background: #2d3748 !important;
+  color: #63b3ed !important;
+}
+
+.languageOption .flag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.languageOption .languageName {
+  flex: 1;
+}
+
+.checkmark {
+  color: #10b981;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .languageButton {
+    min-width: 100px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .languageOption {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+}
