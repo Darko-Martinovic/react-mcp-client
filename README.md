@@ -1,17 +1,20 @@
 # React MCP Client
 
-A modern React TypeScript application for interacting with Model Context Protocol (MCP) servers, featuring AI-powered chat with Azure OpenAI integration, multilingual support, and advanced data visualization.
+A React + TypeScript chat client for [McpServer](https://github.com/Darko-Martinovic/McpServer), a Model Context Protocol server with supermarket and product-catalog data. Ask questions in plain language; Azure OpenAI picks the tools, McpServer runs them, and the client shows the answers as text, charts and tables.
 
 ## ✨ Key Features
 
-- 🤖 **AI-Powered Chat**: Interactive interface with Azure OpenAI integration
-- 🌍 **Multilingual Support**: English, French, and Dutch with language-specific chat storage
-- 📊 **Data Visualization**: Automatic charts (bar, pie, line) and interactive tables
-- 💾 **Manual Save/Import**: Conversations can be manually saved and imported (JSON, TXT, MD)
-- 🍞 **Toast Notifications**: Modern toast system for user feedback
-- 🔍 **Azure Search Integration**: RAG capabilities with Azure Cognitive Search
-- 📈 **Excel Export**: Professional Excel exports with formatting and metadata
-- 🐛 **Debug Tracing**: Comprehensive trace functionality for troubleshooting
+- 🤖 **AI chat**: Azure OpenAI with function calling over McpServer's tools, through McpServer, so the browser never holds a key
+- 📊 **Data visualisation**: automatic bar, pie and line charts and interactive tables, plus a JSON viewer with expand and collapse
+- 📈 **Analytics dashboard**: chats, messages and tool calls over time, tool usage and activity by hour
+- 🔍 **Tool search**: Azure AI Search finds the right tool for a question (RAG over the tool catalog)
+- 🧾 **Response metadata**: tokens used, estimated cost, tools called and model for every answer
+- 🌍 **Three languages**: English, French and Dutch, each with its own chat history
+- 💾 **Save, import and export**: save chats, import them (JSON, TXT, MD), export tables to formatted Excel
+- 🎙️ **Speech to text**: dictate questions in the browser
+- ⚙️ **System prompt editor**: add your own instructions to the base system prompt
+- 👥 **Team workspaces and sharing**: share chats and group them in workspaces (stored in the browser)
+- 🌗 **Light and dark themes**, a response cache with its own manager, toast notifications, and a step-by-step trace of how each answer was made
 
 ## 🎬 Demo Video
 
@@ -21,58 +24,39 @@ https://github.com/user-attachments/assets/c06299ae-9ed7-42bc-a93f-4879ca464a8a
 
 _The demo showcases smart query processing, automatic data visualization, and multilingual chat capabilities._
 
-## 🆕 Latest Features
-
-**Recent Additions:**
-
-1. **Custom Plugin Support** - Define custom logic to access your database or API through configurable plugins
-2. **Advanced JSON Viewer** - Interactive data visualizer with expand/collapse functionality and intelligent formatting
-3. **Enhanced AI Response Tracking** - Each AI response now includes detailed metadata:
-   - Number of tokens used (prompt + completion)
-   - Estimated cost breakdown
-   - Tools utilized during processing
-   - AI model information
-
 ## 🛠️ Technology Stack
 
-- **Frontend**: React 19 + TypeScript, Vite, CSS Modules
-- **AI Integration**: Azure OpenAI, Azure Search
-- **Charts**: Recharts library for data visualization
-- **Export**: XLSX library for Excel generation
+- **Frontend**: React 19, TypeScript, Vite 5, CSS Modules
+- **AI**: Azure OpenAI and Azure AI Search, both reached through McpServer
+- **Charts**: Recharts
+- **Export**: xlsx
 - **i18n**: react-i18next with browser language detection
 
 ## 📋 Quick Start
 
 ### Prerequisites
 
-- Node.js 16+
-- [McpServer](https://github.com/Darko-Martinovic/McpServer) running in Web API mode (port 5000), with the Azure OpenAI key in its `.env`
+- Node.js 18+
+- [McpServer](https://github.com/Darko-Martinovic/McpServer) running in Web API mode on port 5000 (`dotnet run -- --webapi`), with the Azure OpenAI settings in its `.env`
 
 ### Installation
 
 1. **Clone and install**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Darko-Martinovic/react-mcp-client.git
    cd react-mcp-client
    npm install
    ```
 
-2. **Environment Setup**
-   Create `.env` file:
+2. **Environment (optional)**
+
+   Copy `.env.example` to `.env`. The client needs no key: Azure OpenAI and Azure AI Search are configured in McpServer, and the client calls them through McpServer's API. Every `VITE_` variable is built into the browser bundle, so never put a key in one.
 
    ```env
+   # Shown in the system prompt editor; the default is http://localhost:5000
    VITE_MCP_SERVER_URL=http://localhost:5000
-
-   # Optional - for RAG capabilities
-   AZURE_SEARCH_ENDPOINT=https://your-search-service.search.windows.net
-   AZURE_SEARCH_APIKEY=your-search-admin-key
-   AZURE_SEARCH_INDEX=your-index-name
    ```
-
-   The client holds no model key. Every `VITE_` variable is built into the
-   browser bundle, so the Azure OpenAI key stays in McpServer's `.env`, and the
-   client calls `POST /api/v1/chat/completions` on McpServer, which adds it.
 
 3. **Start the development server**
 
@@ -80,88 +64,81 @@ _The demo showcases smart query processing, automatic data visualization, and mu
    npm run dev
    ```
 
-4. **Open browser**: Navigate to `http://localhost:5174`
+4. **Open** `http://localhost:5173`
 
-## 🏗️ Project Architecture
-
-```
-src/
-├── components/
-│   ├── App.tsx                 # Main app & session management
-│   ├── Chat/Chat.tsx          # Chat interface & data visualization
-│   ├── Toast/                 # Toast notification system
-│   ├── DataVisualization/     # Chart rendering & table components
-│   └── LanguageSelector.tsx   # Multi-language support
-├── config/
-│   └── api.ts                 # Centralized API endpoints & versioning
-├── services/
-│   ├── azureOpenAI.ts         # Azure OpenAI, through McpServer's /chat/completions
-│   ├── azureSearch.ts         # Azure Search/RAG capabilities
-│   ├── mcpServer.ts           # MCP server communication
-│   └── chatService.ts         # Business logic & parameter extraction
-├── i18n/
-│   └── locales/              # Translation files (en, fr, nl)
-└── hooks/
-    └── useToast.ts           # Toast notification hook
-```
+`npm run build` builds for production into `dist/`.
 
 ## 🎯 How It Works
 
 ```
-Frontend (React) → Vite Proxy (/api/v1/*) → Backend API (5000) → Data Processing → UI Rendering
+React client → Vite proxy (/api → localhost:5000) → McpServer → Azure OpenAI / SQL Server / MongoDB
 ```
 
-1. **User Input**: User submits query through React chat interface
-2. **AI Processing**: Azure OpenAI analyzes intent and generates function calls
-3. **Parameter Extraction**: Smart extraction of dates, thresholds, categories, suppliers
-4. **API Communication**: Frontend calls versioned `/api/v1/*` endpoints via Vite proxy
-5. **Data Processing**: Intelligent formatting (summary vs detailed data)
-6. **Visualization**: Automatic chart/table rendering with export capabilities
+1. **Question**: the user types or dictates a question.
+2. **Tool choice**: the client sends it, with its tool definitions, to `POST /api/v1/chat/completions`; McpServer adds its key and calls Azure OpenAI, which chooses the tools and their parameters.
+3. **Parameters**: the client fills in dates, thresholds, categories and suppliers the question implies.
+4. **Tools**: the client runs each tool through McpServer's `POST /api/v1/tool`.
+5. **Answer**: the results come back as a summary, a chart or a table, with the response's metadata.
+
+## 🏗️ Project Structure
+
+```
+src/
+├── components/
+│   ├── App.tsx                # Layout, sessions, panels
+│   ├── Chat/                  # Chat, header, input, messages
+│   ├── DataVisualization/     # Charts, tables, data type detection
+│   ├── AnalyticsDashboard/    # Usage and cost charts
+│   ├── TeamWorkspace/         # Workspaces
+│   ├── ShareDialog/           # Sharing chats
+│   ├── SpeechToText/          # Dictation
+│   ├── ThemeToggle/           # Light and dark themes
+│   ├── Toast/                 # Notifications
+│   ├── SystemPromptEditor.tsx # Custom system prompt
+│   ├── CacheManager.tsx       # Response cache
+│   └── WorkflowVisualization.tsx # How an answer was made, step by step
+├── config/api.ts              # McpServer's endpoints, versioned (/api/v1)
+├── services/
+│   ├── azureOpenAI.ts         # Chat completions, through McpServer
+│   ├── azureSearch.ts         # Tool search, through McpServer
+│   ├── mcpServer.ts           # Tool calls
+│   ├── chatService.ts         # Parameter extraction and orchestration
+│   └── cacheManager.ts        # Response cache
+├── hooks/                     # Toasts, speech, collaboration, workspaces, chat metadata
+├── i18n/locales/              # en, fr, nl
+└── utils/exporters/           # Chat and Excel export
+```
 
 ## 💡 Usage Examples
 
-### Chat Queries
-
-- "Show me recent sales data" → Applies 30-day date range, renders charts
-- "What products are low in stock?" → Extracts thresholds, filters data
-- "Category performance this month" → Auto-applies date filters, shows breakdown
-
-### Data Export
-
-- **Manual Save**: Click 💾 button to save chat to localStorage
-- **Import**: Click 📥 to import conversations (JSON/TXT/MD)
-- **Excel Export**: Export data tables to formatted Excel files
-
-### Language Support
-
-- Switch between 🇺🇸 English, 🇫🇷 French, 🇳🇱 Dutch
-- Each language maintains separate chat history
-- All UI elements fully translated
+- "Show me recent sales data" → last 30 days, as a chart
+- "What products are low in stock?" → low-stock products with the threshold applied
+- "Category performance this month" → sales by category for the month
+- "Find articles with cola in the name" → catalog search
+- "Which articles have ingredients?" → articles with their ingredient text
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+**Chat errors**
 
-**Azure OpenAI Connection**
+- A 503 from `/api/v1/chat/completions` means McpServer has no Azure OpenAI settings: check `AOAI_ENDPOINT`, `AOAI_APIKEY` and `CHATCOMPLETION_DEPLOYMENTNAME` in its `.env`
+- A 400 means the request asked for more than 4000 `max_tokens` or more than one answer
 
-- The key and deployment are McpServer's: check `AOAI_ENDPOINT`, `AOAI_APIKEY` and `CHATCOMPLETION_DEPLOYMENTNAME` in its `.env`
-- A 503 from `/api/v1/chat/completions` means McpServer has no Azure OpenAI settings
+**No data**
 
-**Backend API Issues**
+- Check McpServer is running on port 5000 in Web API mode (`http://localhost:5000/health`)
+- The client calls relative `/api/v1/...` URLs, which Vite's proxy (`vite.config.js`) sends to McpServer; a client served another way needs its own proxy, or its origin in McpServer's `CORS_ORIGINS`
 
-- Check backend API server is running on port 5000
-- Verify Vite proxy configuration in `vite.config.js`
-- Verify server returns data in expected JSON format
+**Charts**
 
-**Data Visualization**
+- A chart needs numeric values and categories; otherwise the data shows as a table
+- Check the browser console for rendering errors
 
-- Ensure data has numeric values and categories for charts
-- Check browser console for rendering errors
+**Language or saved chats**
 
-**Language/Storage Issues**
+- Chats are kept per language in the browser's localStorage
 
-- Check browser localStorage for language-specific keys
-- Translation files should load in browser network tab
+`search-proxy.cjs` is the earlier Node.js proxy for Azure AI Search, kept for reference; McpServer now does this, so the client doesn't need it.
 
 ## 📄 License
 
@@ -170,7 +147,7 @@ MIT License - see LICENSE file for details.
 ## 🔗 Resources
 
 - [Model Context Protocol](https://modelcontextprotocol.io/)
-- [Azure OpenAI](https://docs.microsoft.com/en-us/azure/cognitive-services/openai/)
+- [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/)
 - [React](https://react.dev/) | [Vite](https://vitejs.dev/) | [Recharts](https://recharts.org/)
 
 ## 🛡️ Disclaimer
